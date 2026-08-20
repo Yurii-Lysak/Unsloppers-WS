@@ -1,17 +1,13 @@
 ---
 name: workspace-status
-description: Check Git status of workspace and all submodules in services/ folder (backend, frontend). Analyzes uncommitted changes, unpushed commits, and suggests next actions. Use when user asks to check status, see what changed, before sync/commit, or to verify clean state.
+description: Check Git status of workspace and both submodules in services/ (backend, frontend). Analyzes uncommitted changes, unpushed commits, detached HEAD, and suggests next actions. Use when user asks to check status, see what changed, before sync/commit, or to verify clean state.
 ---
 
 # Workspace Status
 
 ## Algorithm
 
-Follow these steps to check complete workspace status:
-
 ### Step 1: Check Workspace Root Status
-
-Check the main workspace repository status:
 
 ```bash
 echo "=== Workspace Repository Status ==="
@@ -25,25 +21,22 @@ Analyze:
 
 ### Step 2: Check All Submodules Overview
 
-Use the npm script we created:
-
 ```bash
 echo "=== All Submodules Overview ==="
 npm run services:status
 ```
 
-This shows quick overview of all submodules.
+This shows each submodule's checked-out commit vs. what the workspace has recorded
+(a `-` prefix means uninitialized — tell the user to run `npm run services:init`).
 
-### Step 3: Check Each Submodule Detailed
-
-Go into each submodule in `services/` folder and check detailed status:
+### Step 3: Check Each Submodule Detailed — Including Branch
 
 **Backend (services/backend):**
 ```bash
 echo "=== Backend Detailed Status ==="
 cd services/backend
 git status
-git branch -vv
+git branch --show-current
 cd ../..
 ```
 
@@ -52,29 +45,35 @@ cd ../..
 echo "=== Frontend Detailed Status ==="
 cd services/frontend
 git status
-git branch -vv
+git branch --show-current
 cd ../..
 ```
 
-### Step 4: Analyze Results
+**If `git branch --show-current` prints nothing for a submodule:** it's on a
+detached HEAD (not on any branch). Flag this explicitly — it means `git submodule
+update` ran without the branch-checkout step (`npm run services:init`/`services:sync`
+handle this correctly; a raw `git submodule update` does not). Committing while
+detached risks orphaning commits. Recommend `git -C services/<name> checkout main`
+before any further work there, unless the user has a specific reason to be detached
+(e.g. inspecting an old pinned commit).
 
-Interpret the output for each repository:
+### Step 4: Analyze Results
 
 **Status meanings:**
 - **Clean working tree** = no uncommitted changes
-- **Changes not staged** = files modified but not added to git
-- **Changes to be committed** = files staged for commit
-- **Untracked files** = new files not in git yet
-- **Your branch is ahead** = local commits not pushed to remote
-- **Your branch is behind** = remote has commits you don't have locally
+- **Changes not staged** / **Changes to be committed** / **Untracked files** — standard git meanings
+- **Your branch is ahead/behind** = local vs. remote commits differ
+- **Submodule modified content** (shown as `m` in `git status --short` at the
+  workspace root) = the submodule's working tree has uncommitted changes, OR it's
+  checked out at a different commit than the workspace's recorded gitlink
 
 **Categorize changes:**
 - **Workspace changes** = changes in workspace root (not in services/)
-- **Service changes** = changes in services/backend or services/frontend
+- **Service changes** = changes inside services/backend or services/frontend
+- **Gitlink drift** = a submodule advanced (new commits pushed) but the workspace's
+  recorded pointer hasn't been updated yet — `commit-and-push-services` handles this
 
 ### Step 5: Suggest Next Actions to User
-
-Analyze the changes and suggest appropriate actions:
 
 **If there are changes in services (backend/frontend):**
 - List which services have changes and what changed
@@ -84,28 +83,26 @@ Analyze the changes and suggest appropriate actions:
 **If there are changes in workspace root:**
 - List what changed in workspace (e.g., new files, modified files)
 - Suggest: "Would you like to commit these workspace changes?"
-- Explain these are workspace-level changes (not service code)
 
 **If both workspace and services have changes:**
-- Explain both have changes
-- Suggest committing services first (using `commit-and-push-services`)
-- Then commit workspace changes separately
+- Suggest committing services first (using `commit-and-push-services`), which also
+  updates the workspace gitlink as part of the same flow
+
+**If a submodule is on detached HEAD:**
+- Flag it and suggest `git -C services/<name> checkout main` before proceeding
 
 **If working trees are clean but behind remote:**
-- Tell user which repositories are behind remote
-- Suggest: "Would you like to sync with remote to get latest changes?"
-- Can use `sync-workspace` skill
+- Suggest: "Would you like to sync with remote to get latest changes?" (`sync-workspace`)
 
 **If everything is clean and up-to-date:**
 - Confirm: "✅ All repositories are clean and up-to-date"
-- "Ready for new work"
 
 **If there are conflicts or errors:**
-- Explain the problem clearly
-- Suggest manual resolution steps or specific commands
+- Explain the problem clearly; suggest manual resolution steps
 
 ## Important Notes
 
 - This skill is **READ-ONLY** - never modifies anything
 - Always run before sync or commit operations
-- Provides clear actionable recommendations
+- Always check submodule branch state, not just `git status` — detached HEAD looks
+  "clean" but is a real risk

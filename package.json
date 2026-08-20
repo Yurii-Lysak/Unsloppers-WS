@@ -5,13 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "services:init": "git submodule update --init --recursive",
+    "services:init": "git submodule update --init --recursive && git submodule foreach \"git checkout main\"",
     "services:status": "git submodule status",
-    "services:sync": "git submodule update --remote"
+    "services:sync": "git submodule update --remote && git submodule foreach \"git checkout main\""
   },
   "repository": {
     "type": "git",
-    "url": "git@gitlab.altexsoft.pro:gr_ai-bootcamp/workspace.git"
+    "url": "https://github.com/andrii-tarasenko-altex/workspace.git"
   },
   "keywords": [],
   "author": "",
