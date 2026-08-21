@@ -6,7 +6,7 @@
 Spec-driven development workspace for the "people management" product, run with the
 BMad Method. Application code lives in two git submodules — `services/backend`
 (NestJS 11 + Prisma 7 + PostgreSQL) and `services/frontend` (React 19 + Vite 8) —
-each a separate GitLab repository. This root repo holds only BMad planning/spec
+each a separate GitHub repository. This root repo holds only BMad planning/spec
 artifacts, workspace skills, and submodule gitlinks.
 
 ## Policy
@@ -22,10 +22,10 @@ artifacts, workspace skills, and submodule gitlinks.
   `project_knowledge`) — the source scope for all planning work.
 - Planning artifacts: `_bmad-output/planning-artifacts/`; implementation artifacts:
   `_bmad-output/implementation-artifacts/`
-- Backend agent guide: `services/backend/CLAUDE.md` + per-area rules in
-  `services/backend/.claude/rules/`
-- Frontend agent guide: `services/frontend/CLAUDE.md` + per-area rules in
-  `services/frontend/.claude/rules/`
+- Backend agent instructions: `services/backend/AGENTS.md`; deeper guide:
+  `services/backend/CLAUDE.md` + per-area rules in `services/backend/.claude/rules/`
+- Frontend agent instructions: `services/frontend/AGENTS.md`; deeper guide:
+  `services/frontend/CLAUDE.md` + per-area rules in `services/frontend/.claude/rules/`
 - BMad config: `_bmad/config.toml`, merged via
   `uv run _bmad/scripts/resolve_config.py --project-root .`
 

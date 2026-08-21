@@ -8,10 +8,10 @@
 mkdir services
 
 # Add backend as submodule
-git submodule add -b main git@gitlab.altexsoft.pro:gr_ai-bootcamp/backend.git services/backend
+git submodule add -b main https://github.com/andrii-tarasenko-altex/backend.git services/backend
 
 # Add frontend as submodule  
-git submodule add -b main git@gitlab.altexsoft.pro:gr_ai-bootcamp/frontend.git services/frontend
+git submodule add -b main https://github.com/andrii-tarasenko-altex/frontend.git services/frontend
 
 # Verify submodules created
 cat .gitmodules
