@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(src/**)", "Write(src/**)",
+      "Edit(app/**)", "Write(app/**)",
+      "Edit(lib/**)", "Write(lib/**)",
+      "Edit(components/**)", "Write(components/**)",
+      "Edit(pages/**)", "Write(pages/**)",
+      "Edit(api/**)", "Write(api/**)",
+      "Edit(dist/**)", "Write(dist/**)",
+      "Edit(build/**)", "Write(build/**)",
+      "Write(node_modules/**)",
+      "Bash(git push origin main*)",
+      "Bash(git push -u origin main*)",
+      "Bash(git push origin HEAD:main*)"
+    ],
+    "ask": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git reset --hard*)"
+    ]
+  }
+}
