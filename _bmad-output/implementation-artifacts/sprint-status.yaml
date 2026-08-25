@@ -1,0 +1,151 @@
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created, ready for development
+#   - in-progress: Developer actively working on implementation
+#   - review: Implementation complete, ready for review
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# Action Item Status:
+#   - open: Committed during a retrospective, not yet addressed
+#   - in-progress: Actively being worked on
+#   - done: Completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when its first story starts (via build's sprint sync)
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates the next story after the previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Retrospective appends its action items to action_items; the status view surfaces open ones
+
+generated: 08-21-2026 00:00
+last_updated: 08-21-2026 00:00
+project: people management
+project_key: NOKEY
+tracking_system: file-system
+story_location: "_bmad-output/implementation-artifacts"
+
+development_status:
+  epic-1: backlog
+  # Wave-0 substrate first — sprint automation selects in file order; C1/registry
+  # (1-19), temporal history (1-20), and auth/C7 (1-18) must land before 1-1+.
+  1-19-backend-substrate-contracts-and-provider-registry-modules: backlog
+  1-20-temporal-employment-history-tables-and-timeline-coupling: backlog
+  1-18-authentication: backlog
+  1-1-derive-manager-access-from-reporting-hierarchy: backlog
+  1-2-extend-manager-access-via-project-assignment: backlog
+  1-3-assign-people-partner-relationships: backlog
+  1-4-define-functional-roles-and-permissions-via-ui: backlog
+  1-5-assign-functional-roles-to-people: backlog
+  1-6-assemble-employee-profile-by-section-access: backlog
+  1-7-profile-header-shows-manager-pp-and-mentor: backlog
+  1-8-enforce-the-colleague-whitelist-everywhere: backlog
+  1-9-management-notes-with-visibility-flags: backlog
+  1-10-per-field-custom-field-visibility: backlog
+  1-11-generate-a-shareable-profile-link: backlog
+  1-12-shared-link-expiry-logging-and-revocation: backlog
+  1-13-cache-access-resolution-safely-and-revoke-immediately-on-pro: backlog
+  1-14-prevent-section-leaks-across-all-surfaces-for-every-denied-a: backlog
+  1-15-access-control-test-suite-architecture: backlog
+  1-16-pseudonymized-seed-data-tool: backlog
+  1-17-intelligent-repository-process-setup-and-single-container-de: backlog
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-1-view-own-employment-summary: backlog
+  2-2-edit-own-personal-and-emergency-contacts: backlog
+  2-3-upload-photo-and-certificates: backlog
+  2-4-view-own-timeline-leaves-projects-cds-and-mentorship: backlog
+  2-5-view-shared-feedback-flagged-notes-and-own-action-items: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-sortable-filterable-employee-list: backlog
+  3-2-define-custom-fields-at-runtime: backlog
+  3-3-inline-editing-on-the-list: backlog
+  3-4-saved-and-shared-views: backlog
+  3-5-export-to-excel: backlog
+  3-6-colleague-mode-of-the-list: backlog
+  3-7-all-employees-list-performance-at-500-records-under-2-second: backlog
+  epic-3-retrospective: optional
+
+  epic-4: backlog
+  4-1-manually-create-an-action-item: backlog
+  4-2-complete-and-cancel-action-items: backlog
+  4-3-overdue-highlighting: backlog
+  4-4-auto-generate-action-item-on-form-campaign-activation: backlog
+  epic-4-retrospective: optional
+
+  epic-5: backlog
+  5-1-record-a-risk: backlog
+  5-2-show-risk-trend: backlog
+  5-3-risk-dashboard: backlog
+  epic-5-retrospective: optional
+
+  epic-6: backlog
+  6-1-create-a-resourcing-request: backlog
+  6-2-fulfil-a-request-with-internal-or-external-candidates: backlog
+  6-3-dm-reviews-and-approves-rejects-candidates: backlog
+  6-4-request-history: backlog
+  epic-6-retrospective: optional
+
+  epic-7: backlog
+  7-1-auto-generate-timeline-events: backlog
+  7-2-manual-timeline-edits: backlog
+  7-3-resolve-conflicts-between-system-generated-and-manually-edit: backlog
+  epic-7-retrospective: optional
+
+  epic-8: backlog
+  8-1-skills-matrix-link-and-assessment-log: backlog
+  8-2-idp-records: backlog
+  8-3-manager-pp-maintain-assessments-and-conclusions: backlog
+  8-4-filter-by-assessment-recency-and-open-idp: backlog
+  epic-8-retrospective: optional
+
+  epic-9: backlog
+  9-1-self-flag-open-to-mentoring: backlog
+  9-2-assign-a-mentor-mentee-pair: backlog
+  9-3-end-a-mentorship-pair-with-required-final-feedback: backlog
+  9-4-automatic-mentor-status-transitions: backlog
+  9-5-view-all-mentor-mentee-pairs-active-and-ended: backlog
+  epic-9-retrospective: optional
+
+  epic-10: backlog
+  10-1-create-a-form-campaign: backlog
+  10-2-build-and-freeze-campaign-audience: backlog
+  10-3-activate-a-campaign: backlog
+  10-4-track-campaign-completion: backlog
+  epic-10-retrospective: optional
+
+  epic-11: backlog
+  11-1-record-feedback-with-a-visibility-flag: backlog
+  11-2-view-feedback-over-time-and-compare-periods: backlog
+  11-3-request-feedback-from-named-colleagues-via-a-form-campaign: backlog
+  epic-11-retrospective: optional
+
+  epic-12: backlog
+  12-1-build-shared-dashboard-engine: backlog
+  12-2-unit-manager-dashboard: backlog
+  12-3-delivery-manager-dashboard-with-project-selector: backlog
+  12-4-project-manager-dashboard: backlog
+  12-5-people-partner-dashboard: backlog
+  12-6-accessibility-and-responsive-layout-pass: backlog
+  epic-12-retrospective: optional
+
+  epic-13: backlog
+  13-1-integrate-timetracker-leaves-api: backlog
+  13-2-integrate-timetracker-projects-people-api-permission-critica: backlog
+  13-3-investigate-integrate-peopleforce-candidate-vacancy-api-with: backlog
+  13-4-resolve-cross-system-identity-peopleforce-platform-timetrack: backlog
+  epic-13-retrospective: optional

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Key Screen — Employee Profile (PP viewer)</title>
+<style>
+/*
+  Illustrates: EXPERIENCE.md — Information Architecture (Employee Profile
+  row), Component Patterns (Access Scope Chip, Profile Section Card incl.
+  RW/R-only distinction, Risk Badge + Trend Arrow, Visibility Flag Toggle,
+  Career Timeline, Action Item Row). DESIGN.md — Colors (risk-*, success),
+  Components (all of the above), Elevation (Section Gate dashed border,
+  shown as a second state in the S7 card's alternate below).
+  Viewer: Daniela, People Partner — UJ-1's scenario. Canonical state, with
+  the S7 card's PM-gated alternate rendered inline below it for reference
+  (a PP never sees the gate; shown here only to illustrate the contrast).
+*/
+:root{
+  --background:oklch(1 0 0); --foreground:oklch(0.145 0.004 286);
+  --card:oklch(1 0 0); --card-foreground:oklch(0.145 0.004 286);
+  --primary:oklch(0.488 0.243 264.376); --primary-foreground:oklch(0.985 0 0);
+  --secondary:oklch(0.961 0.003 286); --secondary-foreground:oklch(0.205 0.008 286);
+  --muted:oklch(0.961 0.003 286); --muted-foreground:oklch(0.556 0.012 286);
+  --destructive:oklch(0.577 0.245 27.325); --destructive-foreground:oklch(0.985 0 0);
+  --border:oklch(0.898 0.003 286);
+  --sidebar:oklch(0.985 0 0); --sidebar-foreground:oklch(0.145 0.004 286); --sidebar-border:oklch(0.898 0.003 286);
+  --success:oklch(0.6 0.15 145); --success-foreground:oklch(0.985 0 0);
+  --risk-high:oklch(0.577 0.245 27.325); --risk-high-fg:oklch(0.985 0 0);
+  --radius:0.625rem; --header-height:3rem; --sidebar-width:15rem;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--muted);color:var(--foreground);font-size:14px}
+.browser{max-width:1280px;margin:16px auto;border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.browser-bar{background:#e8e8ea;padding:8px 12px;display:flex;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;background:#c9c9cc}
+.app{display:flex;height:820px;background:var(--background)}
+.sidebar{width:3.75rem;background:var(--sidebar);border-right:1px solid var(--sidebar-border);flex-shrink:0}
+.main{flex:1;overflow:auto}
+header.top{height:var(--header-height);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.chip{background:var(--secondary);color:var(--secondary-foreground);border-radius:999px;padding:3px 10px;font-size:12px;display:inline-flex;align-items:center;gap:6px}
+.content{padding:20px;max-width:760px}
+.identity{display:flex;gap:14px;align-items:center;margin-bottom:20px}
+.avatar{width:56px;height:56px;border-radius:999px;background:var(--secondary);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--secondary-foreground)}
+.identity h1{font-size:18px;margin:0}
+.identity .sub{font-size:12.5px;color:var(--muted-foreground)}
+.card{border:1px solid var(--border);border-radius:var(--radius);background:var(--card);margin-bottom:14px;overflow:hidden}
+.card h2{font-size:12.5px;margin:0;padding:11px 14px;border-bottom:1px solid var(--border);font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.editpen{color:var(--muted-foreground);font-size:11px}
+.card .body{padding:14px}
+.row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+.row .l{color:var(--muted-foreground)}
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:600;background:var(--risk-high);color:var(--risk-high-fg)}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:5px 0}
+.toggle{width:30px;height:16px;border-radius:999px;background:var(--border);position:relative;display:inline-block}
+.toggle.on{background:var(--primary)}
+.toggle::after{content:"";position:absolute;width:12px;height:12px;border-radius:999px;background:#fff;top:2px;left:2px}
+.toggle.on::after{left:16px}
+.note{border-top:1px solid var(--border);padding:10px 0;font-size:12.5px}
+.gated{border:1px dashed var(--border);border-radius:8px;padding:12px;color:var(--muted-foreground);font-size:12.5px;background:var(--muted)}
+.timeline-item{display:flex;gap:10px;padding:8px 0;font-size:12.5px;border-top:1px solid var(--border)}
+.timeline-item:first-child{border-top:none}
+.dot2{width:8px;height:8px;border-radius:999px;background:var(--muted-foreground);margin-top:4px;flex-shrink:0}
+.tag{font-size:10px;color:var(--muted-foreground);background:var(--secondary);border-radius:999px;padding:0 6px}
+.ai-row{display:flex;gap:8px;padding:8px 0;border-top:1px solid var(--border);font-size:12.5px}
+.ai-row:first-child{border-top:none}
+.cb{width:14px;height:14px;border:1.5px solid var(--border);border-radius:4px;margin-top:1px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="browser">
+  <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+  <div class="app">
+    <nav class="sidebar"></nav>
+    <div class="main">
+      <header class="top">
+        <strong style="font-size:13px">Employee Profile</strong>
+        <span class="chip">Viewing as PP</span>
+      </header>
+      <div class="content">
+        <div class="identity">
+          <div class="avatar">PN</div>
+          <div>
+            <h1>Priya Nadar</h1>
+            <div class="sub">Senior Software Engineer · Engineering · Atlas Migration · Manager: Alex Kim · PP: Daniela Voss</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Risk <span class="editpen">✎ Edit</span></h2>
+          <div class="body">
+            <div class="row"><span class="l">Current level</span><span class="badge">High <span style="margin-left:2px">↑</span></span></div>
+            <div class="row"><span class="l">Last updated</span><span>Aug 19, 2026</span></div>
+            <div class="row"><span class="l">Description</span><span>Missed two 1:1s; workload comment in last check-in</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Management Notes <span class="editpen">+ Add note</span></h2>
+          <div class="body">
+            <div class="note">
+              <div class="toggle-row"><span>From Alex Kim (Manager), Aug 19</span></div>
+              <div style="margin:4px 0 8px">"Priya seems stretched thin this sprint — mentioned wanting to talk about workload."</div>
+              <div class="toggle-row"><span>Visible to employee</span><span class="toggle"></span></div>
+              <div class="toggle-row"><span>Visible to PM</span><span class="toggle on"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="opacity:.75">
+          <h2 style="border-bottom:none">Management Notes — as a Project Manager would see this card</h2>
+          <div class="body" style="padding-top:0">
+            <div class="gated">A management note exists here. Not shared with your role.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Career Timeline</h2>
+          <div class="body">
+            <div class="timeline-item"><div class="dot2"></div><div>Promoted to Senior Software Engineer — Jun 2026 <span class="tag">system</span></div></div>
+            <div class="timeline-item"><div class="dot2"></div><div>Joined Atlas Migration project — Feb 2026 <span class="tag">system</span></div></div>
+            <div class="timeline-item"><div class="dot2" style="background:var(--muted-foreground)"></div><div>Backfilled: prior role at joining, corrected from Excel headcount record — Nov 2023 <span class="tag">manual</span></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Action Items</h2>
+          <div class="body">
+            <div class="ai-row"><div class="cb"></div><div>Schedule workload conversation with Priya<div style="color:var(--muted-foreground);font-size:11px">Due Aug 24 · assigned to Daniela</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

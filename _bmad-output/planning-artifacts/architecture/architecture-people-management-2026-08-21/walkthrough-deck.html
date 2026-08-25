@@ -1,0 +1,659 @@
+<title>Access-First Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper: #F4F5F8;
+    --paper-raised: #FFFFFF;
+    --ink: #1A2233;
+    --ink-soft: #4B5468;
+    --line: #D5D9E2;
+    --line-soft: #E6E9F0;
+    --blueprint: #2E5AA8;
+    --blueprint-soft: #E8EDF8;
+    --blueprint-deep: #1F3E7A;
+    --amber: #A9660B;
+    --amber-soft: #FBF0DD;
+    --green: #2C7A4B;
+    --green-soft: #E4F3EA;
+    --red: #B23A3A;
+    --red-soft: #FBEAEA;
+    --shadow: 0 1px 2px rgba(26,34,51,0.04), 0 8px 24px -12px rgba(26,34,51,0.12);
+    --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-body: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10151F;
+      --paper-raised: #171E2C;
+      --ink: #E8EBF2;
+      --ink-soft: #A6AEC2;
+      --line: #2B3448;
+      --line-soft: #202939;
+      --blueprint: #7FA6E8;
+      --blueprint-soft: #1C2C4C;
+      --blueprint-deep: #A9C2F0;
+      --amber: #E0A857;
+      --amber-soft: #3A2E17;
+      --green: #6FC291;
+      --green-soft: #17301F;
+      --red: #E38080;
+      --red-soft: #3A1E1E;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #10151F;
+    --paper-raised: #171E2C;
+    --ink: #E8EBF2;
+    --ink-soft: #A6AEC2;
+    --line: #2B3448;
+    --line-soft: #202939;
+    --blueprint: #7FA6E8;
+    --blueprint-soft: #1C2C4C;
+    --blueprint-deep: #A9C2F0;
+    --amber: #E0A857;
+    --amber-soft: #3A2E17;
+    --green: #6FC291;
+    --green-soft: #17301F;
+    --red: #E38080;
+    --red-soft: #3A1E1E;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--blueprint-soft); color: var(--ink); }
+
+  a { color: var(--blueprint); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--blueprint);
+    outline-offset: 2px;
+  }
+
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 28px 120px;
+  }
+
+  /* ---------- Cover ---------- */
+  .cover {
+    padding: 88px 28px 56px;
+    max-width: 920px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--line);
+  }
+  .cover-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blueprint);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .cover-eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--blueprint);
+    display: inline-block;
+  }
+  h1.title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin: 0 0 20px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .cover-lede {
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    max-width: 640px;
+    margin: 0 0 32px;
+    text-wrap: pretty;
+  }
+  .cover-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+  .cover-meta strong { color: var(--ink); font-weight: 500; }
+
+  /* ---------- Section rhythm ---------- */
+  section.block {
+    padding: 64px 0 0;
+  }
+  section.block:first-of-type { padding-top: 56px; }
+
+  .block-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 10px;
+  }
+  h2.block-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.9rem;
+    margin: 0 0 18px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  h3.sub-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin: 36px 0 12px;
+    color: var(--ink);
+  }
+  p { max-width: 68ch; color: var(--ink-soft); }
+  p.tight { max-width: 72ch; }
+  strong { color: var(--ink); font-weight: 600; }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--line-soft);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+    color: var(--ink);
+  }
+
+  /* ---------- Diagram frame ---------- */
+  .diagram {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 24px 0;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+  .diagram-caption {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+  }
+
+  /* ---------- Module map grid ---------- */
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 24px 0;
+  }
+  .module-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 14px 12px;
+  }
+  .module-card.core {
+    border-color: var(--blueprint);
+    background: var(--blueprint-soft);
+  }
+  .module-name {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 13.5px;
+    color: var(--ink);
+  }
+  .module-cap {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  /* ---------- AD index ---------- */
+  .ad-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin-top: 20px;
+  }
+  .ad-group-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blueprint);
+    margin-bottom: 12px;
+  }
+  .ad-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+  }
+  .ad-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .ad-id {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--blueprint);
+    flex-shrink: 0;
+  }
+  .ad-title {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 15.5px;
+  }
+  .ad-rule {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .ad-tags {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+  }
+  .tag.new { background: var(--green-soft); color: var(--green); }
+  .tag.fixed { background: var(--amber-soft); color: var(--amber); }
+
+  /* ---------- Contract table ---------- */
+  .table-wrap { overflow-x: auto; margin: 20px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    min-width: 640px;
+  }
+  th {
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--ink-soft);
+    vertical-align: top;
+  }
+  td.c1 { font-family: var(--font-mono); color: var(--ink); font-weight: 500; white-space: nowrap; }
+  td.new-tag { color: var(--green); font-family: var(--font-mono); font-size: 11.5px; }
+
+  /* ---------- Checklist ---------- */
+  .checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .check-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 16px;
+  }
+  .check-mark {
+    font-family: var(--font-mono);
+    color: var(--blueprint);
+    font-size: 13px;
+    margin-top: 1px;
+  }
+  .check-text { font-size: 14.5px; color: var(--ink-soft); }
+  .check-text strong { color: var(--ink); }
+
+  /* ---------- Deferred list ---------- */
+  .deferred-list { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+  .deferred-item {
+    padding: 12px 16px;
+    border-left: 3px solid var(--line);
+    background: var(--paper-raised);
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .deferred-item strong { color: var(--ink); }
+
+  /* ---------- Verdict strip ---------- */
+  .verdict {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .verdict-pill {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  .verdict-pill .n { font-family: var(--font-mono); font-weight: 600; font-size: 15px; }
+  .verdict-pill.crit .n { color: var(--red); }
+  .verdict-pill.high .n { color: var(--amber); }
+  .verdict-pill.pass .n { color: var(--green); }
+  .verdict-pill span.label { color: var(--ink-soft); }
+
+  footer {
+    max-width: 920px;
+    margin: 80px auto 0;
+    padding: 24px 28px 0;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--ink-soft);
+  }
+
+  /* mermaid container theming assist */
+  .mermaid { font-family: var(--font-body) !important; }
+
+  @media (max-width: 640px) {
+    .cover { padding: 56px 20px 40px; }
+    section.block { padding-top: 48px; }
+  }
+</style>
+
+<div class="cover">
+  <div class="cover-eyebrow">Architecture spine · walkthrough</div>
+  <h1 class="title">Access-First Blueprint</h1>
+  <p class="cover-lede">A working session, not a spec re-read. Thirteen decisions that keep three developers from building something that compiles clean and still doesn't fit together — walked in the order you'll actually hit them.</p>
+  <div class="cover-meta">
+    <span><strong>People Management Platform</strong></span>
+    <span>13 capabilities · 13 ADs</span>
+    <span>Reviewed: rubric, tech-currency, adversarial, UX-reconciliation</span>
+    <span>2026-08-21</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section class="block">
+    <p class="block-eyebrow">Why this document, why now</p>
+    <h2 class="block-title">One idea does most of the work</h2>
+    <p class="tight">Every other product decision in this platform is fairly ordinary CRUD — records, lists, dashboards. The one thing that isn't ordinary is that <strong>the same screen renders differently for every viewer</strong>, because every section of every profile carries its own access rule. That's not a feature bolted onto a normal app. It's the thing the whole backend is organized around.</p>
+    <p class="tight">Layered NestJS modules, one per capability, controller → service → Prisma — nothing exotic. What makes it hold together across three people building in parallel is a handful of rules about who may call whom, and one shared mechanism (below) that lets modules read each other's data without importing each other's code.</p>
+  </section>
+
+  <section class="block">
+    <p class="block-eyebrow">The mechanism</p>
+    <h2 class="block-title">Provider Registry — read across modules, never import across modules</h2>
+    <p class="tight">AD-1 says a feature module can never import another feature module directly. Good rule, obvious problem: assembling one employee profile means reading from thirteen different modules (risks, notes, timeline, CDS, feedback...). NestJS doesn't have Angular-style multi-providers that would solve this for free, so the mechanism is explicit: a tiny <code>registry</code> module uses <code>DiscoveryService</code> to find every class tagged <code>@RegisterProvider(family, id)</code> at boot, and index it. Nobody imports anybody — everybody registers with the registry.</p>
+    <div class="diagram">
+      <pre class="mermaid">
+graph TD
+  Controller["Employee Profile Controller"] --> Assembler["ProfileAssemblerService"]
+  Assembler -->|"1: resolve once"| Resolver["AccessResolver (C1)"]
+  Assembler -->|"2: call only granted sections"| Registry["registry: Provider Registry (DiscoveryService)"]
+  Registry --> RiskProvider["risks: SectionProvider(S6)"]
+  Registry --> NotesProvider["access: SectionProvider(S7)"]
+  Registry --> TimelineProvider["timeline: SectionProvider(S9)"]
+  Registry --> CDSFieldProvider["cds: FieldProvider (last-assessment, open-IDP)"]
+  Registry --> RiskSummary["risks: DashboardSummaryProvider"]
+  Registry --> Etc["... one per owning module, per family"]
+      </pre>
+      <div class="diagram-caption">AD-3 — three provider families share this exact mechanism: SectionProvider (profile assembly), FieldProvider (Directory's CDS-derived filters), DashboardSummaryProvider (Dashboards' aggregates). Same registry, same rule.</div>
+    </div>
+    <p class="tight"><strong>The part worth saying out loud in the room:</strong> access is resolved <em>once</em> per request, before any provider is called — a provider for a section the viewer isn't granted is never invoked at all. That's stronger than filtering the response afterward, and it's why a Colleague viewer's response can never accidentally contain a risk record: the risk provider was never asked.</p>
+  </section>
+
+  <section class="block">
+    <p class="block-eyebrow">Boundaries</p>
+    <h2 class="block-title">Thirteen feature modules, two shared ones</h2>
+    <p class="tight">Every module depends on <code>contracts</code> (interfaces, zero logic) and <code>registry</code> (the mechanism above). No module imports another feature module — enforced in CI via <code>dependency-cruiser</code>, not just agreed in a meeting.</p>
+    <div class="diagram">
+      <pre class="mermaid">
+graph LR
+  contracts["contracts (interfaces only)"]
+  registry["registry (Provider Registry)"]
+  access[access]
+  auth[auth]
+  directory[directory]
+  actionitems["action-items"]
+  risks[risks]
+  resourcing[resourcing]
+  timeline[timeline]
+  cds[cds]
+  mentorship[mentorship]
+  campaigns[campaigns]
+  feedback[feedback]
+  dashboards[dashboards]
+  integrations[integrations]
+
+  access --> contracts
+  access --> registry
+  auth --> contracts
+  directory --> contracts
+  directory --> registry
+  actionitems --> contracts
+  risks --> contracts
+  risks --> registry
+  resourcing --> contracts
+  timeline --> contracts
+  cds --> contracts
+  cds --> registry
+  mentorship --> contracts
+  campaigns --> contracts
+  feedback --> contracts
+  feedback --> registry
+  dashboards --> contracts
+  dashboards --> registry
+  integrations --> contracts
+      </pre>
+      <div class="diagram-caption">AD-1 — every arrow points at a shared module, never sideways at a peer.</div>
+    </div>
+    <div class="module-grid">
+      <div class="module-card core"><div class="module-name">contracts</div><div class="module-cap">C1–C8, interfaces only</div></div>
+      <div class="module-card core"><div class="module-name">registry</div><div class="module-cap">Provider discovery</div></div>
+      <div class="module-card"><div class="module-name">auth</div><div class="module-cap">new · JWT session</div></div>
+      <div class="module-card"><div class="module-name">access</div><div class="module-cap">CAP-1 · the core</div></div>
+      <div class="module-card"><div class="module-name">directory</div><div class="module-cap">CAP-2</div></div>
+      <div class="module-card"><div class="module-name">action-items</div><div class="module-cap">CAP-4</div></div>
+      <div class="module-card"><div class="module-name">risks</div><div class="module-cap">CAP-5</div></div>
+      <div class="module-card"><div class="module-name">resourcing</div><div class="module-cap">CAP-6</div></div>
+      <div class="module-card"><div class="module-name">timeline</div><div class="module-cap">CAP-7</div></div>
+      <div class="module-card"><div class="module-name">cds</div><div class="module-cap">CAP-8</div></div>
+      <div class="module-card"><div class="module-name">mentorship</div><div class="module-cap">CAP-9</div></div>
+      <div class="module-card"><div class="module-name">campaigns</div><div class="module-cap">CAP-10</div></div>
+      <div class="module-card"><div class="module-name">feedback</div><div class="module-cap">CAP-11</div></div>
+      <div class="module-card"><div class="module-name">dashboards</div><div class="module-cap">CAP-12</div></div>
+      <div class="module-card"><div class="module-name">integrations</div><div class="module-cap">CAP-13</div></div>
+    </div>
+    <p class="tight" style="font-size:13.5px">CAP-3 Self-Service has no module of its own — it's <code>access</code>'s Self-scoped profile read, with writes (IDP self-complete, action-item self-complete, mentorship self-flag, contact edits) distributed to whichever module already owns that data.</p>
+  </section>
+
+  <section class="block">
+    <p class="block-eyebrow">Parallel delivery</p>
+    <h2 class="block-title">Eight contracts, frozen before Wave 1</h2>
+    <p class="tight">This is the actual mechanism behind "no developer waits on another." Each contract is a TypeScript abstract class in <code>contracts</code> — an injection token, not a promise. A track can build against a stub provider (fixed return value) from day one, and swap in the real implementation later with zero change to callers. Two of the eight didn't exist before this review round — real gaps, not paperwork.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Contract</th><th>Answers</th><th>Owner</th><th></th></tr>
+        <tr><td class="c1">C1 AccessResolver</td><td>What can this viewer see about subject X?</td><td>access</td><td></td></tr>
+        <tr><td class="c1">C2 FieldRegistry</td><td>Define/query any field, built-in or custom</td><td>directory</td><td></td></tr>
+        <tr><td class="c1">C3 ProjectAssignment</td><td>Who's on which project, confirmed or not</td><td>access / integrations</td><td></td></tr>
+        <tr><td class="c1">C4 TimelineEventWriter</td><td>Record a career-timeline event</td><td>timeline</td><td></td></tr>
+        <tr><td class="c1">C5 ExternalIdentityMapping</td><td>Map a PeopleForce/timetracker id to an employee</td><td>integrations</td><td></td></tr>
+        <tr><td class="c1">C6 ActionItemCreation</td><td>Create a task, manual or campaign-sourced</td><td>action-items</td><td></td></tr>
+        <tr><td class="c1">C7 CurrentUserProvider</td><td>Who is making this request?</td><td>auth</td><td class="new-tag">new — closed a real gap</td></tr>
+        <tr><td class="c1">C8 PermissionChecker</td><td>Can this user use this feature at all?</td><td>access</td><td class="new-tag">new — closed a real gap</td></tr>
+      </table>
+    </div>
+    <p class="tight" style="font-size:13.5px">C7 and C8 didn't exist in the original draft. Adversarial review found the gap: every controller needs "who's calling" and "are they allowed to use this feature" (distinct from "can they see this data"), and nothing in the first pass provided either without a module quietly importing another one.</p>
+  </section>
+
+  <section class="block">
+    <p class="block-eyebrow">The thirteen</p>
+    <h2 class="block-title">Every rule, grouped by what it protects</h2>
+
+    <div class="ad-groups">
+      <div>
+        <div class="ad-group-label">Boundaries &amp; contracts</div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-1</span><span class="ad-title">Module dependency direction</span></div>
+          <p class="ad-rule">Feature modules depend only on <code>contracts</code> and <code>registry</code> — never each other. Enforced by <code>dependency-cruiser</code> in CI, not just convention.</p>
+        </div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-2</span><span class="ad-title">Contracts hold interfaces only</span></div>
+          <p class="ad-rule">Zero logic, zero Prisma in <code>contracts</code>. Every HTTP-facing DTO must be plain-JSON-serializable — a <code>Map</code> stays in-process, never crosses the wire as-is.</p>
+        </div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-3</span><span class="ad-title">Provider Registry</span></div>
+          <p class="ad-rule">DiscoveryService-based registration for Section/Field/DashboardSummary providers. Collision = bootstrap failure. Missing registration = explicit "unavailable," never silent omission.</p>
+          <div class="ad-tags"><span class="tag fixed">named the real NestJS mechanism</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="ad-group-label">Access &amp; security</div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-4</span><span class="ad-title">No cache by default</span></div>
+          <p class="ad-rule">AccessResolver re-resolves every request. If a cache is ever built, it must invalidate on <em>every</em> ProjectAssignment write — including a bare <code>confirmed</code> flip, not just row create/delete.</p>
+        </div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-5</span><span class="ad-title">Whitelist is data, not a filter</span></div>
+          <p class="ad-rule">Colleague resolves to a fixed section-grant map, same code path as any other role. Shared Link's S3/S7/S13 exclusion is enforced the same way — server-side, never a frontend checkbox omission.</p>
+        </div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-8</span><span class="ad-title">Confidence state gates access</span></div>
+          <p class="ad-rule"><code>confirmed</code> + <code>confirmedAt</code> on ProjectAssignment. Access requires both true <em>and</em> fresh — a sticky flag from before an outage ages out, it doesn't grant forever.</p>
+          <div class="ad-tags"><span class="tag fixed">closed a stale-grant gap</span></div>
+        </div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-9</span><span class="ad-title">Auth ≠ access</span></div>
+          <p class="ad-rule"><code>auth</code> knows who you are. <code>access</code> knows what you can see. Neither knows the other's job — an SSO swap later touches one module, not the access model.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="ad-group-label">Data shape</div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-6</span><span class="ad-title">Custom fields: typed columns, not new tables</span></div>
+          <p class="ad-rule">One <code>CustomFieldValue</code> table, one populated column per row. Unused columns are <code>NULL</code>, never a sentinel. Rows are created lazily — a missing row <em>is</em> "unset."</p>
+        </div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-7</span><span class="ad-title">Temporal fields are history tables</span></div>
+          <p class="ad-rule">Grade/position/department/employment-type: one effective-dated table each, never a scalar-plus-audit-log. A Prisma extension fires the timeline event automatically — when a system update loses to a manual edit, C4's <code>markSystemWriteSkipped</code> annotates the manual entry with the skip affordance.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="ad-group-label">Frontend &amp; delivery</div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-10</span><span class="ad-title">Generated API types</span></div>
+          <p class="ad-rule">openapi-typescript from the live Swagger spec, committed and CI-diffed. No hand-written parallel DTOs to drift.</p>
+        </div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-11</span><span class="ad-title">Frontend pages mirror the UX spine's IA</span></div>
+          <p class="ad-rule">One page folder per EXPERIENCE.md surface, not per backend module. Cross-capability flows (e.g. "request feedback") are frontend-orchestrated — modules never call each other to fake it.</p>
+        </div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-12</span><span class="ad-title">Deployment</span></div>
+          <p class="ad-rule">Single containerized deploy — docker-compose across backend, frontend, Postgres. One environment. No k8s, no staging tier, this iteration.</p>
+          <div class="ad-tags"><span class="tag new">added — was only in the memlog</span></div>
+        </div>
+        <div class="ad-card">
+          <div class="ad-head"><span class="ad-id">AD-13</span><span class="ad-title">Test architecture</span></div>
+          <p class="ad-rule">One parameterized access-matrix suite per section, driven straight off the matrix table. Lives next to the provider it verifies — not a separate test module.</p>
+          <div class="ad-tags"><span class="tag new">added — SM-1 had no home</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <p class="block-eyebrow">Confidence check</p>
+    <h2 class="block-title">What review actually found</h2>
+    <p class="tight">Three lenses ran against the first draft — a rubric walk, an independent tech-currency check, and an adversarial pass built to construct developers who follow every rule and still build incompatible things. A fourth pass reconciled against the UX spine specifically. All findings are fixed in the spine this deck describes.</p>
+    <div class="verdict">
+      <div class="verdict-pill crit"><span class="n">5</span><span class="label">critical findings — all closed</span></div>
+      <div class="verdict-pill high"><span class="n">4</span><span class="label">high findings — all closed</span></div>
+      <div class="verdict-pill pass"><span class="n">0</span><span class="label">stale or fabricated versions</span></div>
+    </div>
+    <p class="tight" style="font-size:13.5px">Every "existing" stack entry was checked against the real <code>package.json</code>s, not assumed. Every "new" dependency was independently confirmed live on npm on 2026-08-21.</p>
+  </section>
+
+  <section class="block">
+    <p class="block-eyebrow">Not decided yet — on purpose</p>
+    <h2 class="block-title">Deferred</h2>
+    <p class="tight">Naming what's <em>not</em> pinned matters as much as what is — it's the difference between "we haven't gotten to it" and "go ahead and guess."</p>
+    <div class="deferred-list">
+      <div class="deferred-item"><strong>Cache implementation</strong> — the shape is constrained (AD-4), the build is deferred until NFR.2 testing shows a real bottleneck.</div>
+      <div class="deferred-item"><strong>PeopleForce specifics</strong> — auth, endpoints, rate limits are CAP-13's own investigation; the outbound-link fallback means nothing blocks on it today.</div>
+      <div class="deferred-item"><strong>Notifications &amp; Analytics</strong> — good-to-have, no architectural seed until back in scope.</div>
+      <div class="deferred-item"><strong>Horizontal scaling, staging tier, CI/CD pipeline choice</strong> — downstream of AD-12's single-container decision; revisit only if that changes.</div>
+      <div class="deferred-item"><strong>Freshness-window value for AD-8</strong> — the mechanism is fixed, the number waits on knowing the real sync interval.</div>
+    </div>
+  </section>
+
+  <section class="block">
+    <p class="block-eyebrow">Before Wave 1</p>
+    <h2 class="block-title">Wave 0 checklist</h2>
+    <div class="checklist">
+      <div class="check-item"><span class="check-mark">→</span><span class="check-text"><strong>Freeze C1–C8</strong> as TypeScript abstract classes in <code>contracts</code>, with stub providers, before any feature module starts real work.</span></div>
+      <div class="check-item"><span class="check-mark">→</span><span class="check-text"><strong>Stand up <code>registry</code></strong> — the DiscoveryService plumbing — since three providers (Section/Field/DashboardSummary) all depend on it existing first.</span></div>
+      <div class="check-item"><span class="check-mark">→</span><span class="check-text"><strong>Wire the <code>dependency-cruiser</code> CI rule</strong> so AD-1 is enforced from commit one, not discovered in a PR review three weeks in.</span></div>
+      <div class="check-item"><span class="check-mark">→</span><span class="check-text"><strong>Land the four temporal history tables</strong> (AD-7) and the Prisma extension that couples them to the timeline — this is upstream of Career Timeline, Self-Service, and Directory all at once.</span></div>
+      <div class="check-item"><span class="check-mark">→</span><span class="check-text"><strong>Set up the parameterized access-matrix test scaffold</strong> (AD-13) against <code>access-model.md</code> before the first section provider ships, so every provider is tested the same way from its first commit.</span></div>
+      <div class="check-item"><span class="check-mark">→</span><span class="check-text"><strong>Build the pseudonymized seed-data tool</strong> (spec NFR.3) — every track needs realistic data from day one, not partway through.</span></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Source of record: <code>ARCHITECTURE-SPINE.md</code>, architecture-people-management-2026-08-21. This deck is a discussion aid — the spine wins on any conflict.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+</script>
