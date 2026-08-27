@@ -30,17 +30,17 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 generated: 08-21-2026 00:00
-last_updated: 08-21-2026 00:00
+last_updated: 08-27-2026 00:00
 project: people management
 project_key: NOKEY
 tracking_system: file-system
 story_location: "_bmad-output/implementation-artifacts"
 
 development_status:
-  epic-1: backlog
+  epic-1: in-progress
   # Wave-0 substrate first — sprint automation selects in file order; C1/registry
   # (1-19), temporal history (1-20), and auth/C7 (1-18) must land before 1-1+.
-  1-19-backend-substrate-contracts-and-provider-registry-modules: backlog
+  1-19-backend-substrate-contracts-and-provider-registry-modules: review
   1-20-temporal-employment-history-tables-and-timeline-coupling: backlog
   1-18-authentication: backlog
   1-1-derive-manager-access-from-reporting-hierarchy: backlog
