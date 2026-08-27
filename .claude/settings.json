@@ -1,12 +1,6 @@
 {
   "permissions": {
     "deny": [
-      "Edit(src/**)", "Write(src/**)",
-      "Edit(app/**)", "Write(app/**)",
-      "Edit(lib/**)", "Write(lib/**)",
-      "Edit(components/**)", "Write(components/**)",
-      "Edit(pages/**)", "Write(pages/**)",
-      "Edit(api/**)", "Write(api/**)",
       "Edit(dist/**)", "Write(dist/**)",
       "Edit(build/**)", "Write(build/**)",
       "Write(node_modules/**)",
