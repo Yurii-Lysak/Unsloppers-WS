@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PRD Validation: People Management Platform</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --surface: #ffffff;
+    --border: #e7e5e4;
+    --text: #1c1917;
+    --muted: #78716c;
+
+    --verdict-strong: #16a34a;
+    --verdict-adequate: #65a30d;
+    --verdict-thin: #d97706;
+    --verdict-broken: #dc2626;
+
+    --sev-low: #64748b;
+    --sev-medium: #ca8a04;
+    --sev-high: #ea580c;
+    --sev-critical: #dc2626;
+
+    --grade-exc: #16a34a;
+    --grade-good: #65a30d;
+    --grade-fair: #d97706;
+    --grade-poor: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  header.report-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .title .subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .grade {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: white;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  .grade-excellent { background: var(--grade-exc); }
+  .grade-good { background: var(--grade-good); }
+  .grade-fair { background: var(--grade-fair); }
+  .grade-poor { background: var(--grade-poor); }
+
+  .synthesis {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--muted);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    font-size: 15.5px;
+  }
+  .synthesis p { margin: 0 0 10px; }
+  .synthesis p:last-child { margin-bottom: 0; }
+
+  .dimension-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .dim-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .dim-card .dim-name { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .dim-card .dim-verdict { font-size: 14px; font-weight: 600; }
+
+  section.dimension, section.reviewer-section { margin-bottom: 14px; }
+  section.dimension details, section.reviewer-section details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  section summary {
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  section summary::-webkit-details-marker { display: none; }
+  section summary::before {
+    content: "▸";
+    display: inline-block;
+    color: var(--muted);
+    transition: transform 0.15s ease;
+  }
+  section details[open] summary::before { transform: rotate(90deg); }
+  section summary h2 {
+    display: inline;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    flex: 1;
+  }
+  .verdict-pill {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: white;
+  }
+  .verdict-strong { background: var(--verdict-strong); }
+  .verdict-adequate { background: var(--verdict-adequate); }
+  .verdict-thin { background: var(--verdict-thin); }
+  .verdict-broken { background: var(--verdict-broken); }
+
+  .dim-body { padding: 4px 20px 18px; }
+  .dim-judgment { color: var(--text); font-size: 14.5px; }
+  .dim-judgment p { margin: 0 0 10px; }
+
+  .findings-list { padding: 0 20px 4px; }
+  article.finding {
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+  }
+  article.finding:first-child { border-top: none; }
+  article.finding header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .badge {
+    font-size: 10.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .badge-sev-low { background: rgba(100, 116, 139, 0.12); color: var(--sev-low); }
+  .badge-sev-medium { background: rgba(202, 138, 4, 0.14); color: var(--sev-medium); }
+  .badge-sev-high { background: rgba(234, 88, 12, 0.14); color: var(--sev-high); }
+  .badge-sev-critical { background: rgba(220, 38, 38, 0.14); color: var(--sev-critical); }
+  .finding-title { margin: 0; font-size: 15px; font-weight: 500; flex: 1; min-width: 200px; }
+  .finding-location { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; color: var(--muted); }
+  .finding-note, .finding-fix { margin-top: 6px; font-size: 14px; }
+  .finding-fix strong { color: var(--muted); font-weight: 500; }
+
+  .reviewer-source {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  .mechanical {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 24px;
+    font-size: 14px;
+  }
+  .mechanical h3 { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .mechanical ul { margin: 0; padding-left: 20px; }
+  .mechanical li { margin-bottom: 4px; color: var(--text); }
+
+  .category-heading { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 18px 20px 4px; }
+
+  footer.report-footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  footer .meta { display: flex; gap: 24px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="report-header">
+      <div class="title">
+        <h1>People Management Platform — Validation Report</h1>
+        <div class="subtitle">_bmad-output/planning-artifacts/prds/prd-people-management-2026-08-21/prd.md</div>
+      </div>
+      <div class="grade grade-good">GOOD</div>
+    </header>
+
+    <div class="synthesis">
+      <p>On the seven-dimension quality rubric alone, this PRD is Excellent: every dimension is strong or adequate, and every issue the rubric walker found this session (a stale FR-range claim, a broken cross-reference, a self-contradictory Assumptions Index entry, a missed glossary term, seven FRs missing Consequences bullets) was fixed and verified against the file before this report was written.</p>
+      <p>The edge-case-hunter lens tells a different story, and it's the one that matters more before this feeds <code>bmad-architecture</code>. Walking every branch the access model, departure cascade, and resourcing lifecycle imply, it found 22 unhandled paths — several of which are not cosmetic gaps but <strong>direct violations of guarantees the PRD states elsewhere</strong>: FR-8 promises full profile access is "never revocable down to zero holders," but neither concurrent mutual revocation nor the sole holder's own departure is guarded against it. SM-6 promises a shared link "stops working" when the creator's relationship ends, but FR-63's departure cascade never mentions shared links at all. FR-31 promises headcount is "always accurate," but there is no un-approve path once a candidate is found ineligible. These are cheap to close now, in a requirements document, and expensive to discover mid-implementation of the access layer — this platform's stated primary quality attribute. That gap is why the grade is Good rather than Excellent.</p>
+    </div>
+
+    <div class="dimension-summary">
+      <div class="dim-card"><div class="dim-name">Decision-readiness</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+      <div class="dim-card"><div class="dim-name">Substance over theater</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+      <div class="dim-card"><div class="dim-name">Strategic coherence</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+      <div class="dim-card"><div class="dim-name">Done-ness clarity</div><div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div></div>
+      <div class="dim-card"><div class="dim-name">Scope honesty</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+      <div class="dim-card"><div class="dim-name">Downstream usability</div><div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div></div>
+      <div class="dim-card"><div class="dim-name">Shape fit</div><div class="dim-verdict" style="color: var(--verdict-strong)">strong</div></div>
+    </div>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>Decision-readiness</h2><span class="verdict-pill verdict-strong">strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>Trade-offs are named rather than smoothed throughout (project-line narrowing, HR Admin's non-data-access). D11/D12 remain genuinely open, not rhetorical. No findings this pass.</p></div></div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>Substance over theater</h2><span class="verdict-pill verdict-strong">strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>NFRs carry real numbers throughout (2s/500 records, 15-min/4-hour windows, WCAG 2.1 AA). No generic boilerplate. No findings this pass.</p></div></div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>Strategic coherence</h2><span class="verdict-pill verdict-strong">strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>A single stated thesis (per-section, per-audience access rules) is held throughout feature ordering, success metrics, and counter-metrics. No findings this pass.</p></div></div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details open>
+        <summary><h2>Done-ness clarity</h2><span class="verdict-pill verdict-adequate">adequate</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>Seven previously-named FRs (FR-20/34/41/44/46/47/60) were missing Consequences bullets from an earlier fix that only covered its own example — resolved this session. A further ~18 FRs still lack the block but are arguably self-testable as stated per the rubric's own allowance; noted for completeness, not treated as a defect.</p></div></div>
+        <div class="findings-list">
+          <article class="finding">
+            <header><span class="badge badge-sev-low">resolved</span><h3 class="finding-title">Consequences-bullet fix landed only for the named example</h3><span class="finding-location">§5.4/5.7/5.9/5.10/5.13</span></header>
+            <div class="finding-note">FR-20, FR-34, FR-41, FR-44, FR-46, FR-47, FR-60 now all carry Consequences bullets, added this session.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>Scope honesty</h2><span class="verdict-pill verdict-strong">strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>Non-Goals do real work; rehire/reactivation gap is now named and flagged for architecture follow-up. Open-items density matches stakes. No findings this pass.</p></div></div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details open>
+        <summary><h2>Downstream usability</h2><span class="verdict-pill verdict-adequate">adequate</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>FR-1–FR-65 range, FR-28 cross-reference, and Departure glossary entry all verified correct. Three fresh mechanical drifts (an §10 self-contradiction on UJ confirmation status, FR-6's heading missing the "Shared Link" term, an internal spelling split) were found and fixed this session.</p></div></div>
+        <div class="findings-list">
+          <article class="finding">
+            <header><span class="badge badge-sev-low">resolved</span><h3 class="finding-title">§10 self-contradicted UJ-1/2/3 confirmation status</h3><span class="finding-location">§10</span></header>
+            <div class="finding-note">Reworded to match §3.3's clean split between confirmed (UJ-1/UJ-2) and not-yet-confirmed (UJ-3).</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-low">resolved</span><h3 class="finding-title">FR-6 heading omitted the Glossary term "Shared Link"</h3><span class="finding-location">§5.1 FR-6</span></header>
+            <div class="finding-note">Retitled to "Generate and manage a Shared Link."</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary><h2>Shape fit</h2><span class="verdict-pill verdict-strong">strong</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>Capability-spec shape remains right for this multi-stakeholder internal tool; UJ-3 now dramatizes the Vision's headline claim with an honest not-yet-confirmed caveat. No findings this pass.</p></div></div>
+      </details>
+    </section>
+
+    <section class="reviewer-section">
+      <details open>
+        <summary><h2>Edge-case lens</h2><span class="reviewer-source">review-edge-case-hunter.md</span></summary>
+        <div class="dim-body"><div class="dim-judgment"><p>22 unhandled paths found via exhaustive branch-walk of the access model, departure cascade, and resourcing lifecycle. The lens assigns no severity by design; category badges below are this report's own judgment call for scanability, not the lens's own labels. None of these have been applied to the PRD — Validate critiques without changing; roll into an Update to resolve.</p></div></div>
+
+        <div class="category-heading">Access-model precedence &amp; self-reference (FR-1, FR-2, FR-7)</div>
+        <div class="findings-list">
+          <article class="finding">
+            <header><span class="badge badge-sev-high">unresolved</span><h3 class="finding-title">No precedence rule for multi-role viewers</h3><span class="finding-location">FR-1, FR-2</span></header>
+            <div class="finding-note">Nothing states what happens when a viewer resolves to two+ access roles (e.g. Project line and PP) for the same subject — only the S7 PM-flag case has an explicit rule.</div>
+            <div class="finding-fix"><strong>Fix:</strong> state the resolution rule — e.g. section access is the union of every resolved role's grants, per section.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-high">unresolved</span><h3 class="finding-title">Self-managed department loophole</h3><span class="finding-location">FR-7</span></header>
+            <div class="finding-note">Nothing blocks setting a department's manager to a current member of that department — granting Reporting-line access to one's own profile, bypassing "risk never visible to self."</div>
+            <div class="finding-fix"><strong>Fix:</strong> a department's manager may never be a current member of that department or a nested sub-department.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">unresolved</span><h3 class="finding-title">Manager-chain cycle</h3><span class="finding-location">FR-7</span></header>
+            <div class="finding-note">Two sequential legitimate edits (A manages B, then B manages A) can form a cycle with no stated guard, breaking the reporting-line transitive-closure walk.</div>
+            <div class="finding-fix"><strong>Fix:</strong> reject a manager edit if the proposed manager is already a descendant of the employee in the reporting chain.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">unresolved</span><h3 class="finding-title">Concurrent conflicting access-switch writes</h3><span class="finding-location">FR-7, FR-9</span></header>
+            <div class="finding-note">Two actors writing different values to the same access-switch field concurrently has no stated resolution; the journal records outcomes, not conflicts.</div>
+            <div class="finding-fix"><strong>Fix:</strong> reject the losing concurrent write with a conflict error rather than silently overwriting.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">unresolved</span><h3 class="finding-title">Orphaned department on manager-field clear</h3><span class="finding-location">FR-7</span></header>
+            <div class="finding-note">Clearing a department's-manager field directly (not via departure) isn't blocked, leaving members with no Reporting-line coverage until noticed.</div>
+            <div class="finding-fix"><strong>Fix:</strong> block clearing a department's-manager field unless a replacement is designated in the same change.</div>
+          </article>
+        </div>
+
+        <div class="category-heading">Full profile access floor (FR-8)</div>
+        <div class="findings-list">
+          <article class="finding">
+            <header><span class="badge badge-sev-critical">unresolved</span><h3 class="finding-title">Concurrent mutual revocation drives holders to zero</h3><span class="finding-location">FR-8</span></header>
+            <div class="finding-note">The last two holders each revoking the other at the same instant isn't guarded against — FR-8 states the invariant but not the write-time check.</div>
+            <div class="finding-fix"><strong>Fix:</strong> re-check the current holder count at commit time and reject any revocation that would drop it to zero.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-critical">unresolved</span><h3 class="finding-title">Sole holder's own departure bypasses the floor</h3><span class="finding-location">FR-8, FR-62, FR-63</span></header>
+            <div class="finding-note">FR-62's re-parenting gate covers management/PP relationships but never checks full-profile-access status; FR-63's cascade would revoke the last holder's grant regardless.</div>
+            <div class="finding-fix"><strong>Fix:</strong> extend FR-62's blocking gate to require transferring full profile access first if the departing person is its sole holder.</div>
+          </article>
+        </div>
+
+        <div class="category-heading">Departure cascade completeness (FR-61–65)</div>
+        <div class="findings-list">
+          <article class="finding">
+            <header><span class="badge badge-sev-high">unresolved</span><h3 class="finding-title">Shared links outlive their creator's departure</h3><span class="finding-location">FR-63, SM-6</span></header>
+            <div class="finding-note">FR-63 never mentions shared links, so SM-6's own promise that a link "stops working when the creator's relationship ends" has no enforcing step for the departure case.</div>
+            <div class="finding-fix"><strong>Fix:</strong> add "every shared link the departing employee created is revoked" to FR-63's cascade.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">unresolved</span><h3 class="finding-title">Saved views become permanently frozen</h3><span class="finding-location">FR-13, FR-63</span></header>
+            <div class="finding-note">A saved view is editable/deletable only by its creator; FR-63 never transfers or retires that ownership on departure.</div>
+            <div class="finding-fix"><strong>Fix:</strong> on departure, saved-view edit/delete rights transfer to a current manager/PP, or the view is retired.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">unresolved</span><h3 class="finding-title">Double-departure race on a shared mentorship pair</h3><span class="finding-location">FR-43, FR-63</span></header>
+            <div class="finding-note">If both mentor and mentee depart on overlapping dates, nothing states the auto-close is idempotent against a pair already ended.</div>
+            <div class="finding-fix"><strong>Fix:</strong> state that departure-triggered pair auto-closure is a no-op against an already-ended pair.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-low">unresolved</span><h3 class="finding-title">Concurrent cancellation race on action items</h3><span class="finding-location">FR-22, FR-63</span></header>
+            <div class="finding-note">A manual cancellation and a departure-triggered auto-cancellation against the same item, arriving concurrently, has no stated ordering rule.</div>
+            <div class="finding-fix"><strong>Fix:</strong> a cancellation write against an already-cancelled item is a no-op regardless of which path arrives second.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">unresolved</span><h3 class="finding-title">Shared-link scope doesn't re-clamp to creator's narrowing access</h3><span class="finding-location">FR-6</span></header>
+            <div class="finding-note">If the creator's own access narrows short of full departure (e.g. loses a project), nothing states the link's exposed sections shrink to match.</div>
+            <div class="finding-fix"><strong>Fix:</strong> a shared link's exposed sections re-clamp, on every view, to whatever access level its creator currently holds.</div>
+          </article>
+        </div>
+
+        <div class="category-heading">Resourcing lifecycle (FR-28–33)</div>
+        <div class="findings-list">
+          <article class="finding">
+            <header><span class="badge badge-sev-high">unresolved</span><h3 class="finding-title">No un-approve path</h3><span class="finding-location">FR-30, FR-31</span></header>
+            <div class="finding-note">An approved candidate later found ineligible has no stated reversal mechanism, leaving headcount permanently marked filled with no correction route.</div>
+            <div class="finding-fix"><strong>Fix:</strong> allow a DM to reverse an approval to rejected with a written reason, freeing the headcount slot.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">unresolved</span><h3 class="finding-title">Headcount editable below filled count</h3><span class="finding-location">FR-28, FR-31</span></header>
+            <div class="finding-note">Nothing blocks editing headcount downward past the already-filled count, making FR-31's "always accurate" guarantee false by construction.</div>
+            <div class="finding-fix"><strong>Fix:</strong> reject a headcount edit that would drop below the current filled count, or require un-approving first.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">unresolved</span><h3 class="finding-title">No cap enforcement at zero remaining</h3><span class="finding-location">FR-31</span></header>
+            <div class="finding-note">FR-31 states the request never auto-closes on the last slot, but nothing blocks approving further candidates once remaining hits zero.</div>
+            <div class="finding-fix"><strong>Fix:</strong> block new approvals once remaining headcount is zero until the DM raises headcount or closes the request.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-low">unresolved</span><h3 class="finding-title">UM/DM departure mid-decision</h3><span class="finding-location">FR-29, FR-30, FR-63</span></header>
+            <div class="finding-note">A pending proposal or approval decision has no stated reassignment path when the UM/DM owning the next step departs first.</div>
+            <div class="finding-fix"><strong>Fix:</strong> flag a pending item owned by a now-departed UM/DM for reassignment within the same department/project.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-low">unresolved</span><h3 class="finding-title">Stale routing on UM reassignment</h3><span class="finding-location">FR-33</span></header>
+            <div class="finding-note">A request routed to a department's UM at creation time has no stated behavior if that UM changes before the request is fulfilled.</div>
+            <div class="finding-fix"><strong>Fix:</strong> routing re-resolves to the department's current UM on every view, not pinned at creation.</div>
+          </article>
+        </div>
+
+        <div class="category-heading">Timetracker sync flapping (FR-58)</div>
+        <div class="findings-list">
+          <article class="finding">
+            <header><span class="badge badge-sev-high">unresolved</span><h3 class="finding-title">4-hour withdrawal clock resets on any brief recovery</h3><span class="finding-location">FR-58</span></header>
+            <div class="finding-note">A sync that fails, recovers briefly, and fails again repeatedly never accumulates 4 continuous hours, so the withdrawal safeguard may never fire despite far worse cumulative staleness.</div>
+            <div class="finding-fix"><strong>Fix:</strong> the 4-hour clock accumulates total failed time within a rolling window rather than resetting on any momentary recovery.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">unresolved</span><h3 class="finding-title">15-minute grant window has the same flapping gap</h3><span class="finding-location">FR-58</span></header>
+            <div class="finding-note">A genuinely new project assignment observed during a flapping period may never accumulate 15 uninterrupted minutes, so it never registers as an access grant.</div>
+            <div class="finding-fix"><strong>Fix:</strong> an assignment is confirmed once a single successful sync observes it, not after 15 continuous minutes.</div>
+          </article>
+        </div>
+
+        <div class="category-heading">Mentorship consent &amp; concurrency (FR-41–45)</div>
+        <div class="findings-list">
+          <article class="finding">
+            <header><span class="badge badge-sev-medium">unresolved</span><h3 class="finding-title">No server-side consent gate on pair creation</h3><span class="finding-location">FR-42</span></header>
+            <div class="finding-note">FR-42 relies on browsing the open-to-mentor pool, but nothing states the server rejects creating a pair for someone whose flag is not currently on.</div>
+            <div class="finding-fix"><strong>Fix:</strong> creating a pair is rejected server-side unless the prospective mentor's flag is currently on.</div>
+          </article>
+          <article class="finding">
+            <header><span class="badge badge-sev-low">unresolved</span><h3 class="finding-title">Concurrent pair-ending race</h3><span class="finding-location">FR-43</span></header>
+            <div class="finding-note">Two permission holders ending the same pair at once has no stated resolution; the second closing note could silently overwrite the first.</div>
+            <div class="finding-fix"><strong>Fix:</strong> reject an end-pair request if the pair's status already transitioned to ended by a concurrent request.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <div class="mechanical">
+      <h3>Mechanical notes</h3>
+      <ul>
+        <li>FR numbering (FR-1–FR-65) verified contiguous, gap-free, duplicate-free.</li>
+        <li>All cross-references spot-checked by the rubric walker resolved correctly; no new broken numeric references found.</li>
+        <li>No v1-era residue detected anywhere (single manager tier, HR-Admin-as-implicit-full-access, colleague leave-type visibility, feedback period comparison).</li>
+        <li>All 22 edge-case findings trace to the seven <code>also_consider</code> areas given to the lens — a genuinely exhaustive path walk of the access model, not a spot-check.</li>
+      </ul>
+    </div>
+
+    <footer class="report-footer">
+      <div class="meta">
+        <span>Rubric: .claude/skills/bmad-prd/assets/prd-validation-checklist.md</span>
+        <span>Generated: 2026-08-26T19:27</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
