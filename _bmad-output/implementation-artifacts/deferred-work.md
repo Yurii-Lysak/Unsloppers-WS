@@ -14,6 +14,10 @@
   summary: C1 `AccessResolver.resolveAudience()` and C7 `CurrentUserProvider.getCurrentUser()` don't specify behavior for a nonexistent/unauthenticated subject (throw vs. null vs. sentinel).
   evidence: The Wave-0 stubs are safe either way (they deny/return a fixed value regardless of input validity), so this doesn't block Wave-1 today, but the real implementations (owned by `access` and Story 1.18/Authentication respectively) will need to decide this — C7's contract file already carries an explicit cross-story coordination note for the same reason.
 
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-16-pseudonymized-seed-data-tool.md`
+  summary: '`npm run start:prod` (`node dist/main`) is broken — `nest build`''s real compiled entrypoint is `dist/src/main.js`, not `dist/main.js`.'
+  evidence: Reproduced directly (`node dist/main` → `MODULE_NOT_FOUND`). Confirmed pre-existing and unrelated to Story 1.16 — `nest-cli.json` and both `tsconfig*.json` files are untouched by this story's diff, so the same mismatch exists on the baseline commit. Surfaced incidentally by this story's review because it doubled the `nest build` invocation in `postbuild`, but the broken path is independent of that; whoever owns Story 1.17 (single-container deployment) needs `start:prod` actually working before the containerized deploy target can run the built app.
+
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-19-backend-substrate-contracts-and-provider-registry-modules.md`
   summary: `ProviderRegistryService.get<T>()` performs an unchecked `as T` cast with no per-family provider marker interface (e.g. `SectionProvider`/`FieldProvider`/`DashboardSummaryProvider`).
   evidence: Defining those interfaces now would be speculative — no concrete section/field/dashboard-summary provider exists yet to shape them against. Relevant once the first real provider in any family is designed (Epic 3+).
@@ -33,3 +37,21 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-20-temporal-employment-history-tables-and-timeline-coupling.md`
   summary: The temporal-history extension's `create()` on the four history models doesn't support caller-supplied `select`/`include`/extra fields — it rebuilds the write data from only `employeeId`/`value`/`effectiveFrom`, silently dropping anything else a caller passes.
   evidence: No real caller exists yet (no service/endpoint in this story's scope), so nothing is broken today, but the first real caller (Story 1.1/1.6+) that wants a shaped `select` response will need this extended. Flagged by the edge-case reviewer.
+
+## Deferred from: code review of spec-1-16-pseudonymized-seed-data-tool (2026-08-28)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-16-pseudonymized-seed-data-tool.md`
+  summary: `TimelineEventWriterStub` no-ops — seed creates four history rows per employee but `timeline_events` stays empty until Epic 7 supplies a real C4 implementation.
+  evidence: Pre-existing Wave-0 stub from Story 1.19; seed correctly calls extension-mediated `create`, but the stub writer records nothing. Career Timeline will have no events after seeding until Epic 7.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-16-pseudonymized-seed-data-tool.md`
+  summary: Compiled seed entrypoint (`node dist/prisma/seed.js`) and `postbuild` migrate→seed chain have no automated CI smoke test.
+  evidence: Same root cause as Story 1.19 CI gap — workflow runs depcruise only, not `npm test` or build/postbuild. All 121 unit tests pass locally but deploy-path regressions (broken DI in `prisma/seed.ts`, removed `&& npm run db:seed`) would not fail CI.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-16-pseudonymized-seed-data-tool.md`
+  summary: `postbuild` unconditionally chains seed with no environment gate — runs manifest seed on every build.
+  evidence: Deliberate for current single-environment scope per spec Design Notes; Story 1.17 owns deployment topology and environment gating when real prod/staging separation exists. **Post-pivot (2026-08-28):** seed no longer calls TimeTracker — manifest-only, so postbuild does not require VPN/TT keys.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-16-pseudonymized-seed-data-tool.md`
+  summary: `ExternalIdentityMapping` (C5) not populated during seed — TimeTracker numeric `id` is not mapped to platform `employeeId`.
+  evidence: Review decision 1B (2026-08-28): defer to Epic 13 / follow-up substrate story. Spec Code Map originally named C5 population as this story's job; amended to note seed stores identity on `User` by email only until Epic 13 owns project-assignment and external-id mapping.

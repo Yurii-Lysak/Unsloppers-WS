@@ -2,6 +2,23 @@
 
 **Date:** 2026-08-25 · **For:** all teams
 
+---
+
+## Bootcamp pivot — 2026-08-28 (post-v1.5)
+
+| Change | Where / agent doc |
+| --- | --- |
+| **Seed population is 24 accounts**, not 500+ via TimeTracker Accounting | `_bmad-output/implementation-artifacts/bootcamp-scope-overrides.md` |
+| Source list: `docs/bootcamp-seed-accounts-source.csv` → `bootcamp-identities.json` | Story 1.16 shipped state |
+| **500+ still applies** for All Employees **performance** (§7 NFR, Story 3.7) — not seed manifest size | `epics.md` Story 3.7 |
+| TimeTracker API keys **not required** for `npm run db:seed` | `services/backend/README.md` |
+
+Agents: read `bootcamp-scope-overrides.md` before re-implementing TimeTracker-based seed or 500-floor guards.
+
+---
+
+**Date:** 2026-08-25 · **For:** all teams
+
 The spec has moved three revisions since the copy most of you are working from. This lists what changed and where. Two teams also have a full question-and-answer document; everything material from those is reflected here, so this file is sufficient on its own.
 
 If you read nothing else, read the first section.
