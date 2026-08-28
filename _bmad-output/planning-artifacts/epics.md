@@ -96,7 +96,7 @@ NFR-8: Access is evaluated server-side, per section, per request — no client-s
 - Deployment: single containerized deploy, docker-compose across backend+frontend+Postgres (AD-12/D10).
 - openapi-typescript-generated frontend types from the backend's Swagger surface, CI-diffed (AD-10).
 - Parameterized access-matrix test scaffold driven off `access-model.md`'s table (AD-13), stood up before the first section provider ships.
-- Pseudonymized seed-data tool (spec NFR.3) — every track needs realistic 500+-record data from day one.
+- Pseudonymized seed-data tool (Story 1.16, **done**) — **24-account** manifest for dev/demo; see `bootcamp-scope-overrides.md`. **500+-record scale** is a separate perf target (Story 3.7 / NFR-2), not the seed manifest size.
 
 ### UX Design Requirements
 
@@ -483,23 +483,25 @@ So that "access-control correctness" (the platform's primary quality attribute) 
 **When** a PM without access to a candidate's profile attempts to view it directly instead of through profile-sharing
 **Then** an automated test asserts this is rejected with the same rigor as the profile-matrix tests
 
-### Story 1.16: Pseudonymized Seed Data Tool
+### Story 1.16: Pseudonymized Seed Data Tool *(done — see bootcamp-scope-overrides.md)*
 
 As the delivery team,
-I want a seed/pseudonymization tool producing realistic, non-real employee data at 500+-record scale,
-So that every track has realistic data from day one and no real personal data ever enters an agent context, log, or the repository.
+I want a seed tool loading a fixed bootcamp test population with substituted identities,
+So that every track has realistic dev data from day one and no real personal data enters an agent context, log, or the repository.
 
-**FRs:** NFR-5.
+**FRs:** NFR-5. **Shipped:** 24 accounts from `docs/bootcamp-seed-accounts-source.csv` → `bootcamp-identities.json`. **Not shipped:** 500+ manifest, TimeTracker Accounting as seed source.
 
-**Acceptance Criteria:**
+**Acceptance Criteria (shipped):**
 
 **Given** a new non-production environment is provisioned
-**When** it is seeded using the tool
-**Then** it contains 500+ employee records with realistic org structure/volume and substituted names, emails, phones, addresses — including realistic custom fields, risk records, and management notes
+**When** `npm run db:seed` runs (no TimeTracker keys required)
+**Then** the database contains **24** employee records from the bundled manifest with pseudonymized names/emails and synthetic history rows
 
 **Given** a developer uses an AI coding agent against a seeded environment
 **When** the agent inspects employee data
-**Then** everything it encounters is pseudonymized, and the seed data is regenerable as schema evolves
+**Then** everything it encounters is test/pseudonymized data from the delivered list — not real PII
+
+**Deferred to Story 3.7:** All Employees list performance validation at **500+** records (NFR-2) — separate from seed manifest size.
 
 ### Story 1.17: Intelligent Repository, Process Setup, and Single-Container Deployment
 
@@ -795,7 +797,7 @@ So that NFR-2 is verified under realistic conditions, not assumed from unit test
 
 **Acceptance Criteria:**
 
-**Given** a workspace seeded with 500+ pseudonymized employee records (Story 1.16) and a DM with access to several projects
+**Given** a workspace seeded with the bootcamp manifest (Story 1.16, 24 accounts) **and** a load fixture or scale-up to 500+ records for perf testing
 **When** the DM loads All Employees with three filters applied, including a derived field and a custom field
 **Then** the response, including full permission resolution, returns within 2 seconds
 

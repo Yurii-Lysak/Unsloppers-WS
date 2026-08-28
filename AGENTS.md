@@ -50,3 +50,11 @@ artifacts, workspace skills, and submodule gitlinks.
   modified content when this happens.
 
 <!-- /bmad:context -->
+
+## Bootcamp seed pivot (2026-08-28)
+
+Story 1.16 seeds **24 accounts** from `docs/bootcamp-seed-accounts-source.csv` — **not**
+500+ via TimeTracker. Agents working on seed/population: read
+`_bmad-output/implementation-artifacts/bootcamp-scope-overrides.md` before following
+frozen Story 1.16 intent or PRD §4.17 TimeTracker-import wording literally.
+

@@ -7,6 +7,9 @@ review_loop_iteration: 0
 baseline_commit: '0b5583e42553d57820cfc37b1cf01ed44d098bf9'
 context:
   - '{project-root}/docs/api-external-openapi.json'
+  - '{project-root}/docs/bootcamp-seed-accounts-source.csv'
+  - '{project-root}/_bmad-output/implementation-artifacts/bootcamp-scope-overrides.md'
+  - '{project-root}/_bmad-output/archive/bootcamp-seed-identities.json'
   - '{project-root}/_bmad-output/implementation-artifacts/spec-1-20-temporal-employment-history-tables-and-timeline-coupling.md'
   - '{project-root}/_bmad-output/implementation-artifacts/spec-1-19-backend-substrate-contracts-and-provider-registry-modules.md'
 ---
@@ -63,9 +66,39 @@ context:
 
 </frozen-after-approval>
 
+## Shipped state — agent reference (2026-08-28 pivot)
+
+**Agents: read `_bmad-output/implementation-artifacts/bootcamp-scope-overrides.md` first.** The frozen Intent/Boundaries/I/O matrix above describes the *original* TimeTracker Accounting design. **Shipped code differs** as follows.
+
+### Current behavior
+
+1. **Identity source:** bundled manifest `services/backend/src/prisma/seed/data/bootcamp-identities.json` (24 accounts), derived from `docs/bootcamp-seed-accounts-source.csv`. Archive mirror: `_bmad-output/archive/bootcamp-seed-identities.json`.
+2. **No TimeTracker at seed time** — no VPN, no API keys. `TimetrackerService` exists for Epic 13 only.
+3. **Population guard:** halt only on **empty** manifest after dedupe (`EmptySeedPopulationError`). The 500/2000 floor/ceiling is **removed**.
+4. **`hash`:** SHA256 of `bootcamp-seed-v1:` + lowercased email (uppercase hex) — source CSV has no hash column.
+5. **Synthetic layer:** unchanged — four history dimensions via `seed.synthetic.ts` + temporal-history extension.
+6. **Idempotent upsert by email** — unchanged.
+
+### Amended acceptance (supersedes frozen AC where they conflict)
+
+- Given an empty database, when `npm run db:seed` runs, then **24** `User`/`Employee` pairs exist matching the manifest.
+- Given a missing or empty manifest, when seed runs, then it exits non-zero before any write.
+- Given a database already seeded, when seed runs again, then no duplicate rows and exit 0.
+- ~~TimeTracker unreachable blocks seed~~ — **N/A** (manifest-only).
+- ~~500 floor / Talents orphan warnings~~ — **N/A** (TT not called from seed).
+
+### Amended verification
+
+- `npm run db:seed` → exit 0, log `Seed complete: 24 identities upserted`
+- `npm run test` → seed unit tests pass (manifest fixture, not TT mocks)
+
 ## Code Map
 
-- `docs/api-external-openapi.json` -- TimeTracker external API contract: two endpoints, two separate `X-Api-Key` policies (Accounting vs Talents), `Employee`/`ProjectTalentDto` shapes.
+- `services/backend/src/prisma/seed/data/bootcamp-identities.json` -- **runtime seed manifest** (24 identities); keep in sync with archive + source CSV.
+- `docs/bootcamp-seed-accounts-source.csv` -- delivered account list (workspace); semicolon-separated source of truth for manifest regeneration.
+- `_bmad-output/archive/bootcamp-seed-identities.json` -- archive mirror of runtime manifest.
+- `_bmad-output/implementation-artifacts/bootcamp-scope-overrides.md` -- **agent reference** when frozen spec / PRD §4.17 conflict with shipped seed.
+- `docs/api-external-openapi.json` -- TimeTracker external API contract (Epic 13; **not** seed source post-pivot).
 - `docs/project-requirements-v2.md:506-535` (§4.17, §5.1) -- source of the seeded-population requirement; project-assignment sync is a *separate* concern (Epic 13), not this story's.
 - `_bmad-output/planning-artifacts/architecture/architecture-people-management-2026-08-21/ARCHITECTURE-SPINE.md:264` -- Design Notes row already names `prisma/seed.ts` and confirms the seeded population *is* the non-prod data (no separate real-population leak risk).
 - `services/backend/prisma/schema.prisma:12-42` -- `User` (email/name) and `Employee` (1:1, cascade) models; seed writes here. **Neither model has columns for `hash`/`countryCode` today — a migration adding them to `User` (alongside the existing `email`/`name`) is required before seed.ts can store these verbatim, per Acceptance Criteria.**
@@ -131,7 +164,8 @@ context:
 
 ## Spec Change Log
 
-- **2026-08-28, found during step-03 verification (not step-04 review):** the implementer made both TimeTracker API keys `.required()` in `env.validation.ts`, following this repo's own `nest-config.md` convention ("`.required()` when no sane default exists") literally. Verified this breaks the documented `cp .env.example .env` Quick Start and the pre-existing `temporal-history.extension.spec.ts` suite — both boot via the same global `envValidationSchema`, so *any* app bootstrap (not just seeding) now hard-fails without TimeTracker credentials, since `.env.example` shipped the keys empty. Amended: keys are now `.optional()` in Joi; `TimetrackerService` already enforces presence at point-of-use via `ConfigService.getOrThrow` (per this spec's own "Always" bullet), which is the correct place for a seed-only credential to fail loudly. `.env.example` amended to comment the two keys out entirely (an optional-but-present-empty string still fails `Joi.string()` validation). **KEEP:** the `getOrThrow`-at-point-of-use pattern in `timetracker.service.ts` was already correct and needed no change.
+- **2026-08-28, bootcamp pivot (post-merge):** test task scope reduced from 500+ TimeTracker Accounting population to a **fixed 24-account manifest**. Seed now reads `src/prisma/seed/data/bootcamp-identities.json` (archive mirror: `_bmad-output/archive/bootcamp-seed-identities.json`); removed 500/2000 `PopulationSizeError` floor/ceiling — only empty manifest halts. TimeTracker keys no longer required for seed (Epic 13 sync only). `TimetrackerService` retained in codebase.
+- **2026-08-28, found during step-03 verification (not step-04 review):**** the implementer made both TimeTracker API keys `.required()` in `env.validation.ts`, following this repo's own `nest-config.md` convention ("`.required()` when no sane default exists") literally. Verified this breaks the documented `cp .env.example .env` Quick Start and the pre-existing `temporal-history.extension.spec.ts` suite — both boot via the same global `envValidationSchema`, so *any* app bootstrap (not just seeding) now hard-fails without TimeTracker credentials, since `.env.example` shipped the keys empty. Amended: keys are now `.optional()` in Joi; `TimetrackerService` already enforces presence at point-of-use via `ConfigService.getOrThrow` (per this spec's own "Always" bullet), which is the correct place for a seed-only credential to fail loudly. `.env.example` amended to comment the two keys out entirely (an optional-but-present-empty string still fails `Joi.string()` validation). **KEEP:** the `getOrThrow`-at-point-of-use pattern in `timetracker.service.ts` was already correct and needed no change.
 - **2026-08-28, found during step-03 verification:** confirmed live (not hypothetical) that Prisma 7's `prisma db seed` CLI always exits 0 and prints "The seed command has been executed" regardless of the underlying seed command's real exit code — reproduced directly against the real TimeTracker dev host (unreachable from this network), where the seed script itself correctly threw and exited 1, but `prisma db seed`/`npm run db:seed` (as originally wired) reported exit 0. This would have silently defeated the AC "unreachable TimeTracker → exits non-zero" for every real `postbuild` run. Amended: `package.json`'s `db:seed` now runs `nest build && node dist/prisma/seed.js` directly, bypassing the wrapper; `postbuild`'s exit code was re-verified end-to-end (`npm run build` → exit 1 on unreachable TimeTracker, confirmed via real Postgres with zero rows written). `prisma.config.ts`'s `migrations.seed` keeps the old (still-swallowing) path solely for `prisma migrate dev`'s interactive local convenience, documented as an accepted, human-supervised gap.
 - **2026-08-28, step-04 review (second pass):** four review layers re-ran after first patch round. Decisions: (1B) defer `ExternalIdentityMapping` (C5) population to Epic 13; (2C) persist `hash` in DB but exclude from Users API responses. Twelve patch findings applied: envelope validation for Accounting/Talents responses, null/non-object JSON guard, error response bodies on non-2xx, README/seed.ts comment fixes, and expanded `seed.service.spec.ts` coverage (Talents failure/malformed, month/year wiring, all four history dimensions, absent-identity boundary). Three items deferred (TimelineEvent stub, CI/postbuild smoke, postbuild env gating). Branch: `feature/1-16-seed-data-review-patches` in `services/backend`.
 
@@ -141,22 +175,24 @@ context:
 
 - **Reuse real DI, don't hand-roll a second Prisma client.** `prisma/seed.ts` should call `NestFactory.createApplicationContext(AppModule)` so it gets the extended `PrismaService` (temporal-history guarantees intact) and the new TimeTracker client via normal DI, rather than bypassing the extension.
 - **Two API keys, not one.** AD-12 names a single `TIMETRACKER_API_KEY`; the OpenAPI contract defines two independent, non-interchangeable keys (`AccountingApiKey`, `TalentsApiKey` — wrong one gets a 403). This spec follows the OpenAPI contract; reconciling AD-12's naming is a follow-up, not a blocker here.
-- **"500+ records" is a floor on the real list, not a padding target.** Do not invent extra identity-anchor people to hit the number — see Ask First.
+- **500+ list performance ≠ seed size (post-pivot).** The PRD §7 NFR targets All Employees perf at 500+ records (Story 3.7). The seed manifest is **24 accounts** for bootcamp dev/demo — do not pad seed to 500 or re-block on TimeTracker Accounting count.
 - **Migrate-then-seed ordering is already guaranteed.** `postbuild` chains `prisma migrate deploy && npm run db:seed` with shell `&&` — seed only ever runs after migrate exits 0, so a schema-changing deploy can't race the seed against a stale shape. No extra coordination needed.
-- **`prisma/seed.ts` is intentionally outside `.dependency-cruiser.cjs`'s module-boundary rule.** That rule only constrains `src/modules/**`; the seed script lives under `prisma/` and may import `PrismaService` and the new `timetracker` module's service directly. This is accepted — it matches seed.ts's role as the one cross-cutting entrypoint reused by both triggers, not a gap to close.
-- **Partial-credential configuration is handled at point-of-use, not at bootstrap.** `TIMETRACKER_ACCOUNTING_API_KEY` and `TIMETRACKER_TALENTS_API_KEY` are `.optional()` in `env.validation.ts` (amended — see Spec Change Log): making them Joi-required would fail `ConfigModule` validation, and therefore ALL app bootstrap (`start:dev`, every test importing `AppModule`), for any developer not actively seeding. `TimetrackerService.fetchAccountingReport`/`fetchTalentsProjects` each call `ConfigService.getOrThrow` on their own key, so a missing credential still fails loudly — but only when the seed path is actually invoked, not on every app start.
+- **`prisma/seed.ts` is intentionally outside `.dependency-cruiser.cjs`'s module-boundary rule.** That rule only constrains `src/modules/**`; the seed script lives under `prisma/` and imports `PrismaService` directly (no TimeTracker dependency post-pivot).
+- **TimeTracker keys are optional at bootstrap, Epic-13-only.** `TIMETRACKER_*` keys are `.optional()` in `env.validation.ts`; `TimetrackerService` uses `getOrThrow` only when Epic 13 sync code invokes it — not during seed.
 - **The single-environment assumption is temporary.** "No separate real-population leak risk" (Code Map, ARCHITECTURE-SPINE) holds only while local dev and the one auto-deployed environment are the only targets `postbuild` ever runs against. Revisit gating the seed step behind an explicit environment check when Story 1.17 introduces real deployment topology — not required now, since there is nothing yet to gate against.
 
 ## Verification
 
 **Commands:**
-- `npm run db:seed` (services/backend, local docker-compose Postgres) -- expected: exits 0, `employees` row count matches the TimeTracker identity count
+- `npm run db:seed` (services/backend, local docker-compose Postgres) -- expected: exits 0, **24** identities upserted (see manifest)
 - `npm run db:seed` run twice -- expected: second run exits 0, no new rows
-- `node dist/prisma/seed.js` run directly (the compiled seed `db:seed` actually invokes — see Design Notes on the `ts-node` deviation) -- expected: resolves `NestFactory.createApplicationContext(AppModule)` and the generated (CJS) Prisma client without modification, and propagates a real non-zero exit code on failure (verified end-to-end against real Postgres + an unreachable TimeTracker host)
-- `npm run test` -- expected: new seed tests pass alongside the existing suite
-- `npm run depcruise` -- expected: new `timetracker` module passes the module-boundary rule
+- `node dist/prisma/seed.js` run directly -- expected: loads manifest from `dist/prisma/seed/data/` or `dist/src/prisma/seed/data/` fallback paths
+- `npm run test` -- expected: seed manifest tests pass alongside the existing suite
+- `npm run depcruise` -- expected: `timetracker` module passes the module-boundary rule
 
 ## Suggested Review Order
+
+> **Post-pivot note:** Steps referencing TimeTracker fetch, 500/2000 guards, and TT-specific tests describe the **original** design. For current code, start with **Shipped state** above and `bootcamp-scope-overrides.md`.
 
 **Orchestration — entry point**
 

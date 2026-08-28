@@ -49,8 +49,8 @@
   evidence: Same root cause as Story 1.19 CI gap — workflow runs depcruise only, not `npm test` or build/postbuild. All 121 unit tests pass locally but deploy-path regressions (broken DI in `prisma/seed.ts`, removed `&& npm run db:seed`) would not fail CI.
 
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-16-pseudonymized-seed-data-tool.md`
-  summary: `postbuild` unconditionally chains seed with no environment gate — every production build hits live TimeTracker or fails.
-  evidence: Deliberate for current single-environment scope per spec Design Notes; Story 1.17 owns deployment topology and environment gating when real prod/staging separation exists.
+  summary: `postbuild` unconditionally chains seed with no environment gate — runs manifest seed on every build.
+  evidence: Deliberate for current single-environment scope per spec Design Notes; Story 1.17 owns deployment topology and environment gating when real prod/staging separation exists. **Post-pivot (2026-08-28):** seed no longer calls TimeTracker — manifest-only, so postbuild does not require VPN/TT keys.
 
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-16-pseudonymized-seed-data-tool.md`
   summary: `ExternalIdentityMapping` (C5) not populated during seed — TimeTracker numeric `id` is not mapped to platform `employeeId`.

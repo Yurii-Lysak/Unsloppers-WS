@@ -41,7 +41,7 @@ Every profile-scoped read or write in the platform passes through this epic's ac
 - Shared links are **authenticated and explicitly named at creation** — no anonymous "anyone with the link" mode. All `cfg` sections default off except S1; never-share set is {S3, S7, S13, S14}. Exposure **re-clamps continuously** to the creator's live access on every view, not just at creation. Revocation follows whoever currently holds Reporting-line/Project-line/PP access (full-access holder as backstop), never the original creator.
 - Colleague whitelist is exactly S1, S10 (dates only — leave type hidden), S11 (project name only), enforced identically on every surface (API, export, search, notifications). One exception: a campaign author sees name + that campaign's completion status for their own recipients only, ending when the campaign closes.
 - Revocation timing is split: platform-owned relationship changes take effect on the next request; project-derived access within 15 minutes — stated as an access guarantee, not best-effort.
-- Non-production environments use only the **given seeded population** (delivered 26 August, imported from the timetracker test environment) — never real employee data. There is no employee-provisioning flow and no SSO/AD; auth is local JWT over that seeded population.
+- Non-production environments use only the **given seeded population** — **24 bootcamp test accounts** from `docs/bootcamp-seed-accounts-source.csv` / `bootcamp-identities.json` (see `bootcamp-scope-overrides.md`). Never real employee data. No employee-provisioning flow and no SSO/AD; auth is local JWT over that seeded population. TimeTracker leave/project sync is Epic 13.
 - Access-matrix test coverage (CI-enforced) must cover every audience × section combination, every negative case, every narrowed project-line cell, and the multi-audience union case.
 
 ## Technical Decisions
@@ -57,7 +57,7 @@ Every profile-scoped read or write in the platform passes through this epic's ac
 
 - Story 1.2 must reflect the narrowed Project-line grant (no S2/S3, S5 = CV+certs, split S7) rather than treating project line as equal-strength Manager access.
 - Story 1.20 needs a fifth history table (EmploymentStatusHistory, owned by a new `employment` module) alongside the four originally scoped, plus the departure-cascade orchestrator.
-- Story 1.16's seed-data approach shifts from a synthetic pseudonymization generator to importing and using the fixed seeded population delivered 26 August from the timetracker test environment.
+- Story 1.16 (done): seed loads **24 accounts** from bundled JSON manifest (`bootcamp-identities.json`), not TimeTracker Accounting. See `bootcamp-scope-overrides.md`. Original epic note about 26 August / TimeTracker import superseded for seed identity source; TT sync remains Epic 13.
 - No existing story yet covers: the Department entity and its admin screen, the organisational-relationship write path (FR-7), full profile access grant/revoke (FR-8), or the relationship/grant journal (FR-9) — these need new or amended stories, and their UX (three new admin screens) has not yet had a design pass.
 - Story 1.19 (contracts + registry) and Story 1.18 (auth, C7) must still land before Story 1.6 (`ProfileAssemblerService`) and any `SectionProvider` across every epic.
 - Story 1.11's Shared Link mechanism is reused by Epic 6 (Resourcing) for candidate review when a DM lacks standing access.
