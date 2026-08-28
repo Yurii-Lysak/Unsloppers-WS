@@ -6,7 +6,7 @@
 `services/backend` and `services/frontend`. Fresh clone:
 
 ```bash
-git clone https://github.com/andrii-tarasenko-altex/workspace.git
+git clone https://github.com/Yurii-Lysak/Unsloppers-WS.git
 cd workspace
 npm run services:init
 ```
@@ -23,8 +23,8 @@ If you ever need to (re-)add a submodule from scratch — not needed for a norma
 clone, only if setting this up fresh:
 
 ```bash
-git submodule add -b main https://github.com/andrii-tarasenko-altex/backend.git services/backend
-git submodule add -b main https://github.com/andrii-tarasenko-altex/frontend.git services/frontend
+git submodule add -b main https://github.com/Yurii-Lysak/Unsloppers-BE.git services/backend
+git submodule add -b main https://github.com/Yurii-Lysak/Unsloppers-FE.git services/frontend
 ```
 
 `git submodule add` (unlike `update --init`) checks out the branch directly, so

@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://github.com/andrii-tarasenko-altex/workspace.git
+git remote add origin https://github.com/Yurii-Lysak/Unsloppers-WS.git
 git branch -M main
 git push -u origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://github.com/andrii-tarasenko-altex/workspace/settings/installations)
+- [ ] [Set up project integrations](https://github.com/Yurii-Lysak/Unsloppers-WS/settings/installations)
 
 ## Collaborate with your team
 

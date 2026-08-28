@@ -1,8 +1,8 @@
 [submodule "services/backend"]
 	path = services/backend
-	url = https://github.com/andrii-tarasenko-altex/backend.git
+	url = https://github.com/Yurii-Lysak/Unsloppers-BE.git
 	branch = main
 [submodule "services/frontend"]
 	path = services/frontend
-	url = https://github.com/andrii-tarasenko-altex/frontend.git
+	url = https://github.com/Yurii-Lysak/Unsloppers-FE.git
 	branch = main
