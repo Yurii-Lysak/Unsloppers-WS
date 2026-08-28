@@ -30,7 +30,7 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 generated: 08-21-2026 00:00
-last_updated: 08-27-2026 00:00
+last_updated: 08-28-2026 13:30
 project: people management
 project_key: NOKEY
 tracking_system: file-system
@@ -58,7 +58,7 @@ development_status:
   1-13-cache-access-resolution-safely-and-revoke-immediately-on-pro: backlog
   1-14-prevent-section-leaks-across-all-surfaces-for-every-denied-a: backlog
   1-15-access-control-test-suite-architecture: backlog
-  1-16-pseudonymized-seed-data-tool: backlog
+  1-16-pseudonymized-seed-data-tool: done
   1-17-intelligent-repository-process-setup-and-single-container-de: backlog
   epic-1-retrospective: optional
 
