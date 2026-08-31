@@ -55,3 +55,33 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-16-pseudonymized-seed-data-tool.md`
   summary: `ExternalIdentityMapping` (C5) not populated during seed — TimeTracker numeric `id` is not mapped to platform `employeeId`.
   evidence: Review decision 1B (2026-08-28): defer to Epic 13 / follow-up substrate story. Spec Code Map originally named C5 population as this story's job; amended to note seed stores identity on `User` by email only until Epic 13 owns project-assignment and external-id mapping.
+
+## Deferred from: code review of spec-1-1-derive-manager-access-from-reporting-hierarchy (2026-08-31)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-1-derive-manager-access-from-reporting-hierarchy.md`
+  summary: '5 test suites — including this story''s new `app.module.spec.ts` DI-wiring safety net — fail to even load under the pinned Node 22, because `@nestjs/jwt`/`@nestjs/passport` ship ESM-only dist builds that Jest''s `require(ESM)` cannot load synchronously below Node 24.9.'
+  evidence: Reproduced directly (`npx cross-env NODE_OPTIONS=--experimental-vm-modules jest` on Node v22.23.2, matching `.nvmrc`). Pre-existing since Story 1.18 introduced `AuthModule`/`@nestjs/jwt` — already broke `auth.service.spec.ts`, `jwt.strategy.spec.ts`, `prisma.module.spec.ts`, and `src/__tests__/app-startup.spec.ts` before this story. Combined with the already-tracked CI gap above (CI only runs `depcruise`, never `npm test`), this means the one test written specifically to catch a botched C1 `AccessResolver` DI rewiring never actually executes anywhere today — locally or in CI.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-1-derive-manager-access-from-reporting-hierarchy.md`
+  summary: '`test/support/access-matrix.ts`/`graph-factory.ts` (the TEA e2e test-oracle harness merged to `main` the same day as this story, commit `bb9531c`) still model a single combined `managerLine` audience unioning reports-to and project PM/DM lines — not yet updated to the ratified `ReportingLine`/`ProjectLine` split this story''s contract now uses (`ARCHITECTURE-SPINE.md` AD-2, 2026-08-26).'
+  evidence: Pre-existing in a file this story does not touch; the harness itself documents (via a `TODO(domain-schema)` comment) that it isn''t wired to real Prisma persistence yet — this story''s `Employee.managerId` is the schema piece that TODO was waiting on. Whoever wires `graph-factory.ts` to persistence next should split its role model to match.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-1-derive-manager-access-from-reporting-hierarchy.md`
+  summary: '`test/support/access-matrix.spec.ts` fails `tsc --noEmit` (`TS2345`, a type-narrowing issue in `test/support/access-matrix.ts`), unrelated to this story.'
+  evidence: Surfaced incidentally while reviewing this story''s diff; no file under `test/support/` was touched here. Pre-existing in the same just-merged TEA e2e harness commit (`bb9531c`).
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-1-derive-manager-access-from-reporting-hierarchy.md`
+  summary: No DB-level `CHECK` constraint prevents `Employee.managerId = Employee.id` (a self-referencing manager) — only the app-level cycle-safe walk in `AccessResolverService` defends against it at read time.
+  evidence: Flagged by the edge-case reviewer as defense-in-depth. Natural to add alongside the write-time cycle guard (D15, `access-model.md`) once a real write path for `managerId` exists — no such path exists yet in this story's scope (managerId is only set via migration/seed/manual DB ops today).
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-1-derive-manager-access-from-reporting-hierarchy.md`
+  summary: ARCHITECTURE-SPINE.md's AD-2 (C1 row) and AD-18 both specify that `AccessResolver` caps every section to `R` once the subject's employment status is `dismissed` — this story's "Never" boundary list doesn't call that out as an explicitly deferred concern the way it does for AD-14/Story-1.2/Story-1.8.
+  evidence: Understandable gap — the `employment` module (C11 `EmploymentStatusService`) doesn't exist anywhere in the codebase yet, so there's nothing for `AccessResolverService` to consult. But it's an undocumented gap against a ratified invariant rather than an explicitly scoped-out one; whoever builds the `employment` module (CAP-14) needs to circle back and wire this cap into C1.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-1-derive-manager-access-from-reporting-hierarchy.md`
+  summary: Empty/falsy `viewerId`/`subjectId` inputs to `resolveAudience` silently resolve to `Colleague` (safe deny-by-default) rather than surfacing as a likely upstream caller bug (e.g. auth/session not resolving to a real `Employee.id`).
+  evidence: Not required by the spec's I/O matrix or "Never" list — the unit tests already cover the both-empty case per the story's own task list, and the current behavior is safe, not incorrect. Flagged as a possible future hardening (throw/log on empty ids) rather than a defect; worth revisiting once a real caller (Story 1.6+) exists to observe whether this ever actually happens in practice.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-1-derive-manager-access-from-reporting-hierarchy.md`
+  summary: No automated test exercises the real `onDelete: SetNull` FK behavior on `Employee.managerId` — every `AccessResolverService` test mocks `PrismaService.employee.findUnique`, and the only e2e delete path (`test/users.e2e-spec.ts`) deletes a user with no `directReports`.
+  evidence: The spec's own Verification section already scopes this to a manual check ("delete a manager's Employee row locally... confirm dependents' managerId is set to null"), so this is an accepted, spec-sanctioned gap, not a violation. Flagged because an e2e test (in the style of `test/users.e2e-spec.ts`, using `testApp.prisma` directly) would be cheap and would catch a future accidental flip to `Restrict`/`Cascade` (the pattern already used by sibling history-table FKs in the same schema file) that nothing today would catch.
