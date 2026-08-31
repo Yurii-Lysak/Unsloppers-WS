@@ -119,6 +119,14 @@
   summary: No automated test exercises the real `onDelete: Restrict` FK behavior on `ProjectAssignment.employeeId`/`pmId`/`dmId` — every `ProjectAssignmentService` test mocks `PrismaService`.
   evidence: Mirrors the identical, already-deferred gap for `Employee.managerId`'s `onDelete: SetNull` from spec-1-1's review — the spec's own Verification section only covers this via manual migration inspection, not an automated FK-behavior test. Flagged by the blind-hunter review layer.
 
+## Deferred from: code review of spec-3-2-define-custom-fields-at-runtime (2026-08-31)
+
+- N+1 access resolution in `listDefinitions` / `listValuesForEmployee` loops — each definition triggers separate `resolveAudience` / `hasPermission` calls. Performance concern for large field sets; not blocking for Wave-1 bootcamp scope.
+
+- `manage_custom_fields` permission not granted in bootcamp seed data — expected while C8 `PermissionChecker` remains deny-by-default stub until Track A functional-role stories land.
+
+- Colleague-visible custom fields require S16 read for Colleague role — blocked until Story 1.8 (colleague whitelist) lands. Production `AccessResolverService` assigns Colleague S16 `none`; colleague-tier field reads return false until C1 colleague access is implemented.
+
 ## Deferred from: code review of spec-1-4-define-functional-roles-and-permissions-via-ui (2026-08-31)
 
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-4-define-functional-roles-and-permissions-via-ui.md`

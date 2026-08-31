@@ -101,3 +101,53 @@ Multi-select values encode as JSON string arrays in `valueText` (AD-6 allows typ
 
 - Global stub override
   [`directory.module.ts:18`](../../services/backend/src/modules/directory/directory.module.ts#L18)
+
+### Review Findings
+
+- [x] [Review][Defer] Colleague-visible fields unreachable with real AccessResolver — deferred to Story 1.8 (colleague whitelist + S16 read). Production Colleague role has S16 `none` until then; tests updated to reflect current resolver behavior.
+
+- [x] [Review][Dismiss] `manage_custom_fields` bypasses S16 on read/write — accepted design: HR admins with `manage_custom_fields` intentionally bypass subject-level S16 checks on value operations (superuser for field administration).
+
+- [x] [Review][Patch] Definition list uses Self role, leaking employee-tier metadata [`custom-field-visibility.service.ts:58`] — fixed: `canViewFieldDefinition` now uses directory-list rules (employee-tier requires management role); `listValuesForEmployee` filters via subject-scoped `canViewFieldForSubject`.
+
+- [x] [Review][Patch] Missing employee 404 on value list [`custom-fields.service.ts:127`]
+
+- [x] [Review][Patch] setValue response echoes request, not stored value [`custom-fields.service.ts:120`]
+
+- [x] [Review][Patch] SetCustomFieldValueDto lacks type validation [`set-custom-field-value.dto.ts:17`] — validated in service: `value` property required; type checks remain in FieldRegistryService.
+
+- [x] [Review][Patch] Whitespace-only field names accepted [`field-registry.service.ts:1220`]
+
+- [x] [Review][Patch] Corrupt multi_select JSON throws unhandled error [`field-registry.service.ts:1492`]
+
+- [x] [Review][Patch] query() with empty filter arrays returns all rows [`field-registry.service.ts:1284`]
+
+- [x] [Review][Patch] Omitted `value` property silently clears field [`custom-fields.service.ts:118`]
+
+- [x] [Review][Patch] Select options validated trimmed but stored raw [`field-registry.service.ts:1223`]
+
+- [x] [Review][Patch] Non-select types with options not rejected [`field-registry.service.ts:1215`]
+
+- [x] [Review][Patch] multi_select allows duplicate selections [`field-registry.service.ts:1400`]
+
+- [x] [Review][Patch] No e2e tests for custom-fields REST API [`test/custom-fields.e2e-spec.ts`]
+
+- [x] [Review][Patch] Missing unit tests for setValue/getDefinition/listValues auth [`custom-fields.service.spec.ts`]
+
+- [x] [Review][Patch] Upsert sibling-column test does not assert behavior [`field-registry.service.spec.ts:90`]
+
+- [x] [Review][Patch] Missing validateValueForDefinition branch tests [`field-registry.service.spec.ts`]
+
+- [x] [Review][Patch] Missing visibility tests for employee tier [`custom-field-visibility.service.spec.ts`]
+
+- [x] [Review][Patch] Missing C2 DI override regression test [`app.module.spec.ts`]
+
+- [x] [Review][Patch] Date values may shift across timezones [`field-registry.service.ts:1446`]
+
+- [x] [Review][Patch] Swagger missing 400 responses [`custom-fields.swagger.ts`]
+
+- [x] [Review][Patch] Visibility tests use unrealistic Colleague S16 mock [`custom-field-visibility.service.spec.ts`]
+
+- [x] [Review][Defer] N+1 access resolution in list loops [`custom-fields.service.ts:52`] — deferred, pre-existing performance concern for large field sets
+
+- [x] [Review][Defer] `manage_custom_fields` not granted in seed data — deferred, pre-existing; C8 PermissionChecker stub deny-all expected until Track A lands
