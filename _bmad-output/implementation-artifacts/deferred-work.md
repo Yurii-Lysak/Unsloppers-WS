@@ -28,6 +28,11 @@
 
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-20-temporal-employment-history-tables-and-timeline-coupling.md`
   summary: Manual-conflict detection is an exact match on `(employeeId, type, effectiveDate)`, not a range/overlap check — a manual correction on a nearby-but-different date doesn't stop a system write from closing the currently-open row and inserting a new one that effectively spans across it.
+
+## Deferred from: code review of spec-1-3-assign-people-partner-relationships (2026-08-31)
+
+- Removed resolver JSDoc on `isProjectAssignmentActive` / `isInReportingLine` — doc regression from Story 1.3 diff; restore when touching those methods again.
+- `access-resolver.contract.ts` lacks post–Story 1.3 union/role-rank documentation — contract doc update deferred to a docs pass or Story 1.15 test-suite story.
   evidence: This is the deliberately chosen, frozen design (C4's `effectiveDate` parameter is a single date, not a range), not an implementation defect — but it's a known limitation worth revisiting once Epic 7 designs the real manual-edit/conflict semantics for the `timeline` module.
 
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-20-temporal-employment-history-tables-and-timeline-coupling.md`
