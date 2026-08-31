@@ -483,7 +483,7 @@ So that "access-control correctness" (the platform's primary quality attribute) 
 **When** a PM without access to a candidate's profile attempts to view it directly instead of through profile-sharing
 **Then** an automated test asserts this is rejected with the same rigor as the profile-matrix tests
 
-### Story 1.16: Pseudonymized Seed Data Tool *(done — see bootcamp-scope-overrides.md)*
+### Story 1.16: Pseudonymized Seed Data Tool
 
 As the delivery team,
 I want a seed tool loading a fixed bootcamp test population with substituted identities,
