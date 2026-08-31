@@ -30,7 +30,7 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 generated: 08-21-2026 00:00
-last_updated: 08-28-2026 13:30
+last_updated: 08-31-2026
 project: people management
 project_key: NOKEY
 tracking_system: file-system
@@ -42,7 +42,7 @@ development_status:
   # (1-19), temporal history (1-20), and auth/C7 (1-18) must land before 1-1+.
   1-19-backend-substrate-contracts-and-provider-registry-modules: review
   1-20-temporal-employment-history-tables-and-timeline-coupling: review
-  1-18-authentication: backlog
+  1-18-authentication: review
   1-1-derive-manager-access-from-reporting-hierarchy: backlog
   1-2-extend-manager-access-via-project-assignment: backlog
   1-3-assign-people-partner-relationships: backlog
