@@ -2,7 +2,7 @@
 title: 'Define Custom Fields at Runtime (FieldRegistry C2)'
 type: 'feature'
 created: '2026-08-31'
-status: 'in-review'
+status: 'done'
 review_loop_iteration: 0
 baseline_commit: '9c376b3e6ab029f08276064418f8b33d437a56a8'
 story_key: '3-2-define-custom-fields-at-runtime'
