@@ -85,3 +85,31 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-1-derive-manager-access-from-reporting-hierarchy.md`
   summary: No automated test exercises the real `onDelete: SetNull` FK behavior on `Employee.managerId` — every `AccessResolverService` test mocks `PrismaService.employee.findUnique`, and the only e2e delete path (`test/users.e2e-spec.ts`) deletes a user with no `directReports`.
   evidence: The spec's own Verification section already scopes this to a manual check ("delete a manager's Employee row locally... confirm dependents' managerId is set to null"), so this is an accepted, spec-sanctioned gap, not a violation. Flagged because an e2e test (in the style of `test/users.e2e-spec.ts`, using `testApp.prisma` directly) would be cheap and would catch a future accidental flip to `Restrict`/`Cascade` (the pattern already used by sibling history-table FKs in the same schema file) that nothing today would catch.
+
+## Deferred from: spec-1-2-extend-manager-access-via-project-assignment planning (2026-08-31, token-budget split)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-2-extend-manager-access-via-project-assignment.md`
+  summary: Bootcamp seed data (`seed.synthetic.ts`) doesn't include any demo `ProjectAssignment` rows, so `ProjectLine` access has no seeded example to click through after `db:seed`.
+  evidence: Neither of this story's acceptance criteria require seeded demo data — both are proven by unit tests against the real C3 implementation. Carved off at the spec's token-budget checkpoint (drafted spec was 2810 tokens against the 900-1600 target) to keep the story to one cohesive goal: resolver logic + persistence, not persistence + demo-data curation. A follow-up can add 2-3 confirmed `ProjectAssignment` rows among the 24 bootcamp employees once this story ships.
+
+## Deferred from: code review of spec-1-2-extend-manager-access-via-project-assignment (2026-08-31)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-2-extend-manager-access-via-project-assignment.md`
+  summary: No `@@unique`/exclusion constraint on `ProjectAssignment` stops two confirmed, active rows for the same `(employeeId, projectId)` naming different PM/DM, and no validation rejects `pmId`/`dmId` equal to `employeeId` (self-managed project) or an `endDate` earlier than `startDate`.
+  evidence: `resolveProjectLine`'s "grant if any surviving row matches" logic silently tolerates ambiguous/conflicting or nonsensical rows rather than rejecting them at write time. Not required by either acceptance criterion — all three are data-integrity hardening beyond this story's scope, flagged by the edge-case and blind-hunter review layers.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-2-extend-manager-access-via-project-assignment.md`
+  summary: `ProjectAssignmentService.create()` accepts `confirmed: true` with no `confirmedAt` (defaults to `null`), silently producing a row that can never resolve active — `isProjectAssignmentActive` always requires a non-null `confirmedAt`.
+  evidence: Fails safe (denies access rather than granting it), so not a security defect, but a footgun for any future caller of the internal-write path. Flagged by the edge-case-hunter review layer; not required by either acceptance criterion.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-2-extend-manager-access-via-project-assignment.md`
+  summary: `AccessResolverService.resolveProjectLine`'s `listByEmployee(subjectId)` call fetches every historical `ProjectAssignment` row for the subject (no `confirmed`/date filtering pushed into the Prisma `where`), filtering only in application code; the reports-to walks per row (`isInReportingLine` for `pmId`/`dmId`) are also not de-duplicated across rows sharing the same PM/DM, nor does the loop short-circuit once both `granted` and `dmMatched` are already `true`.
+  evidence: Every `resolveAudience` call re-fetches and re-walks the full assignment history with no caching or filtering — a real scalability gap once the table grows, mirroring the identical, already-deferred `FieldRegistry.query()` pagination gap from spec-1-19's review. Not a correctness bug; flagged by the blind-hunter review layer as a forward-looking performance concern.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-2-extend-manager-access-via-project-assignment.md`
+  summary: `resolveAudience`'s `ReportingLine` chain walk and `resolveProjectLine`'s `ProjectAssignment` reads are not wrapped in a single read transaction, so a concurrent write between them can (rarely) yield an inconsistent role for one call.
+  evidence: Extends the identical accepted risk spec-1-1's Design Notes already documented for the `ReportingLine` walk alone ("acceptable for Wave-0 scope but worth flagging if... access checks become hot-path") to the new `ProjectAssignment` read path. Flagged by the edge-case-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-2-extend-manager-access-via-project-assignment.md`
+  summary: No automated test exercises the real `onDelete: Restrict` FK behavior on `ProjectAssignment.employeeId`/`pmId`/`dmId` — every `ProjectAssignmentService` test mocks `PrismaService`.
+  evidence: Mirrors the identical, already-deferred gap for `Employee.managerId`'s `onDelete: SetNull` from spec-1-1's review — the spec's own Verification section only covers this via manual migration inspection, not an automated FK-behavior test. Flagged by the blind-hunter review layer.
