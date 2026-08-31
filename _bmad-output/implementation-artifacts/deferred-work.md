@@ -118,3 +118,9 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-2-extend-manager-access-via-project-assignment.md`
   summary: No automated test exercises the real `onDelete: Restrict` FK behavior on `ProjectAssignment.employeeId`/`pmId`/`dmId` — every `ProjectAssignmentService` test mocks `PrismaService`.
   evidence: Mirrors the identical, already-deferred gap for `Employee.managerId`'s `onDelete: SetNull` from spec-1-1's review — the spec's own Verification section only covers this via manual migration inspection, not an automated FK-behavior test. Flagged by the blind-hunter review layer.
+
+## Deferred from: code review of spec-1-4-define-functional-roles-and-permissions-via-ui (2026-08-31)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-4-define-functional-roles-and-permissions-via-ui.md`
+  summary: Seed upsert may overwrite a pre-existing custom role that shares a built-in role name on re-seed.
+  evidence: Bootcamp-only re-seed edge case unlikely in practice; `seed.functional-roles.ts` upserts by exact built-in name without checking whether an existing row is custom.
