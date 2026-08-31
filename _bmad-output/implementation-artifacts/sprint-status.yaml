@@ -30,7 +30,7 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 generated: 08-21-2026 00:00
-last_updated: 08-31-2026 15:19
+last_updated: 08-31-2026 16:30
 project: people management
 project_key: NOKEY
 tracking_system: file-system
@@ -50,8 +50,8 @@ development_status:
   1-20-temporal-employment-history-tables-and-timeline-coupling: done
   1-18-authentication: done
   1-1-derive-manager-access-from-reporting-hierarchy: done
-  1-2-extend-manager-access-via-project-assignment: review
-  1-3-assign-people-partner-relationships: backlog
+  1-2-extend-manager-access-via-project-assignment: done
+  1-3-assign-people-partner-relationships: done
   1-4-define-functional-roles-and-permissions-via-ui: backlog
   1-5-assign-functional-roles-to-people: backlog
   1-6-assemble-employee-profile-by-section-access: backlog
