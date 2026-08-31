@@ -30,7 +30,7 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 generated: 08-21-2026 00:00
-last_updated: 08-31-2026 18:08
+last_updated: 08-31-2026 19:05
 project: people management
 project_key: NOKEY
 tracking_system: file-system
@@ -52,7 +52,7 @@ development_status:
   1-1-derive-manager-access-from-reporting-hierarchy: done
   1-2-extend-manager-access-via-project-assignment: done
   1-3-assign-people-partner-relationships: done
-  1-4-define-functional-roles-and-permissions-via-ui: backlog
+  1-4-define-functional-roles-and-permissions-via-ui: done
   1-5-assign-functional-roles-to-people: backlog
   1-6-assemble-employee-profile-by-section-access: backlog
   1-7-profile-header-shows-manager-pp-and-mentor: backlog
@@ -111,8 +111,8 @@ development_status:
 
   epic-7: in-progress
   7-1-auto-generate-timeline-events: done
-  7-2-manual-timeline-edits: backlog
-  7-3-resolve-conflicts-between-system-generated-and-manually-edit: backlog
+  7-2-manual-timeline-edits: review
+  7-3-resolve-conflicts-between-system-generated-and-manually-edit: review
   epic-7-retrospective: optional
 
   epic-8: backlog
@@ -153,8 +153,8 @@ development_status:
   12-6-accessibility-and-responsive-layout-pass: backlog
   epic-12-retrospective: optional
 
-  epic-13: backlog
-  13-1-integrate-timetracker-leaves-api: backlog
+  epic-13: in-progress
+  13-1-integrate-timetracker-leaves-api: done
   13-2-integrate-timetracker-projects-people-api-permission-critica: backlog
   13-3-investigate-integrate-peopleforce-candidate-vacancy-api-with: backlog
   13-4-resolve-cross-system-identity-peopleforce-platform-timetrack: backlog

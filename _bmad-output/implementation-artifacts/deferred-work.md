@@ -126,3 +126,9 @@
 - `manage_custom_fields` permission not granted in bootcamp seed data — expected while C8 `PermissionChecker` remains deny-by-default stub until Track A functional-role stories land.
 
 - Colleague-visible custom fields require S16 read for Colleague role — blocked until Story 1.8 (colleague whitelist) lands. Production `AccessResolverService` assigns Colleague S16 `none`; colleague-tier field reads return false until C1 colleague access is implemented.
+
+## Deferred from: code review of spec-1-4-define-functional-roles-and-permissions-via-ui (2026-08-31)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-4-define-functional-roles-and-permissions-via-ui.md`
+  summary: Seed upsert may overwrite a pre-existing custom role that shares a built-in role name on re-seed.
+  evidence: Bootcamp-only re-seed edge case unlikely in practice; `seed.functional-roles.ts` upserts by exact built-in name without checking whether an existing row is custom.
