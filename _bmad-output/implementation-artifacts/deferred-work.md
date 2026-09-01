@@ -132,3 +132,8 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-4-define-functional-roles-and-permissions-via-ui.md`
   summary: Seed upsert may overwrite a pre-existing custom role that shares a built-in role name on re-seed.
   evidence: Bootcamp-only re-seed edge case unlikely in practice; `seed.functional-roles.ts` upserts by exact built-in name without checking whether an existing row is custom.
+
+## Deferred from: code review of spec-1-6-assemble-employee-profile-by-section-access (2026-09-01)
+
+- Core Story 1-6 backend files (assembler, controller, providers, entities, e2e) remain untracked in git — implementation exists in working tree but is not yet committed on the feature branch.
+- Duplicate Prisma fetch for subject employee on each profile request (assembler pre-load + `IdentitySectionProvider` re-query) — performance optimization deferred; not a spec violation.
