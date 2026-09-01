@@ -109,10 +109,10 @@ development_status:
   6-4-request-history: backlog
   epic-6-retrospective: optional
 
-  epic-7: in-progress
+  epic-7: done
   7-1-auto-generate-timeline-events: done
-  7-2-manual-timeline-edits: review
-  7-3-resolve-conflicts-between-system-generated-and-manually-edit: review
+  7-2-manual-timeline-edits: done
+  7-3-resolve-conflicts-between-system-generated-and-manually-edit: done
   epic-7-retrospective: optional
 
   epic-8: backlog
