@@ -129,6 +129,20 @@
 
 ## Deferred from: code review of spec-1-4-define-functional-roles-and-permissions-via-ui (2026-08-31)
 
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-4-define-functional-roles-and-permissions-via-ui.md`
+  summary: Seed upsert may overwrite a pre-existing custom role that shares a built-in role name on re-seed.
+  evidence: Bootcamp-only re-seed edge case unlikely in practice; `seed.functional-roles.ts` upserts by exact built-in name without checking whether an existing row is custom.
+
+## Deferred from: code review of spec-1-6-assemble-employee-profile-by-section-access (2026-09-01)
+
+- Core Story 1-6 backend files (assembler, controller, providers, entities, e2e) remain untracked in git — implementation exists in working tree but is not yet committed on the feature branch.
+- Duplicate Prisma fetch for subject employee on each profile request (assembler pre-load + `IdentitySectionProvider` re-query) — performance optimization deferred; not a spec violation.
+
+## Deferred from: code review of spec-1-8-enforce-the-colleague-whitelist-everywhere (2026-09-01)
+
+- Timeline double-resolves C1 after controller gate — `timeline.service.ts` still calls `assertCanReadTimeline`/`assertCanWriteTimeline` after `SectionAccessGate.requireSection` at the controller; redundant but safe.
+- Duplicated viewer-employee resolution across leaves, timeline, custom-fields, and profile controllers — extract shared helper in a follow-up refactor.
+- Directory queries fetch user email before S1-safe mapping — `employees.service.ts` loads `user.email` for `displayName` fallback; DTO surface is S1-safe, no leak.
 
 ## Deferred from: code review of spec-3-1-sortable-filterable-employee-list.md (2026-09-01)
 
