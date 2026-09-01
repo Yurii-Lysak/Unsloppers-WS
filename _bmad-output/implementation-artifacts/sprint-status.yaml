@@ -57,7 +57,7 @@ development_status:
   1-6-assemble-employee-profile-by-section-access: done
   1-7-profile-header-shows-manager-pp-and-mentor: backlog
   1-8-enforce-the-colleague-whitelist-everywhere: done
-  1-9-management-notes-with-visibility-flags: backlog
+  1-9-management-notes-with-visibility-flags: done
   1-10-per-field-custom-field-visibility: backlog
   1-11-generate-a-shareable-profile-link: backlog
   1-12-shared-link-expiry-logging-and-revocation: backlog
@@ -155,7 +155,7 @@ development_status:
 
   epic-13: in-progress
   13-1-integrate-timetracker-leaves-api: done
-  13-2-integrate-timetracker-projects-people-api-permission-critica: backlog
+  13-2-integrate-timetracker-projects-people-api-permission-critica: review
   13-3-investigate-integrate-peopleforce-candidate-vacancy-api-with: backlog
   13-4-resolve-cross-system-identity-peopleforce-platform-timetrack: backlog
   epic-13-retrospective: optional

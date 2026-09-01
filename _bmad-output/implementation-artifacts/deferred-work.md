@@ -148,3 +148,10 @@
 
 - In-memory full-table filter/sort vs SQL/Prisma engine (`field-registry.service.ts:467-483`) — NFR-2 performance validation scoped to Story 3.7.
 - C1 per-field masking for Wave-1 built-in columns (`employees.service.ts:61-63`) — built-ins always included in catalog; section-level S16 gating for built-ins belongs to Track A (Stories 1.6/1.8).
+- source_spec: `_bmad-output/implementation-artifacts/spec-13-2-integrate-timetracker-projects-people-api-permission-critical.md`
+  summary: The complete backend unit suite has seven pre-existing seed-service failures because its Prisma mock lacks `functionalRoleAssignment.findMany`.
+  evidence: Story 13.2's 79 focused unit tests and 2 database-backed e2e tests pass, while full `npm test -- --runInBand` fails only in `src/prisma/seed/__tests__/seed.service.spec.ts`; this story does not modify the seed service or its mock.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-13-2-integrate-timetracker-projects-people-api-permission-critical.md`
+  summary: Full-source TypeScript checking has three pre-existing incomplete section-access fixtures.
+  evidence: `npx tsc --noEmit --incremental false` now clears Story 13.2's ProjectAssignment fixture but still reports only partial `Record<SectionId, SectionAccessLevel>` values in identity/leaves provider tests outside this story.
