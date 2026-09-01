@@ -137,3 +137,9 @@
 
 - Core Story 1-6 backend files (assembler, controller, providers, entities, e2e) remain untracked in git — implementation exists in working tree but is not yet committed on the feature branch.
 - Duplicate Prisma fetch for subject employee on each profile request (assembler pre-load + `IdentitySectionProvider` re-query) — performance optimization deferred; not a spec violation.
+
+## Deferred from: code review of spec-1-8-enforce-the-colleague-whitelist-everywhere (2026-09-01)
+
+- Timeline double-resolves C1 after controller gate — `timeline.service.ts` still calls `assertCanReadTimeline`/`assertCanWriteTimeline` after `SectionAccessGate.requireSection` at the controller; redundant but safe.
+- Duplicated viewer-employee resolution across leaves, timeline, custom-fields, and profile controllers — extract shared helper in a follow-up refactor.
+- Directory queries fetch user email before S1-safe mapping — `employees.service.ts` loads `user.email` for `displayName` fallback; DTO surface is S1-safe, no leak.
