@@ -129,6 +129,8 @@
 
 ## Deferred from: code review of spec-1-4-define-functional-roles-and-permissions-via-ui (2026-08-31)
 
-- source_spec: `_bmad-output/implementation-artifacts/spec-1-4-define-functional-roles-and-permissions-via-ui.md`
-  summary: Seed upsert may overwrite a pre-existing custom role that shares a built-in role name on re-seed.
-  evidence: Bootcamp-only re-seed edge case unlikely in practice; `seed.functional-roles.ts` upserts by exact built-in name without checking whether an existing row is custom.
+
+## Deferred from: code review of spec-3-1-sortable-filterable-employee-list.md (2026-09-01)
+
+- In-memory full-table filter/sort vs SQL/Prisma engine (`field-registry.service.ts:467-483`) — NFR-2 performance validation scoped to Story 3.7.
+- C1 per-field masking for Wave-1 built-in columns (`employees.service.ts:61-63`) — built-ins always included in catalog; section-level S16 gating for built-ins belongs to Track A (Stories 1.6/1.8).
