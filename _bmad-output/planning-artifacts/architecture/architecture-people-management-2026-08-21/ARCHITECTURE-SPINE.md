@@ -189,6 +189,7 @@ Manager and PP are **not** in this table set — the SPEC's temporal-field const
 - **Binds:** all modules, operational envelope
 - **Prevents:** "deployed and demonstrable, not on someone's laptop" (PRD success signal) being left to each developer's own ad hoc setup
 - **Rule:** Single containerized deployment — `docker-compose` (already used locally for Postgres) extended to three services: `backend`, `frontend` (built static assets served by a lightweight server, or Vite preview), `postgres`, on one host or a simple container platform. One environment (`production`) for this iteration; no staging tier. Secrets (`DATABASE_URL`, `JWT_SECRET`, `TIMETRACKER_API_KEY`, `PEOPLEFORCE_API_KEY`) via environment variables, validated by the existing Joi schema, never committed.
+- **2026-09-01 supersession:** the docker-compose rule above was never itself a PRD requirement — only "deployed and demonstrable, not on a laptop" is (checked directly against `project-requirements-v2.md`; Story 1.17's original **FRs: NFR-7** citation was a miscite, NFR-7 is repo/doc currency, unrelated to deployment mechanism). Replaced with a managed-PaaS topology, still one environment / no staging tier: `frontend` on **Vercel** (auto-deploy on push to `Unsloppers-FE`'s `main`), `backend` on **Render** (auto-deploy on push to `Unsloppers-BE`'s `main`), Postgres on **Neon** (managed). Secrets set per-platform via each dashboard's environment variables, still validated by the existing Joi schema, still never committed. Splitting FE/BE across two registrable domains has two concrete consequences the code had to account for, not just ops config: the session cookie is `SameSite=None; Secure` rather than `Strict` in production (a `Strict`/`Lax` cookie is silently dropped on cross-site requests), and CORS must echo the exact FE origin with `credentials: true`. Full setup, env var list, and known limitations: `docs/deployment.md`.
 
 ### AD-13 — Test architecture
 
@@ -290,20 +291,26 @@ graph TD
 
 ```mermaid
 graph TB
-  subgraph "Single container deploy (AD-12)"
+  subgraph "Vercel"
     FE[React SPA — services/frontend]
+  end
+  subgraph "Render"
     BE[NestJS API — services/backend]
+  end
+  subgraph "Neon"
     PG[(PostgreSQL 18)]
   end
   subgraph External
     TT[Timetracker API]
     PF[PeopleForce API]
   end
-  FE -->|REST, generated types| BE
+  FE -->|REST, generated types, cross-site cookie auth| BE
   BE --> PG
   BE -->|Leaves, Projects & People| TT
   BE -->|Candidates, Vacancies| PF
 ```
+
+Deployment topology per AD-12's 2026-09-01 supersession: three separate managed platforms rather than one docker-compose host — see `docs/deployment.md`.
 
 ```mermaid
 erDiagram
