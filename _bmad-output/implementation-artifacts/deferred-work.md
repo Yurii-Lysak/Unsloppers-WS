@@ -143,3 +143,11 @@
 - Timeline double-resolves C1 after controller gate — `timeline.service.ts` still calls `assertCanReadTimeline`/`assertCanWriteTimeline` after `SectionAccessGate.requireSection` at the controller; redundant but safe.
 - Duplicated viewer-employee resolution across leaves, timeline, custom-fields, and profile controllers — extract shared helper in a follow-up refactor.
 - Directory queries fetch user email before S1-safe mapping — `employees.service.ts` loads `user.email` for `displayName` fallback; DTO surface is S1-safe, no leak.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-13-2-integrate-timetracker-projects-people-api-permission-critical.md`
+  summary: The complete backend unit suite has seven pre-existing seed-service failures because its Prisma mock lacks `functionalRoleAssignment.findMany`.
+  evidence: Story 13.2's 79 focused unit tests and 2 database-backed e2e tests pass, while full `npm test -- --runInBand` fails only in `src/prisma/seed/__tests__/seed.service.spec.ts`; this story does not modify the seed service or its mock.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-13-2-integrate-timetracker-projects-people-api-permission-critical.md`
+  summary: Full-source TypeScript checking has three pre-existing incomplete section-access fixtures.
+  evidence: `npx tsc --noEmit --incremental false` now clears Story 13.2's ProjectAssignment fixture but still reports only partial `Record<SectionId, SectionAccessLevel>` values in identity/leaves provider tests outside this story.
