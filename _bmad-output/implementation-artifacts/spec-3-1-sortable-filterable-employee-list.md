@@ -2,7 +2,7 @@
 title: 'Sortable, Filterable Employee List'
 type: 'feature'
 created: '2026-08-31'
-status: 'review'
+status: 'done'
 review_loop_iteration: 0
 baseline_commit: 'd7f1a6890f2652cc816a1baec72798a6b56afe6d'
 story_key: '3-1-sortable-filterable-employee-list'
