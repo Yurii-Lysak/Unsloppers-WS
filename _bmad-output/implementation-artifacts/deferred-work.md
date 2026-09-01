@@ -144,6 +144,10 @@
 - Duplicated viewer-employee resolution across leaves, timeline, custom-fields, and profile controllers — extract shared helper in a follow-up refactor.
 - Directory queries fetch user email before S1-safe mapping — `employees.service.ts` loads `user.email` for `displayName` fallback; DTO surface is S1-safe, no leak.
 
+## Deferred from: code review of spec-3-1-sortable-filterable-employee-list.md (2026-09-01)
+
+- In-memory full-table filter/sort vs SQL/Prisma engine (`field-registry.service.ts:467-483`) — NFR-2 performance validation scoped to Story 3.7.
+- C1 per-field masking for Wave-1 built-in columns (`employees.service.ts:61-63`) — built-ins always included in catalog; section-level S16 gating for built-ins belongs to Track A (Stories 1.6/1.8).
 - source_spec: `_bmad-output/implementation-artifacts/spec-13-2-integrate-timetracker-projects-people-api-permission-critical.md`
   summary: The complete backend unit suite has seven pre-existing seed-service failures because its Prisma mock lacks `functionalRoleAssignment.findMany`.
   evidence: Story 13.2's 79 focused unit tests and 2 database-backed e2e tests pass, while full `npm test -- --runInBand` fails only in `src/prisma/seed/__tests__/seed.service.spec.ts`; this story does not modify the seed service or its mock.
