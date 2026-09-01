@@ -155,7 +155,7 @@ development_status:
 
   epic-13: in-progress
   13-1-integrate-timetracker-leaves-api: done
-  13-2-integrate-timetracker-projects-people-api-permission-critica: backlog
+  13-2-integrate-timetracker-projects-people-api-permission-critica: review
   13-3-investigate-integrate-peopleforce-candidate-vacancy-api-with: backlog
   13-4-resolve-cross-system-identity-peopleforce-platform-timetrack: backlog
   epic-13-retrospective: optional
