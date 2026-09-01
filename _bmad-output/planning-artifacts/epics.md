@@ -509,7 +509,7 @@ As the delivery team,
 I want the intelligent repository, BMad configuration, and deployment topology stood up before feature work starts,
 So that the foundation-phase requirement is real and the platform is deployable and demonstrable from Wave 0 onward.
 
-**FRs:** NFR-7. **Architecture:** AD-12 (single containerized deploy — docker-compose across backend/frontend/Postgres, one environment).
+**FRs:** none directly — the only real PRD source requirement is "deployed and demonstrable, not on a laptop" (`project-requirements-v2.md`, bootcamp grading criteria); the original "FRs: NFR-7" citation here was a miscite (NFR-7 is repo/doc currency, not deployment mechanism). **Architecture:** AD-12, amended 2026-09-01 — managed-PaaS deploy (frontend on Vercel, backend on Render, Postgres on Neon), superseding the original single docker-compose stack; still one environment, no staging tier.
 
 **Acceptance Criteria:**
 
@@ -517,9 +517,9 @@ So that the foundation-phase requirement is real and the platform is deployable 
 **When** the team sets up their workspace
 **Then** the intelligent repository exists with specs, decisions, architecture, and agent rules/skills, BMad is configured, and hard sequential dependencies across epics/stories are identified and documented rather than discovered mid-sprint
 
-**Given** the architecture's docker-compose deployment target
+**Given** the architecture's deployment target (AD-12, amended 2026-09-01)
 **When** the team stands up their first deploy
-**Then** backend, frontend, and Postgres run as one containerized stack on a single environment, satisfying "deployed and demonstrable, not on a laptop"
+**Then** frontend runs on Vercel and backend runs on Render, both auto-deploying on push to `main`, against a managed Postgres instance on Neon, satisfying "deployed and demonstrable, not on a laptop" as one environment with no staging tier — see `docs/deployment.md`
 
 ### Story 1.18: Authentication
 
