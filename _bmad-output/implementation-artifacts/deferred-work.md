@@ -183,3 +183,9 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-11-generate-a-shareable-profile-link.md`
   summary: Recipient picker capped at first 100 employees from directory list.
   evidence: `useSharedLinkManagerDialog` uses `pageSize: 100` with no search/pagination; acceptable at bootcamp scale (24 accounts) but not production-complete.
+
+## Deferred from: code review of spec-1-12-shared-link-expiry-logging-and-revocation (2026-09-02)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-12-shared-link-expiry-logging-and-revocation.md`
+  summary: Backend shared-links e2e not executed locally before merge.
+  evidence: `npm run test:e2e -- shared-links` blocked by pre-existing Node 22 / Jest ESM issue (same blocker as Stories 1.1, 1.10, 1.11); unit tests (29/29) and frontend Playwright (3/3) passed. Run e2e on CI or Node ≥24.9 before merge.
