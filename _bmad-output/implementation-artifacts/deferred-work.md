@@ -165,3 +165,21 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-10-per-field-custom-field-visibility.md`
   summary: Backend e2e specs added by this story (`employee-profile-custom-fields.e2e-spec.ts`, the new regression block in `custom-fields.e2e-spec.ts`) have never executed successfully anywhere — not in the sandbox that authored them, not independently re-verified.
   evidence: This sandbox's Node (22.23.2) cannot run any backend e2e spec at all — `Jest's require(ESM) requires Node v24.9+` on `@nestjs/schedule`'s dist build. Reproduced identically on the pre-existing, untouched `management-notes.e2e-spec.ts`, confirming it's an environment-wide blocker (tracked since spec-1-1's review, `test/support` section above) rather than anything specific to this story. Whoever owns CI/Node-version alignment for backend e2e needs to run these before merge.
+
+## Deferred from: code review of spec-1-11-generate-a-shareable-profile-link (2026-09-02)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-11-generate-a-shareable-profile-link.md`
+  summary: Backend shared-links e2e not run in verification path.
+  evidence: `npm run test:e2e -- shared-links` documented as NOT RUN due to Node 22 / `@nestjs/schedule` ESM blocker; eight e2e scenarios exist but were not executed before merge claim.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-11-generate-a-shareable-profile-link.md`
+  summary: Frontend Playwright shared-link tests fully stub all API calls.
+  evidence: `e2e/shared-link-create.spec.ts` uses `stubNetworkCall` for create/consume/profile/list; PASS 2/2 proves UI wiring only, not live backend contract.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-11-generate-a-shareable-profile-link.md`
+  summary: Project-line S5 CV+certs narrowing untestable for shared links.
+  evidence: No registered S5 `SectionProvider` exists; matrix row cannot be exercised end-to-end until S5 assembly lands.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-11-generate-a-shareable-profile-link.md`
+  summary: Recipient picker capped at first 100 employees from directory list.
+  evidence: `useSharedLinkManagerDialog` uses `pageSize: 100` with no search/pagination; acceptable at bootcamp scale (24 accounts) but not production-complete.
