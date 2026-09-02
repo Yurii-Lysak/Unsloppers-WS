@@ -155,3 +155,13 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-13-2-integrate-timetracker-projects-people-api-permission-critical.md`
   summary: Full-source TypeScript checking has three pre-existing incomplete section-access fixtures.
   evidence: `npx tsc --noEmit --incremental false` now clears Story 13.2's ProjectAssignment fixture but still reports only partial `Record<SectionId, SectionAccessLevel>` values in identity/leaves provider tests outside this story.
+
+## Deferred from: code review of spec-1-10-per-field-custom-field-visibility (2026-09-02)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-10-per-field-custom-field-visibility.md`
+  summary: '`CustomFieldsSection.tsx`''s `formatCustomFieldValue` has no unit or e2e coverage for the `boolean`, `multi_select`, `number`, or `date` branches — every new Playwright fixture uses `type: ''text''` only.'
+  evidence: Manual code inspection shows the branches are written correctly (i18n yes/no for boolean, joined-or-"none selected" for multi_select, raw `String(value)` for number/date per the spec's explicit boundary), so this is a coverage gap rather than a known defect — but it means a future regression in that formatting function would ship undetected. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-10-per-field-custom-field-visibility.md`
+  summary: Backend e2e specs added by this story (`employee-profile-custom-fields.e2e-spec.ts`, the new regression block in `custom-fields.e2e-spec.ts`) have never executed successfully anywhere — not in the sandbox that authored them, not independently re-verified.
+  evidence: This sandbox's Node (22.23.2) cannot run any backend e2e spec at all — `Jest's require(ESM) requires Node v24.9+` on `@nestjs/schedule`'s dist build. Reproduced identically on the pre-existing, untouched `management-notes.e2e-spec.ts`, confirming it's an environment-wide blocker (tracked since spec-1-1's review, `test/support` section above) rather than anything specific to this story. Whoever owns CI/Node-version alignment for backend e2e needs to run these before merge.

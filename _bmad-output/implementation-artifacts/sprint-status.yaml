@@ -30,7 +30,7 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 generated: 08-21-2026 00:00
-last_updated: 09-01-2026 15:30
+last_updated: 09-02-2026 11:35
 project: people management
 project_key: NOKEY
 tracking_system: file-system
@@ -58,7 +58,7 @@ development_status:
   1-7-profile-header-shows-manager-pp-and-mentor: backlog
   1-8-enforce-the-colleague-whitelist-everywhere: done
   1-9-management-notes-with-visibility-flags: done
-  1-10-per-field-custom-field-visibility: backlog
+  1-10-per-field-custom-field-visibility: done
   1-11-generate-a-shareable-profile-link: backlog
   1-12-shared-link-expiry-logging-and-revocation: backlog
   1-13-cache-access-resolution-safely-and-revoke-immediately-on-pro: backlog

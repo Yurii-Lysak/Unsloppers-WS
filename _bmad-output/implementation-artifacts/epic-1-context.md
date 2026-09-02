@@ -4,7 +4,7 @@
 
 ## Goal
 
-Every profile-scoped read or write in the platform passes through this epic's access resolution — nothing else can ship correctly before it exists. Epic 1 makes "who sees what" a first-class, testable guarantee: it resolves a viewer's access role (Self / Reporting line / Project line / People Partner / Colleague / Shared Link / Full Profile Access) from three underlying relations — reports-to, department management, and project assignment — assembles employee profiles section-by-section (S1–S16) so ungranted sections are absent, not hidden, and enforces the Colleague whitelist and management-notes visibility flags server-side. It also stands up functional roles/permissions defined at runtime, expiring/revocable shareable profile links, and the Wave-0 substrate (contracts, registry, auth, temporal history tables, CI module-boundary rule, single-container deploy) every other epic depends on. **Note:** the epic's story list (1.1–1.20) predates a requirements revision (v1.2→v1.5) that added a Department entity, split "Manager" into two differently-scoped tiers, and introduced a separate, journaled Full Profile Access grant and an organisational-relationship write path — none of which the existing stories or their acceptance criteria mention yet. Requirements/Technical Decisions below reflect the current (v1.5) model; the story list itself likely needs new/amended stories before build.
+Every profile-scoped read or write in the system passes through this epic's access resolution — nothing else can ship correctly before it exists. This epic makes "who sees what" a first-class, testable guarantee rather than an assumption: resolving a viewer's access role (Self / Manager-line / PP / Colleague / Shared Link / HR Admin) against a subject, assembling a profile section-by-section (S1–S16) by that resolved access, enforcing the Colleague whitelist server-side everywhere, supporting dual-visibility management notes, letting HR Admin define functional roles/permissions at runtime with zero deploy, and issuing shareable/expiring/revocable profile links. Its opening stories also stand up the Wave-0 substrate (contracts/registry modules, CI module-boundary rule, JWT auth, temporal history tables, deployment, access-matrix test scaffold) every other epic depends on.
 
 ## Stories
 
@@ -31,34 +31,46 @@ Every profile-scoped read or write in the platform passes through this epic's ac
 
 ## Requirements & Constraints
 
-- Manager access now derives from **three** relations — reports-to, department management, project assignment — unioned into **two** differently-scoped tiers: **Reporting line** (reports-to ∪ department-management, both transitive) gets the full manager section-grant; **Project line** (project-assignment alone) is strictly narrower — no S2, no S3, S5 limited to CV+certificates, and S7 splits (DM gets RW, PM gets R gated by the visible-for-PM flag).
-- **Department** is a first-class, self-nesting entity with a manager; "Unit Manager" is just the name for a department's manager — there is no separate unit entity. A department manager sees everyone in the department and its sub-departments.
-- **HR Admin is configuration-only** (custom fields, dictionaries, departments, functional roles/permissions) and grants zero data access on its own. Full-profile-access is a wholly separate, non-self-assignable grant: seeded at deployment, its holder count re-checked at commit time so it can never reach zero, independent of every functional role including HR Admin.
-- A write requires **both** the access matrix's section grant (R/RW) **and** the relevant functional-role permission — neither is sufficient alone.
-- When a viewer resolves to more than one audience for the same subject (e.g. Project line + PP), effective per-section access is the **union** (least-restrictive), never a ranked precedence.
-- Manager, PP, department, and department-manager are **access switches**: never writable via S1's general edit or the All-Employees inline grid; changed only through a dedicated, permissioned screen that rejects self-assignment, reporting/department cycles, self-managed departments, orphaned departments, and stale concurrent writes — every change journaled.
-- A narrow **relationship/grant journal** (distinct from any general audit log) records manager/PP/department/department-manager changes, full-access grants/revocations, and shared-link accesses; readable by full-access holders and the subject's current manager/PP.
-- Shared links are **authenticated and explicitly named at creation** — no anonymous "anyone with the link" mode. All `cfg` sections default off except S1; never-share set is {S3, S7, S13, S14}. Exposure **re-clamps continuously** to the creator's live access on every view, not just at creation. Revocation follows whoever currently holds Reporting-line/Project-line/PP access (full-access holder as backstop), never the original creator.
-- Colleague whitelist is exactly S1, S10 (dates only — leave type hidden), S11 (project name only), enforced identically on every surface (API, export, search, notifications). One exception: a campaign author sees name + that campaign's completion status for their own recipients only, ending when the campaign closes.
-- Revocation timing is split: platform-owned relationship changes take effect on the next request; project-derived access within 15 minutes — stated as an access guarantee, not best-effort.
-- Non-production environments use only the **given seeded population** — **24 bootcamp test accounts** from `docs/bootcamp-seed-accounts-source.csv` / `bootcamp-identities.json` (see `bootcamp-scope-overrides.md`). Never real employee data. No employee-provisioning flow and no SSO/AD; auth is local JWT over that seeded population. TimeTracker leave/project sync is Epic 13.
-- Access-matrix test coverage (CI-enforced) must cover every audience × section combination, every negative case, every narrowed project-line cell, and the multi-audience union case.
+- Access role is re-resolved on every request, never cached across a session; any future cache invalidates only on a relationship-graph generation bump, never a bare TTL.
+- Profile assembly returns data only for sections the resolved role grants — an ungranted section is absent entirely, never present-but-empty or hidden client-side.
+- The Colleague whitelist (S1 identity, S10 leave dates/type, S11 project name) is enforced identically on every surface — profile, direct API, export, search — as a resolved grant, never a post-hoc filter.
+- Management notes carry independent "visible-for-employee" / "visible-for-PM" flags, both defaulting off; UM/DM/PP retain full read/write regardless of flags.
+- Functional roles grant features only, never data access — a functional role can never widen what access resolution already determined.
+- Shared links are section-scoped, must structurally exclude S3/S7/S13 under any configuration, default to 24h expiry (configurable), log every access attempt, are revocable, and give indistinguishable responses for expired/revoked/invalid.
+- Every audience x relationship-path x section combination in the access matrix, including every negative case, needs a passing automated test — the platform's primary quality bar.
+- Non-production environments use only pseudonymized data — never real PII in agent contexts, logs, screenshots, or the repo.
+- Cross-feature dependencies resolve via frozen interface contracts, stubs, or sanctioned fallbacks — no developer should block waiting on another track.
 
 ## Technical Decisions
 
-- Contracts now number **C1–C13** (grown from the original C1–C8): C9 `OrgRelationshipWriter` and C10 `RelationshipJournal` gate access-switch writes; C12 `DepartmentDirectory` is the only sanctioned department read; C13 exposes full-access-holder lookups and live-responsibility checks. Feature modules still depend only on `contracts`/`registry`, never on each other directly (dependency-cruiser CI rule).
-- **Three independent gating axes**, never conflated: C1 `AccessResolver` gates section visibility; C8 `PermissionChecker` gates functional features; C9 `OrgRelationshipWriter` gates access-switch writes (manager/PP/department/department-manager, full-access grant) — a section RW grant and a feature permission are each necessary but neither is sufficient for these four fields.
-- A new `employment` module (not `access`) owns employment status and the departure cascade: one atomic transaction, idempotent hooks fanned out via the registry's enumerating `departure-hook` family — `action-items` cancels open items, `mentorship` closes pairs with a system note, `access` revokes the departed person's shared links and full-access grant, `auth` deactivates the account. A departure is blocked while the subject still holds live Reporting-line/PP responsibility or is the sole full-access holder. A `dismissed` employment status caps every viewer's section access at `R`, checked once centrally.
-- Temporal history now spans five effective-dated tables (Grade/Position/Department/EmploymentType History plus EmploymentStatusHistory); the Prisma Client Extension auto-firing the timeline writer covers the first four only — a departure is explicitly never a career-timeline event.
-- Deployment stays a single containerized stack (docker-compose: backend, frontend, Postgres), one environment.
-- **Open contradiction, unresolved:** the PRD states employment status is never visible to Self, but the access matrix grants Self a blanket read over the section containing it — needs a one-line disambiguation before that section's provider is built.
+- `AccessResolver` (C1) is the single per-request entry point: `resolveAudience(viewerId, subjectId) → { role, sections: Record<SectionId, "R"|"RW"|"none"> }`, converted to a plain `Record` before crossing any HTTP boundary.
+- `ProfileAssemblerService` resolves C1 once per request, then calls a `SectionProvider` (via the Provider Registry, `@RegisterProvider(family, id)`, discovered through `DiscoveryService`) only for granted sections; a missing registration surfaces as an explicit "unavailable" state, never a silent omission.
+- Module boundary rule: a feature module depends only on `contracts` and `registry`, never imports another feature module directly (including its Prisma tables) — enforced via a `dependency-cruiser` CI rule from commit one.
+- `ProjectAssignment` (C3) is seeded/internally written in this epic; Epic 13's timetracker sync becomes the real writer later, same contract shape.
+- Custom-field visibility (management/employee/colleague) is a generic, field-agnostic gate at query time, shared with Epic 3's `FieldRegistry` (C2).
+- Four temporal history tables (Grade/Position/Department/EmploymentType, current row = `effectiveTo IS NULL`) are coupled to `TimelineEventWriter` (C4) via a Prisma Client Extension — no service writes history any other way; a system write that would overwrite a manual timeline correction is suppressed and flagged via `markSystemWriteSkipped`, never silently dropped.
+- Auth (JWT, local email/password) is fully decoupled from access resolution: it only answers "who is this session," exposing `userId` via `CurrentUserProvider` (C7) — no controller imports `auth` directly.
+- No access-resolution caching by default; if built later, it invalidates synchronously on any reports-to/project-assignment/PP-assignment write, never on a timer.
+- Deployment is managed PaaS, one environment, no staging tier: frontend on Vercel, backend on Render, Postgres on Neon, both auto-deploying on push to `main`; cross-origin split requires `SameSite=None; Secure` cookies and CORS echoing the exact frontend origin with credentials.
+- Every `SectionProvider`/`FieldProvider`/`DashboardSummaryProvider` ships its own parameterized access-matrix test next to its code; `AccessResolver` carries the master suite driven off the access-model matrix.
+
+## UX & Interaction Patterns
+
+- Access Scope Chip: muted pill at the top of any other person's profile ("Viewing as Manager line" / "Colleague view" / "Shared link — expires in 4h") — always on someone else's profile, never on My Profile.
+- Section Gate: dashed "note exists, not shared with you" placeholder — reserved strictly for the documented PM/S7 exception; a Colleague- or Self-denied section is simply absent, never gated.
+- Profile Section Card: RW cards show a pencil inline-edit affordance; R-only cards show no affordance at all.
+- Shared Link Manager: section picker with S3/S7/S13 structurally excluded, expiry setting, and active-link revocation.
+- Visibility Flag Toggle: dual-flag variant for management notes (S7) — separate employee/PM toggles, both default off.
+- Accessibility: resolved access scope must be announced to screen readers, not conveyed by color alone; full keyboard operability on inline edit and required-reason dialogs.
+- Every new string is a translation key (`react-i18next`) — no hardcoded copy.
 
 ## Cross-Story Dependencies
 
-- Story 1.2 must reflect the narrowed Project-line grant (no S2/S3, S5 = CV+certs, split S7) rather than treating project line as equal-strength Manager access.
-- Story 1.20 needs a fifth history table (EmploymentStatusHistory, owned by a new `employment` module) alongside the four originally scoped, plus the departure-cascade orchestrator.
-- Story 1.16 (done): seed loads **24 accounts** from bundled JSON manifest (`bootcamp-identities.json`), not TimeTracker Accounting. See `bootcamp-scope-overrides.md`. Original epic note about 26 August / TimeTracker import superseded for seed identity source; TT sync remains Epic 13.
-- No existing story yet covers: the Department entity and its admin screen, the organisational-relationship write path (FR-7), full profile access grant/revoke (FR-8), or the relationship/grant journal (FR-9) — these need new or amended stories, and their UX (three new admin screens) has not yet had a design pass.
-- Story 1.19 (contracts + registry) and Story 1.18 (auth, C7) must still land before Story 1.6 (`ProfileAssemblerService`) and any `SectionProvider` across every epic.
-- Story 1.11's Shared Link mechanism is reused by Epic 6 (Resourcing) for candidate review when a DM lacks standing access.
-- Story 1.15's parameterized test strategy extends into Risks (Epic 5), Resourcing (Epic 6), and Action Items (Epic 4).
+- Stories 1.19 (contracts/registry) and 1.18 (auth) are Wave-0 substrate every other Epic 1 story — and every other epic — depends on; they land first.
+- Story 1.2's `ProjectAssignment` is seeded/internal until Epic 13 supplies a live timetracker-backed writer against the same C3 contract.
+- Story 1.20's `TimelineEventWriter` (C4) is stubbed here; Epic 7 (Career Timeline) supplies the real implementation.
+- Story 1.9's management-notes visibility state (S7) is consumed by Epic 2's Self-Service story.
+- Story 1.10's custom-field visibility gate is jointly owned with Epic 3's `FieldRegistry` (C2).
+- Story 1.13's no-caching-by-default rule is exercised under real load only in Epic 3's Story 3.7.
+- Story 1.15's test-strategy pattern extends into Epic 5 (Risks) and Epic 6 (Resourcing) access-control coverage.
+- Story 1.16's 24-account seed manifest is the dataset every other epic's stories are built and tested against; 500+-record scale is a separate, later concern (Story 3.7).
