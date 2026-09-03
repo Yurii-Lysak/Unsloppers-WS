@@ -189,3 +189,9 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-12-shared-link-expiry-logging-and-revocation.md`
   summary: Backend shared-links e2e not executed locally before merge.
   evidence: `npm run test:e2e -- shared-links` blocked by pre-existing Node 22 / Jest ESM issue (same blocker as Stories 1.1, 1.10, 1.11); unit tests (29/29) and frontend Playwright (3/3) passed. Run e2e on CI or Node ≥24.9 before merge.
+
+## Deferred from: code review of spec-1-13-cache-access-resolution-safely-and-revoke-immediately-on-pro (2026-09-03)
+
+- Employee delete / FK `SetNull` rewiring bypasses generation bump — deleting a manager/PP employee changes others' `managerId`/`peoplePartnerId` at DB level without Prisma extension hooks; no feature delete path exercised today (`relationship-graph.extension.ts`, `schema.prisma`). Pre-existing cascade semantics; revisit when employee lifecycle (C9/C11) lands.
+
+- `employee.createMany` array payload may skip graph-field detection — `employeeDataTouchesGraph` does not scan array elements; no current callers (`relationship-graph.extension.ts:16-21`). Latent until bulk employee seed lands.
