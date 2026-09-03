@@ -1,0 +1,825 @@
+﻿diff --git a/prisma/schema.prisma b/prisma/schema.prisma
+index 8ed48d9..0478552 100644
+--- a/prisma/schema.prisma
++++ b/prisma/schema.prisma
+@@ -423,6 +423,7 @@ model ActionItem {
+   assignee Employee @relation("ActionItemAssignee", fields: [assigneeId], references: [id], onDelete: Restrict)
+   author   Employee @relation("ActionItemAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+ 
++  @@unique([campaignId, assigneeId])
+   @@index([assigneeId])
+   @@index([authorId])
+   @@map("action_items")
+diff --git a/src/modules/action-items/__tests__/action-items.service.spec.ts b/src/modules/action-items/__tests__/action-items.service.spec.ts
+index d79ed31..c13aa7d 100644
+--- a/src/modules/action-items/__tests__/action-items.service.spec.ts
++++ b/src/modules/action-items/__tests__/action-items.service.spec.ts
+@@ -5,23 +5,51 @@ import {
+   NotFoundException,
+ } from '@nestjs/common';
+ import { Test, TestingModule } from '@nestjs/testing';
++import { Prisma } from '../../../generated/prisma/client';
+ import { Clock } from '../../../clock/clock.service';
+ import { AccessResolver } from '../../contracts/access-resolver.contract';
+ import { PrismaService } from '../../../prisma/prisma.service';
+ import { ActionItemsService } from '../action-items.service';
+ 
++type PrismaMock = {
++  actionItem: {
++    create: jest.Mock;
++    findMany: jest.Mock;
++    findFirst: jest.Mock;
++    update: jest.Mock;
++    updateMany: jest.Mock;
++    count: jest.Mock;
++    createMany: jest.Mock;
++  };
++  employee: {
++    findFirst: jest.Mock;
++    findMany: jest.Mock;
++  };
++  $transaction: jest.Mock;
++};
++
+ describe('ActionItemsService', () => {
+   let service: ActionItemsService;
+   const fixedInstant = new Date('2026-09-03T12:00:00.000Z');
+   const clock = { now: jest.fn(() => fixedInstant), nowMs: jest.fn() };
+-  const prisma = {
++  const prisma: PrismaMock = {
+     actionItem: {
+       create: jest.fn(),
+       findMany: jest.fn(),
+       findFirst: jest.fn(),
+       update: jest.fn(),
+       updateMany: jest.fn(),
++      count: jest.fn(),
++      createMany: jest.fn(),
+     },
++    employee: {
++      findFirst: jest.fn(),
++      findMany: jest.fn(),
++    },
++    $transaction: jest.fn(
++      (callback: (client: typeof prisma) => Promise<unknown>) =>
++        callback(prisma),
++    ),
+   };
+   const accessResolver = {
+     resolveAudience: jest.fn(),
+@@ -185,6 +213,241 @@ describe('ActionItemsService', () => {
+     expect(prisma.actionItem.create).not.toHaveBeenCalled();
+   });
+ 
++  it('createActionItem rejects campaign source', async () => {
++    await expect(
++      service.createActionItem({
++        assigneeId: 'assignee-1',
++        authorId: 'author-1',
++        title: 'Campaign task',
++        dueDate: '2026-09-15',
++        source: 'campaign',
++        campaignId: '11111111-1111-4111-8111-111111111111',
++      }),
++    ).rejects.toMatchObject({
++      response: {
++        message: 'use createCampaignActionItems for campaign activation',
++      },
++    });
++    expect(prisma.actionItem.create).not.toHaveBeenCalled();
++  });
++
++  describe('createCampaignActionItems', () => {
++    const campaignId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
++    const authorId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
++    const assigneeA = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
++    const assigneeB = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
++
++    const campaignInput = {
++      campaignId,
++      authorId,
++      title: 'Annual Engagement Survey',
++      description: 'Please complete',
++      dueDate: '2026-09-20',
++      link: 'https://forms.example.com/survey',
++      assigneeIds: [assigneeA, assigneeB],
++    };
++
++    function mockCampaignPersistence(
++      createdItems: Array<
++        typeof baseItem & { campaignId: string; source: 'campaign' }
++      >,
++    ): void {
++      prisma.actionItem.count.mockResolvedValue(0);
++      prisma.employee.findFirst.mockResolvedValue({ id: authorId });
++      prisma.employee.findMany.mockResolvedValue([
++        { id: assigneeA },
++        { id: assigneeB },
++      ]);
++      prisma.actionItem.createMany.mockResolvedValue({
++        count: createdItems.length,
++      });
++      prisma.actionItem.findMany.mockResolvedValue(createdItems);
++    }
++
++    it('persists one open campaign item per assignee', async () => {
++      const createdAt = new Date('2026-09-01T12:00:00.000Z');
++      const createdItems = [
++        {
++          ...baseItem,
++          id: 'camp-item-1',
++          assigneeId: assigneeA,
++          authorId,
++          title: campaignInput.title,
++          description: campaignInput.description,
++          dueDate: new Date('2026-09-20T00:00:00.000Z'),
++          link: campaignInput.link,
++          source: 'campaign' as const,
++          campaignId,
++          createdAt,
++          updatedAt: createdAt,
++        },
++        {
++          ...baseItem,
++          id: 'camp-item-2',
++          assigneeId: assigneeB,
++          authorId,
++          title: campaignInput.title,
++          description: campaignInput.description,
++          dueDate: new Date('2026-09-20T00:00:00.000Z'),
++          link: campaignInput.link,
++          source: 'campaign' as const,
++          campaignId,
++          createdAt,
++          updatedAt: createdAt,
++        },
++      ];
++      mockCampaignPersistence(createdItems);
++
++      const result = await service.createCampaignActionItems(campaignInput);
++
++      expect(prisma.actionItem.createMany).toHaveBeenCalledWith({
++        data: expect.arrayContaining([
++          expect.objectContaining({
++            assigneeId: assigneeA,
++            authorId,
++            source: 'campaign',
++            campaignId,
++            status: 'open',
++          }),
++          expect.objectContaining({
++            assigneeId: assigneeB,
++            authorId,
++            source: 'campaign',
++            campaignId,
++            status: 'open',
++          }),
++        ]) as object,
++      });
++      expect(result).toHaveLength(2);
++      expect(result[0]).toMatchObject({
++        source: 'campaign',
++        campaignId,
++        status: 'open',
++        assigneeId: assigneeA,
++      });
++    });
++
++    it('returns an empty array for a new campaign with no assignees', async () => {
++      prisma.actionItem.count.mockResolvedValue(0);
++
++      const result = await service.createCampaignActionItems({
++        ...campaignInput,
++        assigneeIds: [],
++      });
++
++      expect(result).toEqual([]);
++      expect(prisma.employee.findFirst).not.toHaveBeenCalled();
++      expect(prisma.actionItem.createMany).not.toHaveBeenCalled();
++    });
++
++    it('rejects empty audience when campaign already has items', async () => {
++      prisma.actionItem.count.mockResolvedValue(1);
++
++      await expect(
++        service.createCampaignActionItems({
++          ...campaignInput,
++          assigneeIds: [],
++        }),
++      ).rejects.toBeInstanceOf(ConflictException);
++    });
++
++    it('rejects duplicate assignee ids', async () => {
++      await expect(
++        service.createCampaignActionItems({
++          ...campaignInput,
++          assigneeIds: [assigneeA, assigneeA],
++        }),
++      ).rejects.toBeInstanceOf(BadRequestException);
++      expect(prisma.actionItem.count).not.toHaveBeenCalled();
++    });
++
++    it('rejects inactive author before creating items', async () => {
++      prisma.actionItem.count.mockResolvedValue(0);
++      prisma.employee.findFirst.mockResolvedValue(null);
++
++      await expect(
++        service.createCampaignActionItems(campaignInput),
++      ).rejects.toBeInstanceOf(BadRequestException);
++      expect(prisma.actionItem.createMany).not.toHaveBeenCalled();
++    });
++
++    it('returns invalidAssigneeIds for unknown or inactive assignees', async () => {
++      prisma.actionItem.count.mockResolvedValue(0);
++      prisma.employee.findFirst.mockResolvedValue({ id: authorId });
++      prisma.employee.findMany.mockResolvedValue([{ id: assigneeA }]);
++
++      await expect(
++        service.createCampaignActionItems(campaignInput),
++      ).rejects.toMatchObject({
++        response: {
++          message: 'assigneeIds must reference active employees',
++          invalidAssigneeIds: [assigneeB],
++        },
++      });
++      expect(prisma.actionItem.createMany).not.toHaveBeenCalled();
++    });
++
++    it('rejects re-activation when campaign already has items', async () => {
++      prisma.actionItem.count.mockResolvedValue(2);
++
++      await expect(
++        service.createCampaignActionItems(campaignInput),
++      ).rejects.toBeInstanceOf(ConflictException);
++      expect(prisma.actionItem.createMany).not.toHaveBeenCalled();
++    });
++
++    it('maps Prisma unique violations to conflict', async () => {
++      prisma.actionItem.count.mockResolvedValue(0);
++      prisma.employee.findFirst.mockResolvedValue({ id: authorId });
++      prisma.employee.findMany.mockResolvedValue([
++        { id: assigneeA },
++        { id: assigneeB },
++      ]);
++      prisma.actionItem.createMany.mockRejectedValue(
++        new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
++          code: 'P2002',
++          clientVersion: 'test',
++        }),
++      );
++
++      await expect(
++        service.createCampaignActionItems(campaignInput),
++      ).rejects.toBeInstanceOf(ConflictException);
++    });
++
++    it('uses the supplied transaction client for writes', async () => {
++      const tx = {
++        actionItem: {
++          count: jest.fn().mockResolvedValue(0),
++          createMany: jest.fn().mockResolvedValue({ count: 1 }),
++          findMany: jest.fn().mockResolvedValue([
++            {
++              ...baseItem,
++              id: 'camp-item-tx',
++              assigneeId: assigneeA,
++              authorId,
++              title: campaignInput.title,
++              source: 'campaign' as const,
++              campaignId,
++            },
++          ]),
++        },
++      };
++      prisma.employee.findFirst.mockResolvedValue({ id: authorId });
++      prisma.employee.findMany.mockResolvedValue([{ id: assigneeA }]);
++
++      await service.createCampaignActionItems(
++        { ...campaignInput, assigneeIds: [assigneeA] },
++        tx,
++      );
++
++      expect(tx.actionItem.count).toHaveBeenCalled();
++      expect(tx.actionItem.createMany).toHaveBeenCalled();
++      expect(tx.actionItem.findMany).toHaveBeenCalled();
++      expect(prisma.$transaction).not.toHaveBeenCalled();
++    });
++  });
++
+   it('buildSection filters Self R to assignee-owned items', async () => {
+     prisma.actionItem.findMany.mockResolvedValue([
+       {
+diff --git a/src/modules/action-items/action-items.service.ts b/src/modules/action-items/action-items.service.ts
+index 69b115a..6698460 100644
+--- a/src/modules/action-items/action-items.service.ts
++++ b/src/modules/action-items/action-items.service.ts
+@@ -5,6 +5,8 @@ import {
+   Injectable,
+   NotFoundException,
+ } from '@nestjs/common';
++import { isUUID } from 'class-validator';
++import { Prisma } from '../../generated/prisma/client';
+ import type { ActionItem, User } from '../../generated/prisma/client';
+ import { Clock } from '../../clock/clock.service';
+ import { PrismaService } from '../../prisma/prisma.service';
+@@ -15,7 +17,9 @@ import {
+ import {
+   ActionItemCreation,
+   ActionItemDto,
++  ActionItemWriteContext,
+   CreateActionItemInput,
++  CreateCampaignActionItemsInput,
+ } from '../contracts/action-item-creation.contract';
+ import {
+   formatActionItemDueDate,
+@@ -51,6 +55,11 @@ export class ActionItemsService extends ActionItemCreation {
+   }
+ 
+   async createActionItem(input: CreateActionItemInput): Promise<ActionItemDto> {
++    if (input.source === 'campaign') {
++      throw new BadRequestException(
++        'use createCampaignActionItems for campaign activation',
++      );
++    }
+     const normalized = normalizeActionItemFields({
+       title: input.title,
+       description: input.description,
+@@ -67,6 +76,27 @@ export class ActionItemsService extends ActionItemCreation {
+     return this.toContractDto(item);
+   }
+ 
++  async createCampaignActionItems(
++    input: CreateCampaignActionItemsInput,
++    tx?: ActionItemWriteContext,
++  ): Promise<ActionItemDto[]> {
++    this.assertCampaignInputUuids(input);
++    const normalized = normalizeActionItemFields({
++      title: input.title,
++      description: input.description,
++      dueDate: input.dueDate,
++      link: input.link,
++    });
++
++    if (tx) {
++      return this.runCampaignActivation(input, normalized, tx);
++    }
++
++    return this.prisma.$transaction((prismaTx) =>
++      this.runCampaignActivation(input, normalized, prismaTx),
++    );
++  }
++
+   async createManualItem(
+     assigneeId: string,
+     authorId: string,
+@@ -392,4 +422,119 @@ export class ActionItemsService extends ActionItemCreation {
+     }
+     return 'Unknown';
+   }
++
++  private assertCampaignInputUuids(
++    input: CreateCampaignActionItemsInput,
++  ): void {
++    if (!isUUID(input.campaignId)) {
++      throw new BadRequestException('campaignId must be a valid UUID');
++    }
++    if (!isUUID(input.authorId)) {
++      throw new BadRequestException('authorId must be a valid UUID');
++    }
++    for (const assigneeId of input.assigneeIds) {
++      if (!isUUID(assigneeId)) {
++        throw new BadRequestException('assigneeIds must contain valid UUIDs');
++      }
++    }
++    if (new Set(input.assigneeIds).size !== input.assigneeIds.length) {
++      throw new BadRequestException('assigneeIds must not contain duplicates');
++    }
++  }
++
++  private async runCampaignActivation(
++    input: CreateCampaignActionItemsInput,
++    normalized: {
++      title: string;
++      description: string | null;
++      dueDate: Date;
++      link: string | null;
++    },
++    writeClient: ActionItemWriteContext,
++  ): Promise<ActionItemDto[]> {
++    const existingCount = await writeClient.actionItem.count({
++      where: { campaignId: input.campaignId },
++    });
++    if (existingCount > 0) {
++      throw new ConflictException('campaign already has action items');
++    }
++
++    if (input.assigneeIds.length === 0) {
++      return [];
++    }
++
++    await this.assertActiveAuthor(input.authorId);
++    await this.assertActiveAssignees(input.assigneeIds);
++
++    const rows = input.assigneeIds.map((assigneeId) => ({
++      assigneeId,
++      authorId: input.authorId,
++      title: normalized.title,
++      description: normalized.description,
++      dueDate: normalized.dueDate,
++      link: normalized.link,
++      source: 'campaign' as const,
++      campaignId: input.campaignId,
++      status: 'open' as const,
++    }));
++
++    try {
++      await writeClient.actionItem.createMany({ data: rows });
++    } catch (error) {
++      if (this.isCampaignUniqueViolation(error)) {
++        throw new ConflictException('campaign already has action items');
++      }
++      throw error;
++    }
++
++    const actionItemDelegate = (
++      writeClient as unknown as { actionItem: PrismaService['actionItem'] }
++    ).actionItem;
++    const created = await actionItemDelegate.findMany({
++      where: { campaignId: input.campaignId },
++      include: this.peopleInclude,
++      orderBy: [
++        { dueDate: 'asc' },
++        { assigneeId: 'asc' },
++        { createdAt: 'asc' },
++      ],
++    });
++
++    return created.map((item) => this.toContractDto(item));
++  }
++
++  private async assertActiveAuthor(authorId: string): Promise<void> {
++    const author = await this.prisma.employee.findFirst({
++      where: { id: authorId, employmentStatus: 'active' },
++      select: { id: true },
++    });
++    if (!author) {
++      throw new BadRequestException('authorId must be an active employee');
++    }
++  }
++
++  private async assertActiveAssignees(assigneeIds: string[]): Promise<void> {
++    const employees = await this.prisma.employee.findMany({
++      where: {
++        id: { in: assigneeIds },
++        employmentStatus: 'active',
++      },
++      select: { id: true },
++    });
++    const activeIds = new Set(employees.map((employee) => employee.id));
++    const invalidAssigneeIds = assigneeIds.filter((id) => !activeIds.has(id));
++    if (invalidAssigneeIds.length > 0) {
++      throw new BadRequestException({
++        message: 'assigneeIds must reference active employees',
++        invalidAssigneeIds,
++      });
++    }
++  }
++
++  private isCampaignUniqueViolation(error: unknown): boolean {
++    return (
++      error instanceof Prisma.PrismaClientKnownRequestError &&
++      error.code === 'P2002'
++    );
++  }
+ }
+diff --git a/src/modules/contracts/action-item-creation.contract.ts b/src/modules/contracts/action-item-creation.contract.ts
+index 40c8499..b64368a 100644
+--- a/src/modules/contracts/action-item-creation.contract.ts
++++ b/src/modules/contracts/action-item-creation.contract.ts
+@@ -30,8 +30,51 @@ export interface ActionItemDto extends CreateActionItemInput {
+   isOverdue: boolean;
+ }
+ 
++export interface CreateCampaignActionItemsInput {
++  campaignId: string;
++  authorId: string;
++  title: string;
++  description?: string;
++  dueDate: string;
++  link?: string;
++  assigneeIds: string[];
++}
++
++/**
++ * Minimal transaction surface C6 needs when participating in a caller's open
++ * DB transaction (Epic 10 campaign activation). Defined here ΓÇö not via Prisma
++ * imports ΓÇö so contracts stay ORM-agnostic per AD-2.
++ */
++export interface ActionItemWriteContext {
++  actionItem: {
++    count(args: { where: { campaignId: string } }): Promise<number>;
++    createMany(args: {
++      data: Array<{
++        assigneeId: string;
++        authorId: string;
++        title: string;
++        description?: string | null;
++        dueDate: Date;
++        link?: string | null;
++        source: 'campaign';
++        campaignId: string;
++        status: 'open';
++      }>;
++    }): Promise<{ count: number }>;
++  };
++}
++
+ export abstract class ActionItemCreation {
+   abstract createActionItem(
+     input: CreateActionItemInput,
+   ): Promise<ActionItemDto>;
++
++  /**
++   * Bulk campaign activation path ΓÇö Epic 10 Story 10.3 calls this directly.
++   * Manual `createActionItem` must not be used for `source: 'campaign'`.
++   */
++  abstract createCampaignActionItems(
++    input: CreateCampaignActionItemsInput,
++    tx?: ActionItemWriteContext,
++  ): Promise<ActionItemDto[]>;
+ }
+diff --git a/src/modules/contracts/stubs/action-item-creation.stub.ts b/src/modules/contracts/stubs/action-item-creation.stub.ts
+index ce1ac74..5e1fcf6 100644
+--- a/src/modules/contracts/stubs/action-item-creation.stub.ts
++++ b/src/modules/contracts/stubs/action-item-creation.stub.ts
+@@ -1,14 +1,18 @@
+ import { randomUUID } from 'crypto';
+-import { Injectable } from '@nestjs/common';
++import { ConflictException, Injectable } from '@nestjs/common';
+ import {
+   ActionItemCreation,
+   ActionItemDto,
++  ActionItemWriteContext,
+   CreateActionItemInput,
++  CreateCampaignActionItemsInput,
+ } from '../action-item-creation.contract';
+ 
+-/** Wave-0 stub ΓÇö creates an in-memory-shaped DTO, does not persist. */
++/** Wave-0 stub ΓÇö creates in-memory-shaped DTOs, does not persist. */
+ @Injectable()
+ export class ActionItemCreationStub extends ActionItemCreation {
++  private readonly campaignItems = new Map<string, ActionItemDto[]>();
++
+   createActionItem(input: CreateActionItemInput): Promise<ActionItemDto> {
+     const now = new Date().toISOString();
+     return Promise.resolve({
+@@ -20,4 +24,76 @@ export class ActionItemCreationStub extends ActionItemCreation {
+       isOverdue: false,
+     });
+   }
++
++  async createCampaignActionItems(
++    input: CreateCampaignActionItemsInput,
++    tx?: ActionItemWriteContext,
++  ): Promise<ActionItemDto[]> {
++    if (this.campaignItems.has(input.campaignId)) {
++      throw new ConflictException('campaign already has action items');
++    }
++
++    if (tx) {
++      const existing = await tx.actionItem.count({
++        where: { campaignId: input.campaignId },
++      });
++      if (existing > 0) {
++        throw new ConflictException('campaign already has action items');
++      }
++      if (input.assigneeIds.length > 0) {
++        await tx.actionItem.createMany({
++          data: input.assigneeIds.map((assigneeId) => ({
++            assigneeId,
++            authorId: input.authorId,
++            title: input.title,
++            description: input.description ?? null,
++            dueDate: new Date(`${input.dueDate}T00:00:00.000Z`),
++            link: input.link ?? null,
++            source: 'campaign' as const,
++            campaignId: input.campaignId,
++            status: 'open' as const,
++          })),
++        });
++      }
++    }
++
++    if (input.assigneeIds.length === 0) {
++      this.campaignItems.set(input.campaignId, []);
++      return [];
++    }
++
++    const now = new Date().toISOString();
++    const items: ActionItemDto[] = input.assigneeIds.map((assigneeId) => ({
++      id: randomUUID(),
++      assigneeId,
++      authorId: input.authorId,
++      title: input.title,
++      ...(input.description ? { description: input.description } : {}),
++      dueDate: input.dueDate,
++      ...(input.link ? { link: input.link } : {}),
++      source: 'campaign',
++      campaignId: input.campaignId,
++      status: 'open',
++      createdAt: now,
++      updatedAt: now,
++      isOverdue: false,
++    }));
++
++    this.campaignItems.set(input.campaignId, items);
++    return sortCampaignContractDtos(items);
++  }
++}
++
++function sortCampaignContractDtos(items: ActionItemDto[]): ActionItemDto[] {
++  return [...items].sort((a, b) => {
++    const dueCmp = a.dueDate.localeCompare(b.dueDate);
++    if (dueCmp !== 0) {
++      return dueCmp;
++    }
++    const assigneeCmp = a.assigneeId.localeCompare(b.assigneeId);
++    if (assigneeCmp !== 0) {
++      return assigneeCmp;
++    }
++    return a.createdAt.localeCompare(b.createdAt);
++  });
+ }
+diff --git a/test/action-items.e2e-spec.ts b/test/action-items.e2e-spec.ts
+index 1bf0bf8..c6dd9f0 100644
+--- a/test/action-items.e2e-spec.ts
++++ b/test/action-items.e2e-spec.ts
+@@ -2,6 +2,7 @@ import { hash } from 'bcryptjs';
+ import { randomUUID } from 'crypto';
+ import request from 'supertest';
+ import { ActionItemsSectionProvider } from '../src/modules/action-items/action-items-section.provider';
++import { ActionItemsService } from '../src/modules/action-items/action-items.service';
+ import { PERMISSION_KEYS } from '../src/modules/contracts/permission-keys';
+ import { createTestApp, TestApp } from './support/app-harness';
+ import { DEFAULT_TEST_INSTANT, FixedClock } from './support/fixed-clock';
+@@ -1223,6 +1224,160 @@ describe('Action items overdue highlighting (e2e)', () => {
+       (afterRetreat.body as ActionItemsSectionResponse).items[0].isOverdue,
+     ).toBe(false);
+   });
++
++  describe('createCampaignActionItems (C6 bulk)', () => {
++    it('creates one campaign item per frozen recipient and exposes them on S14', async () => {
++      const sender = await createEmployeeUser(
++        testApp,
++        'ai-bulk-sender@example.com',
++        'Campaign Sender',
++      );
++      const recipientA = await createEmployeeUser(
++        testApp,
++        'ai-bulk-recipient-a@example.com',
++        'Recipient A',
++      );
++      const recipientB = await createEmployeeUser(
++        testApp,
++        'ai-bulk-recipient-b@example.com',
++        'Recipient B',
++      );
++      const recipientC = await createEmployeeUser(
++        testApp,
++        'ai-bulk-recipient-c@example.com',
++        'Recipient C',
++      );
++      await testApp.prisma.employee.update({
++        where: { id: recipientA.employeeId },
++        data: { managerId: sender.employeeId },
++      });
++      await testApp.prisma.employee.update({
++        where: { id: recipientB.employeeId },
++        data: { managerId: sender.employeeId },
++      });
++      await testApp.prisma.employee.update({
++        where: { id: recipientC.employeeId },
++        data: { managerId: sender.employeeId },
++      });
++
++      const campaignId = randomUUID();
++      const actionItems = testApp.app.get(ActionItemsService);
++      const created = await actionItems.createCampaignActionItems({
++        campaignId,
++        authorId: sender.employeeId,
++        title: 'Annual Engagement Survey',
++        description: 'Please complete the survey',
++        dueDate: '2025-12-31',
++        link: 'https://forms.example.com/survey',
++        assigneeIds: [
++          recipientA.employeeId,
++          recipientB.employeeId,
++          recipientC.employeeId,
++        ],
++      });
++
++      expect(created).toHaveLength(3);
++      expect(created.every((item) => item.source === 'campaign')).toBe(true);
++      expect(created.every((item) => item.campaignId === campaignId)).toBe(
++        true,
++      );
++      expect(created.every((item) => item.isOverdue === true)).toBe(true);
++
++      const senderAgent = await loginAs(testApp, sender.email);
++      const listRes = await senderAgent
++        .get(`/api/v1/employees/${recipientA.employeeId}/action-items`)
++        .expect(200);
++      const listed = (listRes.body as ActionItemsSectionResponse).items;
++      expect(listed).toHaveLength(1);
++      expect(listed[0]).toMatchObject({
++        title: 'Annual Engagement Survey',
++        source: 'campaign',
++        author: { id: sender.employeeId, displayName: 'Campaign Sender' },
++      });
++
++      const profileRes = await senderAgent
++        .get(`/api/v1/employees/${recipientB.employeeId}/profile`)
++        .expect(200);
++      const profileBody = profileRes.body as {
++        sections: { S14?: { data?: ActionItemsSectionResponse } };
++      };
++      const profileItems = profileBody.sections.S14?.data?.items ?? [];
++      expect(profileItems).toHaveLength(1);
++      expect(profileItems[0].source).toBe('campaign');
++    });
++
++    it('rejects a second bulk create for the same campaign', async () => {
++      const sender = await createEmployeeUser(
++        testApp,
++        'ai-bulk-conflict-sender@example.com',
++      );
++      const recipient = await createEmployeeUser(
++        testApp,
++        'ai-bulk-conflict-recipient@example.com',
++      );
++      const campaignId = randomUUID();
++      const actionItems = testApp.app.get(ActionItemsService);
++
++      await actionItems.createCampaignActionItems({
++        campaignId,
++        authorId: sender.employeeId,
++        title: 'One-shot campaign',
++        dueDate: '2026-09-20',
++        assigneeIds: [recipient.employeeId],
++      });
++
++      await expect(
++        actionItems.createCampaignActionItems({
++          campaignId,
++          authorId: sender.employeeId,
++          title: 'Retry campaign',
++          dueDate: '2026-09-21',
++          assigneeIds: [recipient.employeeId],
++        }),
++      ).rejects.toMatchObject({
++        response: { message: 'campaign already has action items' },
++      });
++    });
++
++    it('lets assignees complete campaign-sourced items from bulk activation', async () => {
++      const sender = await createEmployeeUser(
++        testApp,
++        'ai-bulk-complete-sender@example.com',
++      );
++      const recipient = await createEmployeeUser(
++        testApp,
++        'ai-bulk-complete-recipient@example.com',
++      );
++      await testApp.prisma.employee.update({
++        where: { id: recipient.employeeId },
++        data: { managerId: sender.employeeId },
++      });
++
++      const campaignId = randomUUID();
++      const actionItems = testApp.app.get(ActionItemsService);
++      const [item] = await actionItems.createCampaignActionItems({
++        campaignId,
++        authorId: sender.employeeId,
++        title: 'Complete me',
++        dueDate: '2026-09-20',
++        assigneeIds: [recipient.employeeId],
++      });
++
++      const recipientAgent = await loginAs(testApp, recipient.email);
++      const completeRes = await recipientAgent
++        .post(
++          `/api/v1/employees/${recipient.employeeId}/action-items/${item.id}/complete`,
++        )
++        .expect(200);
++
++      expect(completeRes.body).toMatchObject({
++        id: item.id,
++        status: 'completed',
++        source: 'campaign',
++        completedAt: DEFAULT_TEST_INSTANT,
++      });
++    });
++  });
+ });
+ 
+ describe('Action items provider failure (e2e)', () => {
