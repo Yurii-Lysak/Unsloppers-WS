@@ -201,3 +201,7 @@
 - S8 Self `record-absent` flag-gated case — spec open task explicitly skipped (no S8 `SectionProvider` module yet); catalog row and e2e deferred until feedbacks section provider exists.
 
 - S16 parallel route `/custom-fields/values/:id` Colleague per-field narrowing in flag-gated suite — already covered in `colleague-whitelist.e2e-spec.ts`; duplicate assertion deferred to avoid redundant e2e maintenance.
+
+## Deferred from: code review of spec-1-15-access-control-test-suite-architecture (2026-09-03)
+
+- Full `npm test` CI job surfaces pre-existing AppModule/functional-role DI failures (`functional-role-data-access-boundary.spec.ts` missing `RelationshipGraphGenerationService` mock, `app.module.spec.ts` / `prisma.module.spec.ts` timeouts) unrelated to the Story 1.15 diff — Story 1.15 correctly adds the job per spec, but merge will stay blocked until those suites are fixed or CI is scoped.
