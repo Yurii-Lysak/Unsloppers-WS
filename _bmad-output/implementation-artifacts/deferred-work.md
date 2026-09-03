@@ -209,3 +209,15 @@
 ## Deferred from: code review of spec-4-1-manually-create-an-action-item (2026-09-03)
 
 - Frontend `ActionItemsSection.tsx` inline create — spec Ask First defers UI until `EmployeeProfilePage` exists; backend + e2e shipped first per intent.
+
+## Deferred from: code review of spec-4-4-auto-generate-action-item-on-form-campaign-activation (2026-09-03)
+
+- Concurrent activation race e2e against real Postgres unique index — hard to reproduce reliably in CI; sequential conflict path is covered.
+
+- Assignee `employmentStatus` changing between validation and `createMany` — inherent race without serializable isolation; validation is best-effort at activation time.
+
+- Migration preflight for pre-existing duplicate `(campaignId, assigneeId)` rows — greenfield bootcamp has no campaign data yet.
+
+- Map `P2003` FK violations to `invalidAssigneeIds` — narrow window after active-employee validation passes.
+
+- Error precedence when invalid campaign fields and existing campaign rows both apply — invalid input should 400 before 409 count check; acceptable for callers.
