@@ -195,3 +195,9 @@
 - Employee delete / FK `SetNull` rewiring bypasses generation bump — deleting a manager/PP employee changes others' `managerId`/`peoplePartnerId` at DB level without Prisma extension hooks; no feature delete path exercised today (`relationship-graph.extension.ts`, `schema.prisma`). Pre-existing cascade semantics; revisit when employee lifecycle (C9/C11) lands.
 
 - `employee.createMany` array payload may skip graph-field detection — `employeeDataTouchesGraph` does not scan array elements; no current callers (`relationship-graph.extension.ts:16-21`). Latent until bulk employee seed lands.
+
+## Deferred from: code review of spec-1-14-prevent-section-leaks-across-all-surfaces-for-every-denied-a (2026-09-03)
+
+- S8 Self `record-absent` flag-gated case — spec open task explicitly skipped (no S8 `SectionProvider` module yet); catalog row and e2e deferred until feedbacks section provider exists.
+
+- S16 parallel route `/custom-fields/values/:id` Colleague per-field narrowing in flag-gated suite — already covered in `colleague-whitelist.e2e-spec.ts`; duplicate assertion deferred to avoid redundant e2e maintenance.
