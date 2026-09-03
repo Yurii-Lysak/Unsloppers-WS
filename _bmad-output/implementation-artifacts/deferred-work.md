@@ -205,3 +205,7 @@
 ## Deferred from: code review of spec-1-15-access-control-test-suite-architecture (2026-09-03)
 
 - Full `npm test` CI job surfaces pre-existing AppModule/functional-role DI failures (`functional-role-data-access-boundary.spec.ts` missing `RelationshipGraphGenerationService` mock, `app.module.spec.ts` / `prisma.module.spec.ts` timeouts) unrelated to the Story 1.15 diff — Story 1.15 correctly adds the job per spec, but merge will stay blocked until those suites are fixed or CI is scoped.
+
+## Deferred from: code review of spec-4-1-manually-create-an-action-item (2026-09-03)
+
+- Frontend `ActionItemsSection.tsx` inline create — spec Ask First defers UI until `EmployeeProfilePage` exists; backend + e2e shipped first per intent.

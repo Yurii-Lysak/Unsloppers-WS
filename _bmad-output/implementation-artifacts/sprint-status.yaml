@@ -30,7 +30,7 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 generated: 08-21-2026 00:00
-last_updated: 09-03-2026 11:15
+last_updated: 09-03-2026 14:25
 project: people management
 project_key: NOKEY
 tracking_system: file-system
@@ -88,8 +88,8 @@ development_status:
   3-7-all-employees-list-performance-at-500-records-under-2-second: backlog
   epic-3-retrospective: optional
 
-  epic-4: backlog
-  4-1-manually-create-an-action-item: backlog
+  epic-4: in-progress
+  4-1-manually-create-an-action-item: done
   4-2-complete-and-cancel-action-items: backlog
   4-3-overdue-highlighting: backlog
   4-4-auto-generate-action-item-on-form-campaign-activation: backlog
