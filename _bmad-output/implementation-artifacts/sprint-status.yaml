@@ -30,7 +30,7 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 generated: 08-21-2026 00:00
-last_updated: 09-04-2026 01:44
+last_updated: 09-04-2026 02:21
 project: people management
 project_key: NOKEY
 tracking_system: file-system
@@ -96,7 +96,7 @@ development_status:
   epic-4-retrospective: optional
 
   epic-5: in-progress
-  5-1-record-a-risk: review
+  5-1-record-a-risk: done
   5-2-show-risk-trend: backlog
   5-3-risk-dashboard: backlog
   epic-5-retrospective: optional
