@@ -249,3 +249,11 @@
 - Non-draft (active) campaign list rows are disabled with no tooltip or explanatory copy — deferred until Story 10.3 makes active campaigns common in the UI.
 
 - `title` and `link` columns lack DB-level length constraints (`TEXT` unbounded); application-layer validation enforces limits — low risk while campaigns are draft-only.
+
+## Deferred from: code review of spec-3-3-inline-editing-on-the-list (2026-09-04)
+
+- Per-row `writableFieldIds` resolves access per row × field (N+1) — acceptable for Wave 1; Story 3.7 owns list perf at scale.
+
+- Self-edit S4 built-ins not covered by e2e — spec default is yes when S4 is RW; no regression signal yet.
+
+- Frontend e2e mocks API for inline edit — custom-field and non-text types not exercised in Playwright; backend e2e covers custom text PATCH.
