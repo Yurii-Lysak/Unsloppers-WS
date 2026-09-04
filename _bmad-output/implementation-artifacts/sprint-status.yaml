@@ -81,7 +81,7 @@ development_status:
   # Track B / Wave 1 — build 3-2 first (FieldRegistry C2), then 3-1; AccessResolver stub from 1-19
   3-2-define-custom-fields-at-runtime: done
   3-1-sortable-filterable-employee-list: done
-  3-3-inline-editing-on-the-list: review
+  3-3-inline-editing-on-the-list: done
   3-4-saved-and-shared-views: backlog
   3-5-export-to-excel: backlog
   3-6-colleague-mode-of-the-list: backlog
