@@ -221,3 +221,31 @@
 - Map `P2003` FK violations to `invalidAssigneeIds` — narrow window after active-employee validation passes.
 
 - Error precedence when invalid campaign fields and existing campaign rows both apply — invalid input should 400 before 409 count check; acceptable for callers.
+
+## Deferred from: code review of spec-10-1-create-a-form-campaign (2026-09-04)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-1-create-a-form-campaign.md`
+  summary: 'Story 10.1''s new `ActionItem.campaign` FK gives `ActionItemsService.createCampaignActionItems`''s `createMany` call a second column (`campaignId`, alongside the pre-existing `assigneeId`) that can now raise an unmapped Prisma `P2003` instead of a defined 400/404 if ever called with a well-formed but non-existent campaign id.'
+  evidence: Extends the identical, already-deferred gap from spec-4-4's own review ("Map P2003 FK violations to invalidAssigneeIds — narrow window after active-employee validation passes") to the new column. Currently unreachable in production — no controller calls `createCampaignActionItems` yet (Story 10.3 owns that wiring) — and every reachable test path in this story's own diff first creates a real `FormCampaign` row via a new `createTestCampaign()` e2e helper, so nothing exercises the "id doesn't exist" branch today. Flagged by the verification-gap review layer; whoever wires Story 10.3's activation call should add the P2003→clean-error mapping alongside the existing `isCampaignUniqueViolation` (P2002) check in `action-items.service.ts`.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-1-create-a-form-campaign.md`
+  summary: Campaign field validation (title/description/purpose/link/dueDate limits and shape) is independently re-encoded in three places — the backend DTO's class-validator decorators, `campaigns/campaign-input.ts`'s hand-rolled normalizers, and the frontend's `campaign-form.schema.ts` zod schema — with no shared source of truth.
+  evidence: Matches the same duplication pattern already present in every sibling module (risks, action-items) rather than being novel to this story, so it's an existing architectural pattern, not a regression. Consolidating it would mean introducing a shared validation package across the backend/frontend submodule boundary — a real design decision, not a mechanical fix. Flagged by the blind-hunter and verification-gap review layers.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-1-create-a-form-campaign.md`
+  summary: Frontend campaign-save failures (400 validation / 403 lost permission / 404 stale id / 409 no-longer-draft) all surface through the same generic "Couldn't save. Try again." toast, with no per-status-code messaging.
+  evidence: Consistent with the existing mutation-hook pattern elsewhere in the app (e.g. `useRiskMutations`), not a deviation introduced by this story. Differentiating messages would need product/copy input on wording per status code. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-1-create-a-form-campaign.md`
+  summary: '`CampaignForm`''s title/description/purpose inputs have no client-side `maxLength` attribute or character counter — the documented limits (200/500/2000) only surface as a zod error after a failed submit.'
+  evidence: Cosmetic UX polish, not a functional gap (the limits are enforced server-side and by the zod schema at submit time). Flagged by the blind-hunter review layer as low severity.
+
+## Deferred from: code review of spec-10-1 (2026-09-04)
+
+- `npm run test:e2e -- campaigns` exits non-zero due to pre-existing global teardown access-matrix gaps — campaign tests themselves pass (13/13).
+
+- `PermissionCheckerService.getGrantedPermissions` runs three extra `count` queries (direct reports, PP assignees, active PM/DM assignments) for every caller without short-circuiting when a functional-role grant already includes `CREATE_FORM_CAMPAIGNS` — acceptable tradeoff for Story 10.1 scope.
+
+- Non-draft (active) campaign list rows are disabled with no tooltip or explanatory copy — deferred until Story 10.3 makes active campaigns common in the UI.
+
+- `title` and `link` columns lack DB-level length constraints (`TEXT` unbounded); application-layer validation enforces limits — low risk while campaigns are draft-only.
