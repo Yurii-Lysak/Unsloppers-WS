@@ -4,8 +4,18 @@
 # Date: 2026-08-21T11:06:14.532Z
 
 test_artifacts: "{project-root}/_bmad-output/test-artifacts"
-tea_use_playwright_utils: true
-tea_use_pactjs_utils: true
+# Both utility flags turned off 2026-09-04 while reviving bmad-testarch-ci:
+# neither package is installed in either service, and a flag that advertises
+# an absent capability makes every TEA workflow scaffold scripts that cannot
+# resolve.
+# - playwright-utils: the frontend suite is 71 tests (~1.7min), so unfiltered
+#   burn-in is affordable and change-based selection (native --only-changed)
+#   covers the PR case without the extra dependency.
+# - pactjs-utils: no contract tests exist. TimeTracker is a third-party API we
+#   cannot run provider verification against.
+# Flip either back when adopting the package through the framework workflow.
+tea_use_playwright_utils: false
+tea_use_pactjs_utils: false
 tea_pact_mcp: mcp
 tea_browser_automation: auto
 tea_execution_mode: auto
