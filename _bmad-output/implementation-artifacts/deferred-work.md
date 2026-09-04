@@ -253,3 +253,11 @@
 ## Deferred from: code review of spec-10-2-build-and-freeze-campaign-audience (2026-09-04)
 
 - `previewAudience` performs an extra `listEmployees` call solely to sample `fields` for the response — acceptable at bootcamp scale; revisit if preview becomes hot-path at 500+ employees.
+
+## Deferred from: code review of spec-3-3-inline-editing-on-the-list (2026-09-04)
+
+- Per-row `writableFieldIds` resolves access per row × field (N+1) — acceptable for Wave 1; Story 3.7 owns list perf at scale.
+
+- Self-edit S4 built-ins not covered by e2e — spec default is yes when S4 is RW; no regression signal yet.
+
+- Frontend e2e mocks API for inline edit — custom-field and non-text types not exercised in Playwright; backend e2e covers custom text PATCH.

@@ -118,3 +118,12 @@ Built-in writes use `clock.now()` as `effectiveFrom` on a new history row — th
 
 - E2e PATCH scenarios for manager write and colleague deny
   [`employees.e2e-spec.ts`](../../services/backend/test/employees.e2e-spec.ts)
+
+### Review Findings
+
+- [x] [Review][Patch] `manage_custom_fields` bypass marks custom fields writable without S16 RW — `resolveWritableFieldIds` grants writability via `canManage` but `updateEmployeeField` also requires `sectionGate` S16 `RW`, so holders of the functional permission can see editable cells that PATCH rejects with 403 [`employees.service.ts:252`](../../services/backend/src/modules/directory/employees.service.ts#L252)
+- [x] [Review][Patch] Esc revert missing for boolean/select/multi_select editors — spec requires Esc reverts; only text/number/date inputs wire `handleKeyDown` for Escape [`EditableCell.tsx:144`](../../services/frontend/src/pages/AllEmployeesPage/components/EditableCell/EditableCell.tsx#L144)
+- [x] [Review][Patch] Blur saves unchanged values — `commitEdit` fires PATCH on blur even when draft equals the current cell value, causing needless API traffic [`EditableCell.tsx:216`](../../services/frontend/src/pages/AllEmployeesPage/components/EditableCell/EditableCell.tsx#L216)
+- [x] [Review][Defer] Per-row `writableFieldIds` resolves access per row × field (N+1) — acceptable for Wave 1; Story 3.7 owns list perf at scale [`employees.service.ts:69`](../../services/backend/src/modules/directory/employees.service.ts#L69) — deferred, Story 3.7
+- [x] [Review][Defer] Self-edit S4 built-ins not covered by e2e — spec default is yes when S4 is RW; no regression signal yet — deferred, low risk given access-resolver unit coverage elsewhere
+- [x] [Review][Defer] Frontend e2e mocks API for inline edit — custom-field and non-text types not exercised in Playwright; backend e2e covers custom text PATCH — deferred, acceptable split for v1
