@@ -250,6 +250,10 @@
 
 - `title` and `link` columns lack DB-level length constraints (`TEXT` unbounded); application-layer validation enforces limits — low risk while campaigns are draft-only.
 
+## Deferred from: code review of spec-10-2-build-and-freeze-campaign-audience (2026-09-04)
+
+- `previewAudience` performs an extra `listEmployees` call solely to sample `fields` for the response — acceptable at bootcamp scale; revisit if preview becomes hot-path at 500+ employees.
+
 ## Deferred from: code review of spec-3-3-inline-editing-on-the-list (2026-09-04)
 
 - Per-row `writableFieldIds` resolves access per row × field (N+1) — acceptable for Wave 1; Story 3.7 owns list perf at scale.

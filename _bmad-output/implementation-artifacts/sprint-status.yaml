@@ -133,7 +133,7 @@ development_status:
 
   epic-10: in-progress
   10-1-create-a-form-campaign: done
-  10-2-build-and-freeze-campaign-audience: backlog
+  10-2-build-and-freeze-campaign-audience: done
   10-3-activate-a-campaign: backlog
   10-4-track-campaign-completion: backlog
   epic-10-retrospective: optional
