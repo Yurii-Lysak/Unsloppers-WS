@@ -249,3 +249,7 @@
 - Non-draft (active) campaign list rows are disabled with no tooltip or explanatory copy — deferred until Story 10.3 makes active campaigns common in the UI.
 
 - `title` and `link` columns lack DB-level length constraints (`TEXT` unbounded); application-layer validation enforces limits — low risk while campaigns are draft-only.
+
+## Deferred from: code review of spec-10-2-build-and-freeze-campaign-audience (2026-09-04)
+
+- `previewAudience` performs an extra `listEmployees` call solely to sample `fields` for the response — acceptable at bootcamp scale; revisit if preview becomes hot-path at 500+ employees.
