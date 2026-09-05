@@ -14,6 +14,23 @@ This supersedes the initial labels in `ci-pipeline-progress.md`. Two of the thre
 original "known-red" items were mischaracterised on the first pass: there was
 **no transaction deadlock** and **no S16 data leak**.
 
+## Defect Tracking
+
+Open items from this diagnosis are tracked as individual defect files in
+`services/backend/defects/` (also filed on the ClickUp board), so a fix can
+reference the exact evidence directly from the repo:
+
+| Item | Defect file | ClickUp |
+| --- | --- | --- |
+| 1 — `TS2322` build failure | [`bugs/01-build-fails-ts2322-campaigns-service.md`](../../services/backend/defects/bugs/01-build-fails-ts2322-campaigns-service.md) | Filed |
+| 2 — unit test false alarm | **Fixed in this pass** — no defect file needed | — |
+| 3a — S16 substring-assertion false alarm | [`test-debt/01-s16-fragile-substring-assertion.md`](../../services/backend/defects/test-debt/01-s16-fragile-substring-assertion.md) | — |
+| 3b — campaigns fixture enum bug | **Fixed in this pass** — no defect file needed | — |
+| 3c — 3× 403 (needs owner decision) | [`test-debt/02-decision-403-custom-fields-employee-record.md`](../../services/backend/defects/test-debt/02-decision-403-custom-fields-employee-record.md) | — |
+| 3d — filters 400 (DTO defect) | [`bugs/03-employees-filters-400-dto-defect.md`](../../services/backend/defects/bugs/03-employees-filters-400-dto-defect.md) | Filed |
+| 3e — colleague-whitelist access gap | [`bugs/02-employees-list-authorization-gap.md`](../../services/backend/defects/bugs/02-employees-list-authorization-gap.md) | Filed |
+| 3f — 3× 401, not root-caused | [`test-debt/03-investigation-401-employee-profile-session.md`](../../services/backend/defects/test-debt/03-investigation-401-employee-profile-session.md) | — |
+
 ## Fixed in this pass (test-only, safe, verified)
 
 | File | Change | Verified |
@@ -276,6 +293,8 @@ semantics.
 | 3d | 2 × 400 on filters | Real API defect — `fieldId` stripped in DTO transform. Cause predates recent commits. |
 | 3e | colleague-whitelist | **Escalated, not fixed.** Looks like a real access-control gap, not a stale test — `GET /api/v1/employees` has no per-row audience narrowing at all; every builtin field is visible to every authenticated viewer regardless of role. |
 | 3f | 3 × 401 | Not root-caused. Session invalid before the test's first request. |
+
+See "Defect Tracking" above for the corresponding file in `services/backend/defects/` for each open item.
 
 Two items fixed this pass (2, 3b) — both verified safe, test-only, no product
 code touched. **3d and 3e are the two that matter most now**: 3d is a confirmed
