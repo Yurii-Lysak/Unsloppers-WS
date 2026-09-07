@@ -1,5 +1,12 @@
 # Known-red diagnosis — `Unsloppers-BE` @ `77cfaca`
 
+**Status (2026-09-07):** CI merged to `main` in both services
+([Unsloppers-BE#43](https://github.com/Yurii-Lysak/Unsloppers-BE/pull/43),
+[Unsloppers-FE#24](https://github.com/Yurii-Lysak/Unsloppers-FE/pull/24)).
+Item 1 (`TS2322`) fixed on backend `main` via
+[Unsloppers-BE#45](https://github.com/Yurii-Lysak/Unsloppers-BE/pull/45). Gitlinks
+in this workspace PR point at those merge commits (`1e7d532` BE, `03866dd` FE).
+
 **No production code was changed** by this investigation. Three test-only files
 were fixed after being root-caused (see "Fixed in this pass" below) —
 `.github/workflows/ci.yml` and `lint:check` in `package.json` are the only other
@@ -22,7 +29,7 @@ reference the exact evidence directly from the repo:
 
 | Item | Defect file | ClickUp |
 | --- | --- | --- |
-| 1 — `TS2322` build failure | [`bugs/01-build-fails-ts2322-campaigns-service.md`](../../services/backend/defects/bugs/01-build-fails-ts2322-campaigns-service.md) | Filed |
+| 1 — `TS2322` build failure | [`bugs/01-build-fails-ts2322-campaigns-service.md`](../../services/backend/defects/bugs/01-build-fails-ts2322-campaigns-service.md) | **Fixed** via Unsloppers-BE#45 |
 | 2 — unit test false alarm | **Fixed in this pass** — no defect file needed | — |
 | 3a — S16 substring-assertion false alarm | [`test-debt/01-s16-fragile-substring-assertion.md`](../../services/backend/defects/test-debt/01-s16-fragile-substring-assertion.md) | — |
 | 3b — campaigns fixture enum bug | **Fixed in this pass** — no defect file needed | — |
@@ -46,7 +53,7 @@ they're still open.
 
 ---
 
-## 1. Build — `TS2322` in `campaigns.service.ts` (real, blocks deploy)
+## 1. Build — `TS2322` in `campaigns.service.ts` — FIXED (Unsloppers-BE#45)
 
 ```
 src/modules/campaigns/campaigns.service.ts:146:9
@@ -64,15 +71,12 @@ There is an established pattern for this in the codebase — `toJsonValue` in
 through `parseStoredAudienceFilters` (lines 396 and 440), so only the write side
 is untyped.
 
-**Impact beyond CI:** Render's build command is
-`npm install --include=dev && npm run build`. `nest build` fails here, so the
-backend deploy for `77cfaca` should have failed and production is serving an
-older build. Worth confirming in the Render dashboard.
+**Resolution (2026-09-07):** `saveAudience` now casts `audienceFilters` to
+`Prisma.InputJsonValue` ([Unsloppers-BE#45](https://github.com/Yurii-Lysak/Unsloppers-BE/pull/45)).
+`nest build` passes on current backend `main`; the BE CI `build` job is green.
 
-**Caution:** fixing this unblocks auto-deploy on the next push to `main`, and
-`postbuild` runs `prisma migrate deploy` against the shared Neon database. That
-is the risky part, not the type fix. Per `docs/deployment.md` there is no staging
-tier and no separate dev database.
+**Historical impact:** at diagnosis time (`77cfaca`), Render's build command
+(`npm install --include=dev && npm run build`) failed on this error.
 
 ---
 
@@ -285,7 +289,7 @@ semantics.
 
 | # | Item | Verdict |
 |---|---|---|
-| 1 | `TS2322` build failure | Real. Blocks Render deploy. Known fix pattern exists. Not fixed — needs the deploy-risk conversation first. |
+| 1 | `TS2322` build failure | **Fixed** via Unsloppers-BE#45 (merged 2026-09-07). |
 | 2 | 4 unit failures | **Fixed.** Was a false alarm — leftover test schema + unfiltered `pg_indexes` query. |
 | 3a | S16 "leak" | False alarm — `not.toContain('L')` matches `manageLeaveUrl`. Access control correct. Not fixed (test-only, low priority). |
 | 3b | campaigns fixture | **Fixed.** `'inactive'` was not in the `EmploymentStatus` enum; corrected to `'dismissed'`. |
@@ -296,9 +300,8 @@ semantics.
 
 See "Defect Tracking" above for the corresponding file in `services/backend/defects/` for each open item.
 
-Two items fixed this pass (2, 3b) — both verified safe, test-only, no product
-code touched. **3d and 3e are the two that matter most now**: 3d is a confirmed
-API defect on a real endpoint, and 3e may be a bigger finding than originally
-scoped — a live authorization gap, not test debt. Both need the person who owns
-the access matrix / directory list feature, not a guess from here. 1 remains the
-only item with deployment consequences.
+Items 1, 2, and 3b are fixed. Item 1 was a product fix (BE#45); 2 and 3b were
+test-only. **3d and 3e are the two that matter most now**: 3d is a confirmed API
+defect on a real endpoint, and 3e may be a bigger finding than originally scoped
+— a live authorization gap, not test debt. Both need the person who owns the
+access matrix / directory list feature, not a guess from here.

@@ -10,8 +10,8 @@ Deliver the employee directory experience: a single list page whose columns, fil
 
 - Story 3.1: Sortable, Filterable Employee List — **done**
 - Story 3.2: Define Custom Fields at Runtime — **done** (real FieldRegistry on backend `main`)
-- Story 3.3: Inline Editing on the List — **in progress**
-- Story 3.4: Saved and Shared Views
+- Story 3.3: Inline Editing on the List — **done**
+- Story 3.4: Saved and Shared Views — **done**
 - Story 3.5: Export to Excel
 - Story 3.6: Colleague Mode of the List
 - Story 3.7: All Employees List Performance at 500+ Records Under 2 Seconds
