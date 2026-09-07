@@ -1,8 +1,9 @@
 # Known-red diagnosis — `Unsloppers-BE` @ `77cfaca`
 
-Investigation only. **No production or test code was changed** by this pass; the
-only backend diff in the working tree is the CI work itself (`.github/workflows/ci.yml`,
-the `lint:check` script in `package.json`).
+**No production code was changed** by this investigation. Three test-only files
+were fixed after being root-caused (see "Fixed in this pass" below) —
+`.github/workflows/ci.yml` and `lint:check` in `package.json` are the only other
+backend diff, both from the earlier CI-pipeline work.
 
 Context: run locally on Windows, Node 22, Postgres 18 in Docker, against the tip
 of `origin/main` (`77cfaca`, Story 10.2). `package-lock.json` is unmodified, so
@@ -10,8 +11,21 @@ CI installs the same dependency tree — anything reproducing here should reprod
 on a runner.
 
 This supersedes the initial labels in `ci-pipeline-progress.md`. Two of the three
-"known-red" items were mischaracterised on the first pass: there is **no
-transaction deadlock** and **no S16 data leak**.
+original "known-red" items were mischaracterised on the first pass: there was
+**no transaction deadlock** and **no S16 data leak**.
+
+## Fixed in this pass (test-only, safe, verified)
+
+| File | Change | Verified |
+|---|---|---|
+| `src/prisma/__tests__/temporal-history.extension.spec.ts` | Added `AND schemaname = current_schema()` to the `pg_indexes` query (item 2) | Reproduced the original bug on demand (created a throwaway schema with the same migrations, confirmed 4 failures), applied the fix, confirmed 65/65 with the stray schema still present, then dropped it |
+| `test/jest-e2e.global-teardown.ts` | Moved `dropSchemas(...)` into a `finally` so a thrown coverage assertion can no longer skip cleanup (item 2, root cause) | Full unit suite: 707/707 |
+| `test/campaigns.e2e-spec.ts` | Fixture used `employmentStatus: 'inactive'`, not a valid `EmploymentStatus` value — changed to `'dismissed'` (item 3b) | `campaigns.e2e-spec.ts`: 19/19 |
+
+Full e2e re-run after these three fixes: **10 failures across 6 suites** (down
+from 11/7). No new failures introduced. Everything below reflects this fixed
+state; items 2 and 3b are kept in this document for the paper trail, not because
+they're still open.
 
 ---
 
@@ -45,7 +59,7 @@ tier and no separate dev database.
 
 ---
 
-## 2. Unit tests — false alarm, local environment artifact
+## 2. Unit tests — false alarm, local environment artifact — FIXED
 
 Originally recorded as "3 failures … transaction deadlock". It is neither a
 deadlock nor a product bug.
@@ -72,23 +86,29 @@ Verified: after dropping the leftover schema, `temporal-history.extension.spec.t
 passes **65/65**.
 
 Two independent test-hygiene defects, both cheap and safe to fix, neither
-affecting product code:
+affecting product code — **both fixed** (see "Fixed in this pass"):
 
-- the `pg_indexes` query should be schema-scoped;
-- teardown should drop schemas in a `finally`, so the coverage assertion cannot
+- the `pg_indexes` query is now schema-scoped;
+- teardown now drops schemas in a `finally`, so the coverage assertion cannot
   skip cleanup.
 
-**CI is unaffected** — `unit-tests` and `e2e` are separate jobs with separate
-Postgres service containers, so no leftover schema can exist. Expect this one to
-be green on the runner and red locally after any partial e2e run.
+Re-verified by deliberately recreating the original failure mode: manually
+`migrate deploy`-ed a throwaway schema with the full migration set into the same
+database, confirmed the pre-fix query still returns 4 failures against it, then
+confirmed the fixed query returns 65/65 with that schema still present. Dropped
+the throwaway schema afterward.
+
+**CI was unaffected either way** — `unit-tests` and `e2e` are separate jobs with
+separate Postgres service containers, so no leftover schema can exist there. The
+fix mainly protects local dev loops (and anyone else hitting Ctrl-C mid e2e-run).
 
 ---
 
-## 3. E2E — 11 failures across 7 suites
+## 3. E2E — 10 failures across 6 suites (was 11/7 before the campaigns fixture fix)
 
-Reproduced deterministically: the same 11 fail whether run as the full 24-suite
-sweep (11/335) or as just these 7 suites (11/100). `maxWorkers` is already 1, so
-parallelism is not a factor.
+Reproduced deterministically: the same failures show up whether run as the full
+24-suite sweep or as just the affected suites in isolation. `maxWorkers` is
+already 1, so parallelism is not a factor.
 
 ### 3a. S16 "custom-field leak" — false alarm, fragile assertion
 
@@ -114,9 +134,9 @@ assertion trips on an unrelated key.
 No leak, no security finding. The test needs a value that is not a single common
 character, or a structured assertion instead of a substring scan.
 
-### 3b. `campaigns.e2e-spec.ts` — test bug, wrong enum value
+### 3b. `campaigns.e2e-spec.ts` — test bug, wrong enum value — FIXED
 
-`rejects inactive added employee ids` (line 741) does:
+`rejects inactive added employee ids` (line 741) did:
 
 ```ts
 data: { managerId: ..., employmentStatus: 'inactive' }
@@ -125,6 +145,12 @@ data: { managerId: ..., employmentStatus: 'inactive' }
 `PrismaClientValidationError: Invalid value for argument 'employmentStatus'.
 Expected EmploymentStatus.` The enum in `prisma/schema.prisma:35` is
 `active | dismissed` — there is no `inactive`. The fixture, not the product.
+
+Changed to `'dismissed'` — confirmed this preserves the test's intent:
+`campaigns.service.ts:313` filters `where: { employmentStatus: 'active' }` when
+validating added audience members, so any non-`'active'` status (including
+`'dismissed'`) still gets rejected as intended. `campaigns.e2e-spec.ts` now
+passes 19/19.
 
 ### 3c. Three 403s — endpoints now require an Employee record
 
@@ -181,20 +207,47 @@ since the list feature landed and nothing ran the suite, or something
 environmental differs. `package-lock.json` is clean, so the first green/red
 signal from the new `e2e` job is the cheapest way to settle it.
 
-### 3e. `colleague-whitelist.e2e-spec.ts` — response shape mismatch
+### 3e. `colleague-whitelist.e2e-spec.ts` — NOT a stale test; looks like a real access gap
 
 `returns S1-safe directory list entries` (line 241) treats
-`GET /api/v1/employees` as a bare array:
+`GET /api/v1/employees` as a bare array of `{ id, displayName }`:
 
 ```ts
 const rows = res.body as Array<Record<string, unknown>>;
 expect(rows.length).toBeGreaterThan(0);   // received: undefined
+for (const row of rows) {
+  expect(Object.keys(row).sort()).toEqual(['displayName', 'id']);
+}
 ```
 
-The endpoint returns the paginated object `{ total, rows, fields }` — the shape
-`employees.e2e-spec.ts` uses throughout. Either this test predates pagination, or
-the Colleague view is supposed to return a narrowed array. Owner decision, but
-the fix is almost certainly in the test.
+I initially read this as a stale shape assertion (the endpoint returns the
+paginated `{ total, rows, fields }` object `employees.e2e-spec.ts` uses). On
+closer read of `employees.service.ts`, that's not the whole story:
+
+- `filterVisibleFields` (line 169) only ever filters **custom** fields by
+  `visibility`; every builtin field (`name`, `grade`, `position`, `department`,
+  `employment_type`, `years_with_company`) is pushed through unconditionally
+  for every viewer.
+- `maskRowCells` (line 202) only masks **custom** field cells per row; it never
+  touches builtin cells.
+- Nothing in `listEmployees` calls `sectionGate` or otherwise checks the
+  viewer's relationship (Colleague vs. Manager vs. PP vs. Self) to each row's
+  subject.
+
+So today, `GET /api/v1/employees` returns full builtin-field data — grade,
+position, department, tenure — for every employee to any authenticated caller
+with an `Employee` record, Colleague included. There is no per-row S1-safe
+narrowing on this route at all, which is exactly what the failing test expects
+to exist.
+
+I did not touch this one. Whether this is a real gap (the list endpoint needs
+audience-aware row narrowing, mirroring what the profile endpoint already does
+for S1) or intentional (this route is meant to be reachable only by viewers who
+already have broad directory access, gated by something upstream I haven't
+found) is exactly the kind of access-control call this document's own caution
+applies to — I would rather flag it than guess and quietly narrow an API
+response. **Recommend routing this to whoever owns the access matrix (AD-14),
+not silently patching the test to match current behavior.**
 
 ### 3f. `employee-profile.e2e-spec.ts` — three 401s, not root-caused
 
@@ -215,14 +268,18 @@ semantics.
 
 | # | Item | Verdict |
 |---|---|---|
-| 1 | `TS2322` build failure | Real. Blocks Render deploy. Known fix pattern exists. |
-| 2 | 4 unit failures | False alarm — leftover test schema + unfiltered `pg_indexes` query. Green in CI. |
-| 3a | S16 "leak" | False alarm — `not.toContain('L')` matches `manageLeaveUrl`. Access control correct. |
-| 3b | campaigns fixture | Test bug — `'inactive'` is not in the `EmploymentStatus` enum. |
+| 1 | `TS2322` build failure | Real. Blocks Render deploy. Known fix pattern exists. Not fixed — needs the deploy-risk conversation first. |
+| 2 | 4 unit failures | **Fixed.** Was a false alarm — leftover test schema + unfiltered `pg_indexes` query. |
+| 3a | S16 "leak" | False alarm — `not.toContain('L')` matches `manageLeaveUrl`. Access control correct. Not fixed (test-only, low priority). |
+| 3b | campaigns fixture | **Fixed.** `'inactive'` was not in the `EmploymentStatus` enum; corrected to `'dismissed'`. |
 | 3c | 3 × 403 | Likely intended Story 1.8 hardening, stale fixtures. Needs owner call. |
-| 3d | 2 × 400 on filters | Real — `fieldId` stripped in DTO transform. Cause predates recent commits. |
-| 3e | colleague-whitelist | Test expects an array, API returns a paginated object. |
+| 3d | 2 × 400 on filters | Real API defect — `fieldId` stripped in DTO transform. Cause predates recent commits. |
+| 3e | colleague-whitelist | **Escalated, not fixed.** Looks like a real access-control gap, not a stale test — `GET /api/v1/employees` has no per-row audience narrowing at all; every builtin field is visible to every authenticated viewer regardless of role. |
 | 3f | 3 × 401 | Not root-caused. Session invalid before the test's first request. |
 
-Only **3d** is an unambiguous product defect on the API surface, and only **1**
-has deployment consequences. Everything else is test-suite debt or a false alarm.
+Two items fixed this pass (2, 3b) — both verified safe, test-only, no product
+code touched. **3d and 3e are the two that matter most now**: 3d is a confirmed
+API defect on a real endpoint, and 3e may be a bigger finding than originally
+scoped — a live authorization gap, not test debt. Both need the person who owns
+the access matrix / directory list feature, not a guess from here. 1 remains the
+only item with deployment consequences.
