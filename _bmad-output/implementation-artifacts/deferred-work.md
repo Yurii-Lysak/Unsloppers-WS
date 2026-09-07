@@ -254,6 +254,68 @@
 
 - `previewAudience` performs an extra `listEmployees` call solely to sample `fields` for the response — acceptable at bootcamp scale; revisit if preview becomes hot-path at 500+ employees.
 
+## Deferred from: code review of spec-10-3-activate-a-campaign (2026-09-07)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: '`activateCampaign` resolves the audience `employeeId[]` via `EmployeeDirectory.listEmployees` before opening the `prisma.$transaction`, so a concurrent `PUT :campaignId/audience` save landing in that gap is not detected — the frozen action-item recipients can end up one save behind the campaign''s persisted audience definition at commit time.'
+  evidence: Flagged independently by the blind-hunter and edge-case-hunter review layers. The spec''s frozen Boundaries explicitly sanctioned resolving outside the transaction and justified staleness only for per-employee active-status drift (which C6 re-validates and rejects); it did not address drift in the audience *definition* itself (filters/added/excluded changing underneath the read). Narrow race window (requires a concurrent audience-save request landing in the few-millisecond gap between the read and the transaction's atomic status flip) and matches the same class of accepted risk spec-4-4's own review deferred ("Assignee employmentStatus changing between validation and createMany — inherent race without serializable isolation"). Full closure would require re-resolving the audience from inside the transaction (restructuring `EmployeeDirectory.listEmployees` to accept a tx-scoped client), which is a design decision beyond this story's scope — the campaign-metadata half of the same class of race (title/description/link/dueDate read pre-transaction) was cheap to close and was patched directly in this story instead of deferred.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: No e2e races a real concurrent `PATCH :campaignId` against `POST :campaignId/activate` against real Postgres.
+  evidence: The in-transaction re-fetch behavior (guarding against stale title/description/link/dueDate) is already deterministically covered by a mocked unit test (`campaigns.service.spec.ts` — "flips the campaign to active and calls C6 with a fresh in-transaction read, not the pre-transaction snapshot"); a true DB-timing race test would be flaky in CI. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: No frontend test exercises the 400 invalid-assignees branch of useActivateCampaign's onError, or a generic network/5xx failure during activation.
+  evidence: Backend e2e already covers the C6-rejection scenario end to end; the frontend gap is low priority since the generic-toast fallback path is low risk. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: The NotFoundException branch for freshCampaign === null inside the activation transaction is untested.
+  evidence: Effectively unreachable in the current app surface — no campaign-delete endpoint exists, and the row was just updated in the same transaction/connection immediately before the re-fetch. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: SwaggerActivateCampaign's 409 response doc only describes "already active," not the race-loss path the concurrent-activation e2e test covers.
+  evidence: Minor doc completeness gap; both causes return the identical response body (Only draft campaigns can be activated), so API consumers aren't misled, just under-informed. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Theoretical double-submit race if a user double-clicks "Activate campaign" before React commits the disabled state to the DOM.
+  evidence: Low real-world risk — React 18 batches the isPending state update and re-render synchronously within the same click-handler flush, and the backend's atomic updateMany + 409 already backstops a genuine double-fire with no data corruption, only a spurious error toast. Flagged by the edge-case-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: useActivateCampaign's onError doesn't special-case a 403 (no employee record) response the way it does for 400/404/409.
+  evidence: Pre-existing pattern shared by every other campaign mutation hook (useCreateCampaign, useUpdateCampaign, useSaveCampaignAudience) — not a regression introduced by this story, and reaching it requires the authenticated user's employee record to disappear mid-session, which no code path in this app can do today. Flagged by the edge-case-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Diff bundles unrelated Prettier-only formatting churn (several directory/risks backend files, saved-views.service.ts) alongside the activation feature.
+  evidence: Verified as formatting-only (arrow-function parens, line wrapping) with one accompanying no-op type cleanup (saved-views.service.ts's redundant "as unknown as Prisma.InputJsonValue" cast removal on columnIds, harmless since string[] is already JSON-compatible). Commit-hygiene note, not a code defect — makes the real diff harder to review in isolation. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: '`useActivateCampaign` `onError` invalidates only the detail query on 409/404, not the campaigns list — the list can still show `draft` after concurrent activation elsewhere.'
+  evidence: Flagged by the edge-case-hunter review layer. Low user impact while the creator remains on the detail page (which refetches correctly); list staleness clears on next navigation or manual refresh.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Backend activate happy-path e2e does not assert persisted action-item metadata (`title`, `description`, `link`, `dueDate`) — only count, `source`, `status`, and `assigneeId`.
+  evidence: Flagged by the verification-gap review layer. The unit test already asserts C6 receives the in-transaction-fresh metadata; e2e metadata assertion would be belt-and-suspenders, not blocking.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: '`POST :campaignId/activate` has no 403 e2e for authenticated users without an employee record.'
+  evidence: Create and list 403 cases exist in `campaigns.e2e-spec.ts`; activate reuses the same `resolveViewerEmployeeId` guard. Flagged by the verification-gap review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Playwright 409 recovery test uses unscoped `getByText('Active')` instead of a status-specific test id.
+  evidence: Flagged by the blind-hunter review layer. Cosmetic test brittleness — would fail only if unrelated copy introduced the word "Active".
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Activation confirmation copy does not show resolved recipient count or zero-recipient warning.
+  evidence: Flagged by the blind-hunter review layer. UX polish — empty-audience activation is allowed per spec; dialog could surface count from audience preview.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Creator can activate while audience builder has unsaved local changes — activation uses persisted server audience, not in-memory draft.
+  evidence: Flagged by the blind-hunter review layer. Same class as other save-before-act UX gaps; no spec requirement to block or warn.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Playwright happy-path activate test skips the audience-build step — creates campaign and activates immediately.
+  evidence: Flagged by the blind-hunter review layer. Backend e2e covers multi-recipient activation; frontend e2e only proves lock-UI wiring.
+
 ## Deferred from: code review of spec-3-3-inline-editing-on-the-list (2026-09-04)
 
 - Per-row `writableFieldIds` resolves access per row × field (N+1) — acceptable for Wave 1; Story 3.7 owns list perf at scale.
