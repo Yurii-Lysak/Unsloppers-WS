@@ -323,3 +323,13 @@
 - Self-edit S4 built-ins not covered by e2e — spec default is yes when S4 is RW; no regression signal yet.
 
 - Frontend e2e mocks API for inline edit — custom-field and non-text types not exercised in Playwright; backend e2e covers custom text PATCH.
+
+## Deferred from: code review of spec-10-4-track-campaign-completion (2026-09-07)
+
+- Completion loading/error and 60s polling behavior untested in e2e — wired correctly in production; timer-based assertions deferred as brittle/low ROI.
+
+- Draft detail completion prefetch untested — `enabled: status === 'active'` is correct; no network-count assertion added.
+
+- `displayName` duplicated in `CampaignsService` and `ActionItemsService` — mirrors spec intent; shared helper is refactor outside story scope.
+
+- Pre-existing backend e2e failure in `rejects inactive added employee ids` — `employmentStatus: "inactive"` Prisma validation error unrelated to story 10.4.

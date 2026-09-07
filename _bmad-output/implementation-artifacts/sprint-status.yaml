@@ -30,7 +30,7 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 generated: 08-21-2026 00:00
-last_updated: 09-07-2026 12:15
+last_updated: 09-07-2026 15:05
 project: people management
 project_key: NOKEY
 tracking_system: file-system
@@ -135,7 +135,7 @@ development_status:
   10-1-create-a-form-campaign: done
   10-2-build-and-freeze-campaign-audience: done
   10-3-activate-a-campaign: done
-  10-4-track-campaign-completion: backlog
+  10-4-track-campaign-completion: done
   epic-10-retrospective: optional
 
   epic-11: backlog
