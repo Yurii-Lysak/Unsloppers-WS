@@ -357,3 +357,8 @@
 - Workbook is fully buffered in memory before `StreamableFile` response — matches current spec task; revisit only if infra timeouts appear at 500+ rows.
 
 - E2E global teardown access-matrix coverage failure — pre-existing harness gap unrelated to export (9/9 export e2e cases pass; teardown exits non-zero).
+
+## Deferred from: code review of spec-3-6-colleague-mode-of-the-list (2026-09-08) — RESOLVED 2026-09-08
+
+- ~~AC #3 Self-row S4~~ — implemented via Self-only S4 in catalog with `filterable: false` / `sortable: false` for non-elevated viewers; `years_with_company` stays excluded.
+- ~~EmployeeCardList unit tests~~ — covered by `services/frontend/e2e/directory-card-layout.spec.ts`.
