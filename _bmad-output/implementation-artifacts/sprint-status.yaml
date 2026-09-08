@@ -102,9 +102,9 @@ development_status:
   5-3-risk-dashboard: done
   epic-5-retrospective: optional
 
-  epic-6: backlog
+  epic-6: in-progress
   # Track B / Wave 2 (after Epic 3 Wave 1 exit + Track A 1-11/1-12 real)
-  6-1-create-a-resourcing-request: backlog
+  6-1-create-a-resourcing-request: in-progress
   6-2-fulfil-a-request-with-internal-or-external-candidates: backlog
   6-3-dm-reviews-and-approves-rejects-candidates: backlog
   6-4-request-history: backlog
