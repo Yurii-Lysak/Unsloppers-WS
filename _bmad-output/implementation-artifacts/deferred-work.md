@@ -339,3 +339,9 @@
 - `formatFeedbackCalendarDate` uses `toISOString().slice(0,10)` — UTC calendar edge cases are a pre-existing class of date-handling issue; same approach as other modules; low user impact for HR feedback dates.
 
 - Unused `getFeedbacks()` client method — parallel GET API wrapper not needed while profile assembly is the only read surface in 11.1; can wire when a standalone feedback view is added.
+
+## Deferred from: code review of spec-11-2-view-feedback-over-time-and-compare-periods (2026-09-08)
+
+- Profile invalidation AC (records edited in another session while in compare mode) — no multi-tab/session mutation harness in frontend e2e; compare does not cache records client-side, so risk is low.
+
+- Dedicated SharedLink `R` compare e2e — Self `R` path exercises the same `FeedbackSectionCard` renderer; shared-link page uses identical profile section wiring.
