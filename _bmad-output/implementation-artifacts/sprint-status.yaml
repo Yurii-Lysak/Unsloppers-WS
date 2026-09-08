@@ -105,7 +105,7 @@ development_status:
   epic-6: in-progress
   # Track B / Wave 2 (after Epic 3 Wave 1 exit + Track A 1-11/1-12 real)
   6-1-create-a-resourcing-request: in-progress
-  6-2-fulfil-a-request-with-internal-or-external-candidates: backlog
+  6-2-fulfil-a-request-with-internal-or-external-candidates: in-progress
   6-3-dm-reviews-and-approves-rejects-candidates: backlog
   6-4-request-history: backlog
   epic-6-retrospective: optional
