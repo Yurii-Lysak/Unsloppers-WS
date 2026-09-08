@@ -31,7 +31,7 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 generated: 08-21-2026 00:00
-last_updated: 09-08-2026 22:35
+last_updated: 09-08-2026 22:52
 project: people management
 project_key: NOKEY
 tracking_system: file-system
@@ -124,12 +124,12 @@ development_status:
   8-4-filter-by-assessment-recency-and-open-idp: backlog
   epic-8-retrospective: optional
 
-  epic-9: in-progress
+  epic-9: done
   9-1-self-flag-open-to-mentoring: done
   9-2-assign-a-mentor-mentee-pair: done
   9-3-end-a-mentorship-pair-with-required-final-feedback: done
   9-4-automatic-mentor-status-transitions: done
-  9-5-view-all-mentor-mentee-pairs-active-and-ended: review
+  9-5-view-all-mentor-mentee-pairs-active-and-ended: done
   epic-9-retrospective: optional
 
   epic-10: in-progress
