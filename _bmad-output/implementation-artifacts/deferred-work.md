@@ -345,3 +345,7 @@
 - Profile invalidation AC (records edited in another session while in compare mode) — no multi-tab/session mutation harness in frontend e2e; compare does not cache records client-side, so risk is low.
 
 - Dedicated SharedLink `R` compare e2e — Self `R` path exercises the same `FeedbackSectionCard` renderer; shared-link page uses identical profile section wiring.
+
+## Deferred from: code review of spec-11-3-request-feedback-from-named-colleagues-via-a-form-campaign (2026-09-08)
+
+- E2e for employees-list fetch error inline state in `RequestFeedbackDialog` — picker error UI is implemented; automated stub ordering for list failure alongside create/audience stubs is fragile; manual check sufficient for bootcamp scope.
