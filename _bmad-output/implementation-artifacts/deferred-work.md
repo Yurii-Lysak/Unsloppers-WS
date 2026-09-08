@@ -362,3 +362,7 @@
 
 - ~~AC #3 Self-row S4~~ — implemented via Self-only S4 in catalog with `filterable: false` / `sortable: false` for non-elevated viewers; `years_with_company` stays excluded.
 - ~~EmployeeCardList unit tests~~ — covered by `services/frontend/e2e/directory-card-layout.spec.ts`.
+
+## Deferred from: code review of spec-12-1-build-shared-dashboard-engine (2026-09-08)
+
+- `RisksDashboardService.getScopedData` trusts orchestrator-passed `subjectIds` without per-subject S6 re-validation — acceptable while `dashboards` is the sole caller via AD-1; add defense-in-depth if another consumer invokes scoped `getSummary` later.
