@@ -1,0 +1,155 @@
+﻿diff --git a/src/locales/en/translation.json b/src/locales/en/translation.json
+index 374896e..ef70798 100644
+--- a/src/locales/en/translation.json
++++ b/src/locales/en/translation.json
+@@ -292,6 +292,7 @@
+       "identity": "Identity",
+       "risks": "Risks",
+       "managementNotes": "Management notes",
++      "feedback": "Feedback",
+       "timeline": "Career timeline",
+       "leaves": "Leaves and absences",
+       "projects": "Projects",
+@@ -351,6 +352,38 @@
+         "contentTooLong": "Note content must be at most 10,000 characters."
+       }
+     },
++    "s8": {
++      "empty": "No feedback recorded.",
++      "addRecord": "Add feedback",
++      "recordedAt": "Date",
++      "context": "Context",
++      "toggleSharedWithEmployee": "Shared with employee",
++      "deleteRecord": "Delete",
++      "confirmDelete": "Delete this feedback record?",
++      "saveFailed": "Could not save feedback. Try again.",
++      "validation": {
++        "recordedAtRequired": "Date is required.",
++        "recordedAtInvalid": "Enter a valid date (YYYY-MM-DD).",
++        "contextRequired": "Context is required.",
++        "contextTooLong": "Context must be at most 500 characters.",
++        "bodyRequired": "Feedback body is required.",
++        "bodyTooLong": "Feedback body must be at most 10,000 characters."
++      }
++    },
++    "feedback": {
++      "create": {
++        "success": "Feedback recorded.",
++        "error": "Could not record feedback."
++      },
++      "update": {
++        "success": "Feedback updated.",
++        "error": "Could not update feedback."
++      },
++      "delete": {
++        "success": "Feedback deleted.",
++        "error": "Could not delete feedback."
++      }
++    },
+     "customFields": {
+       "empty": "No custom fields to show.",
+       "notSet": "Not set",
+diff --git a/src/pages/EmployeeProfilePage/profile-sections.tsx b/src/pages/EmployeeProfilePage/profile-sections.tsx
+index 864d2f3..ea34ccc 100644
+--- a/src/pages/EmployeeProfilePage/profile-sections.tsx
++++ b/src/pages/EmployeeProfilePage/profile-sections.tsx
+@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
+ import type {
+   CustomFieldsSection as CustomFieldsSectionData,
+   EmployeeProfile,
++  FeedbackSection as FeedbackSectionData,
+   LeavesSection,
+   ManagementNotesSection as ManagementNotesSectionData,
+   ProfileSectionEnvelope,
+@@ -12,6 +13,7 @@ import type {
+   TimelineSection,
+ } from '@/types/employee-profile'
+ import { CustomFieldsSectionCard } from './components/CustomFieldsSection/CustomFieldsSection'
++import { FeedbackSectionCard } from './components/FeedbackSection/FeedbackSection'
+ import { ManagementNotesSectionCard } from './components/ManagementNotesSection/ManagementNotesSection'
+ import { RisksSectionCard } from './components/RisksSection/RisksSection'
+ 
+@@ -38,6 +40,7 @@ export const PROFILE_SECTION_TITLE_KEYS: Partial<Record<SectionId, string>> = {
+   S1: 'employeeProfile.sections.identity',
+   S6: 'employeeProfile.sections.risks',
+   S7: 'employeeProfile.sections.managementNotes',
++  S8: 'employeeProfile.sections.feedback',
+   S9: 'employeeProfile.sections.timeline',
+   S10: 'employeeProfile.sections.leaves',
+   S11: 'employeeProfile.sections.projects',
+@@ -78,6 +81,13 @@ export const PROFILE_SECTION_RENDERERS: Partial<Record<SectionId, SectionRendere
+         accessLevel={accessLevel}
+       />
+     ),
++    S8: ({ employeeId, section, accessLevel }) => (
++      <FeedbackSectionCard
++        employeeId={employeeId}
++        section={section as ProfileSectionEnvelope<FeedbackSectionData>}
++        accessLevel={accessLevel}
++      />
++    ),
+     S9: ({ section, t }) => {
+       if (!isSectionData<TimelineSection>(section)) {
+         return null
+diff --git a/src/types/employee-profile.ts b/src/types/employee-profile.ts
+index 10978c5..48d34b6 100644
+--- a/src/types/employee-profile.ts
++++ b/src/types/employee-profile.ts
+@@ -97,6 +97,43 @@ export interface UpdateManagementNotePayload {
+   visibleForPm?: boolean
+ }
+ 
++export interface FeedbackRecordAuthor {
++  id: string
++  displayName: string
++}
++
++export interface FeedbackRecordRead {
++  id: string
++  recordedAt: string
++  context: string
++  body: string
++  author: FeedbackRecordAuthor
++  createdAt: string
++  updatedAt: string
++}
++
++export interface FeedbackRecord extends FeedbackRecordRead {
++  sharedWithEmployee: boolean
++}
++
++export interface FeedbackSection {
++  records: FeedbackRecordRead[] | FeedbackRecord[]
++}
++
++export interface CreateFeedbackRecordPayload {
++  recordedAt: string
++  context: string
++  body: string
++  sharedWithEmployee?: boolean
++}
++
++export interface UpdateFeedbackRecordPayload {
++  recordedAt?: string
++  context?: string
++  body?: string
++  sharedWithEmployee?: boolean
++}
++
+ export interface IdentityRelation {
+   id: string
+   displayName: string
+
+diff --git a/e2e/feedback-visibility.spec.ts b/e2e/feedback-visibility.spec.ts new file mode 100644 index 0000000..8bc51d1 --- /dev/null +++ b/e2e/feedback-visibility.spec.ts @@ -0,0 +1,187 @@ +import { setupAuthApi } from './flows/authentication/helpers' +import { expect, test } from './shared/merged-fixtures' +import { expectSectionAbsent } from './shared/selectors' +import { testEnv } from './shared/test-env' + +const apiBaseUrl = testEnv.api.baseUrl +const employeeId = '11111111-1111-4111-8111-111111111102' +const profileUrl = `${apiBaseUrl}/api/v1/employees/${employeeId}/profile` + +const rwProfileWithToggle = { +  employeeId, +  displayName: 'Anton Savchenko', +  audience: { +    role: 'PP', +    sections: { +      S8: 'RW', +      S1: 'RW', +    }, +  }, +  sections: { +    S1: { +      accessLevel: 'RW', +      data: { displayName: 'Anton Savchenko', manager: null, peoplePartner: null }, +    }, +    S8: { +      accessLevel: 'RW', +      data: { +        records: [ +          { +            id: 'feedback-rw-1', +            recordedAt: '2026-07-01', +            context: 'Q3 project retrospective', +            body: 'Private feedback', +            sharedWithEmployee: false, +            author: { id: 'author-1', displayName: 'People Partner' }, +            createdAt: '2026-01-01T00:00:00.000Z', +            updatedAt: '2026-01-01T00:00:00.000Z', +          }, +        ], +      }, +    }, +  }, +} + +const selfProfileSharedOnly = { +  employeeId, +  displayName: 'Anton Savchenko', +  audience: { +    role: 'Self', +    sections: { +      S8: 'R', +      S1: 'R', +    }, +  }, +  sections: { +    S1: { +      accessLevel: 'R', +      data: { displayName: 'Anton Savchenko', manager: null, peoplePartner: null }, +    }, +    S8: { +      accessLevel: 'R', +      data: { +        records: [ +          { +            id: 'feedback-shared-1', +            recordedAt: '2026-07-01', +            context: 'Shared review', +            body: 'Visible to me', +            author: { id: 'author-1', displayName: 'Manager' }, +            createdAt: '2026-01-01T00:00:00.000Z', +            updatedAt: '2026-01-01T00:00:00.000Z', +          }, +        ], +      }, +    }, +  }, +} + +const colleagueProfile = { +  employeeId, +  displayName: 'Anton Savchenko', +  audience: { +    role: 'Colleague', +    sections: { +      S1: 'R', +      S10: 'R', +      S11: 'R', +      S8: 'none', +    }, +  }, +  sections: { +    S1: { +      accessLevel: 'R', +      data: { displayName: 'Anton Savchenko', manager: null, peoplePartner: null }, +    }, +    S10: { accessLevel: 'R', status: 'unavailable' }, +    S11: { accessLevel: 'R', data: { projects: [] } }, +  }, +} + +test.describe('Feedback visibility', () => { +  test('renders RW shared-with-employee toggle for managers', async ({ +    page, +    stubNetworkCall, +    interceptNetworkCall, +  }) => { +    await setupAuthApi(page, { authenticated: true }) +    await stubNetworkCall({ +      url: `${apiBaseUrl}/api/v1/permissions/me`, +      body: { permissions: [] }, +    }) +    await stubNetworkCall({ url: profileUrl, body: rwProfileWithToggle }) +    await stubNetworkCall({ +      url: `${apiBaseUrl}/api/v1/employees/${employeeId}/feedbacks/feedback-rw-1`, +      method: 'PATCH', +      body: { +        id: 'feedback-rw-1', +        recordedAt: '2026-07-01', +        context: 'Q3 project retrospective', +        body: 'Private feedback', +        sharedWithEmployee: true, +        author: { id: 'author-1', displayName: 'People Partner' }, +        createdAt: '2026-01-01T00:00:00.000Z', +        updatedAt: '2026-01-01T00:00:00.000Z', +      }, +    }) + +    const profileRequest = interceptNetworkCall({ url: profileUrl, method: 'GET' }) +    await page.goto(`/employees/${employeeId}`) +    await profileRequest.settled + +    await expect(page.getByTestId('profile-section-s8')).toBeVisible() +    await expect( +      page.getByTestId('feedback-record-feedback-rw-1-shared-employee'), +    ).toBeVisible() +    await expect(page.getByTestId('feedback-add-body')).toBeVisible() + +    const patchRequest = page.waitForRequest( +      request => +        request.url().includes('/feedbacks/feedback-rw-1') && +        request.method() === 'PATCH', +    ) +    await page.getByTestId('feedback-record-feedback-rw-1-shared-employee').click() +    const request = await patchRequest +    expect(request.postDataJSON()).toEqual({ sharedWithEmployee: true }) +  }) + +  test('shows only shared feedback for Self viewers', async ({ +    page, +    stubNetworkCall, +    interceptNetworkCall, +  }) => { +    await setupAuthApi(page, { authenticated: true }) +    await stubNetworkCall({ +      url: `${apiBaseUrl}/api/v1/permissions/me`, +      body: { permissions: [] }, +    }) +    await stubNetworkCall({ url: profileUrl, body: selfProfileSharedOnly }) + +    const profileRequest = interceptNetworkCall({ url: profileUrl, method: 'GET' }) +    await page.goto(`/employees/${employeeId}`) +    await profileRequest.settled + +    await expect(page.getByTestId('profile-section-s8')).toBeVisible() +    await expect(page.getByText('Visible to me')).toBeVisible() +    await expect(page.getByTestId('feedback-add-body')).toHaveCount(0) +  }) + +  test('omits S8 for colleague viewers', async ({ +    page, +    stubNetworkCall, +    interceptNetworkCall, +  }) => { +    await setupAuthApi(page, { authenticated: true }) +    await stubNetworkCall({ +      url: `${apiBaseUrl}/api/v1/permissions/me`, +      body: { permissions: [] }, +    }) +    await stubNetworkCall({ url: profileUrl, body: colleagueProfile }) + +    const profileRequest = interceptNetworkCall({ url: profileUrl, method: 'GET' }) +    await page.goto(`/employees/${employeeId}`) +    await profileRequest.settled + +    await expectSectionAbsent(page, 'S8') +  }) +})
+
+diff --git a/src/api/hooks/useFeedbackMutations.ts b/src/api/hooks/useFeedbackMutations.ts new file mode 100644 index 0000000..bc651db --- /dev/null +++ b/src/api/hooks/useFeedbackMutations.ts @@ -0,0 +1,71 @@ +import { useMutation, useQueryClient } from '@tanstack/react-query' +import { useTranslation } from 'react-i18next' +import { toast } from 'sonner' +import { employeeProfileQueryKey } from '@/api/hooks/useEmployeeProfile' +import { feedbackApiService } from '@/api/services/feedback.service' +import type { +  CreateFeedbackRecordPayload, +  UpdateFeedbackRecordPayload, +} from '@/types/employee-profile' + +export const useCreateFeedback = (employeeId: string) => { +  const { t } = useTranslation() +  const queryClient = useQueryClient() + +  return useMutation({ +    mutationFn: (payload: CreateFeedbackRecordPayload) => +      feedbackApiService.createFeedback(employeeId, payload), +    onSuccess: async () => { +      toast.success(t('employeeProfile.feedback.create.success')) +      await queryClient.invalidateQueries({ +        queryKey: employeeProfileQueryKey(employeeId), +      }) +    }, +    onError: () => { +      toast.error(t('employeeProfile.feedback.create.error')) +    }, +  }) +} + +export const useUpdateFeedback = (employeeId: string) => { +  const { t } = useTranslation() +  const queryClient = useQueryClient() + +  return useMutation({ +    mutationFn: ({ +      feedbackId, +      payload, +    }: { +      feedbackId: string +      payload: UpdateFeedbackRecordPayload +    }) => feedbackApiService.updateFeedback(employeeId, feedbackId, payload), +    onSuccess: async () => { +      toast.success(t('employeeProfile.feedback.update.success')) +      await queryClient.invalidateQueries({ +        queryKey: employeeProfileQueryKey(employeeId), +      }) +    }, +    onError: () => { +      toast.error(t('employeeProfile.feedback.update.error')) +    }, +  }) +} + +export const useDeleteFeedback = (employeeId: string) => { +  const { t } = useTranslation() +  const queryClient = useQueryClient() + +  return useMutation({ +    mutationFn: (feedbackId: string) => +      feedbackApiService.deleteFeedback(employeeId, feedbackId), +    onSuccess: async () => { +      toast.success(t('employeeProfile.feedback.delete.success')) +      await queryClient.invalidateQueries({ +        queryKey: employeeProfileQueryKey(employeeId), +      }) +    }, +    onError: () => { +      toast.error(t('employeeProfile.feedback.delete.error')) +    }, +  }) +}
+
+diff --git a/src/api/services/feedback.service.ts b/src/api/services/feedback.service.ts new file mode 100644 index 0000000..154a3ab --- /dev/null +++ b/src/api/services/feedback.service.ts @@ -0,0 +1,44 @@ +import { apiClient } from '@/api/client' +import type { +  CreateFeedbackRecordPayload, +  FeedbackRecord, +  FeedbackSection, +  UpdateFeedbackRecordPayload, +} from '@/types/employee-profile' + +class FeedbackApiService { +  public getFeedbacks(employeeId: string): Promise<FeedbackSection> { +    return apiClient.get<FeedbackSection>( +      `/api/v1/employees/${employeeId}/feedbacks`, +    ) +  } + +  public createFeedback( +    employeeId: string, +    payload: CreateFeedbackRecordPayload, +  ): Promise<FeedbackRecord> { +    return apiClient.post<FeedbackRecord>( +      `/api/v1/employees/${employeeId}/feedbacks`, +      payload, +    ) +  } + +  public updateFeedback( +    employeeId: string, +    feedbackId: string, +    payload: UpdateFeedbackRecordPayload, +  ): Promise<FeedbackRecord> { +    return apiClient.patch<FeedbackRecord>( +      `/api/v1/employees/${employeeId}/feedbacks/${feedbackId}`, +      payload, +    ) +  } + +  public deleteFeedback(employeeId: string, feedbackId: string): Promise<void> { +    return apiClient.delete<void>( +      `/api/v1/employees/${employeeId}/feedbacks/${feedbackId}`, +    ) +  } +} + +export const feedbackApiService = new FeedbackApiService()
+
+diff --git a/src/hooks/data/useFeedbackData.ts b/src/hooks/data/useFeedbackData.ts new file mode 100644 index 0000000..3ffbd34 --- /dev/null +++ b/src/hooks/data/useFeedbackData.ts @@ -0,0 +1,43 @@ +import { +  useCreateFeedback, +  useDeleteFeedback, +  useUpdateFeedback, +} from '@/api/hooks/useFeedbackMutations' +import type { +  CreateFeedbackRecordPayload, +  UpdateFeedbackRecordPayload, +} from '@/types/employee-profile' + +export const useFeedbackData = (employeeId: string) => { +  const createFeedbackMutation = useCreateFeedback(employeeId) +  const updateFeedbackMutation = useUpdateFeedback(employeeId) +  const deleteFeedbackMutation = useDeleteFeedback(employeeId) + +  const createFeedback = async (payload: CreateFeedbackRecordPayload) => { +    await createFeedbackMutation.mutateAsync(payload) +  } + +  const updateFeedback = async ( +    feedbackId: string, +    payload: UpdateFeedbackRecordPayload, +  ) => { +    await updateFeedbackMutation.mutateAsync({ feedbackId, payload }) +  } + +  const deleteFeedback = async (feedbackId: string) => { +    await deleteFeedbackMutation.mutateAsync(feedbackId) +  } + +  return { +    createFeedback, +    updateFeedback, +    deleteFeedback, +    isCreatingFeedback: createFeedbackMutation.isPending, +    isUpdatingFeedback: updateFeedbackMutation.isPending, +    isDeletingFeedback: deleteFeedbackMutation.isPending, +    isMutatingFeedback: +      createFeedbackMutation.isPending || +      updateFeedbackMutation.isPending || +      deleteFeedbackMutation.isPending, +  } +}
+
+diff --git a/src/pages/EmployeeProfilePage/components/FeedbackSection/FeedbackSection.tsx b/src/pages/EmployeeProfilePage/components/FeedbackSection/FeedbackSection.tsx new file mode 100644 index 0000000..66364d8 --- /dev/null +++ b/src/pages/EmployeeProfilePage/components/FeedbackSection/FeedbackSection.tsx @@ -0,0 +1,176 @@ +import { useTranslation } from 'react-i18next' +import { Button } from '@/components/Button/Button' +import { Form } from '@/components/Form/Form' +import { FormRootError } from '@/components/Form/components/FormRootError/FormRootError' +import { Input } from '@/components/Input/Input' +import { Switch } from '@/components/Switch/Switch' +import { Textarea } from '@/components/Textarea/Textarea' +import type { +  FeedbackRecord, +  FeedbackRecordRead, +  FeedbackSection as FeedbackSectionData, +  ProfileSectionEnvelope, +  SectionAccessLevel, +} from '@/types/employee-profile' +import { isSectionData } from '../../profile-sections' +import { +  isWritableFeedback, +  useAddFeedbackForm, +  useFeedbackItem, +} from './hooks/useFeedbackSection' + +interface FeedbackSectionCardProps { +  employeeId: string +  section: ProfileSectionEnvelope<FeedbackSectionData> +  accessLevel: Exclude<SectionAccessLevel, 'none'> +} + +export const FeedbackSectionCard = ({ +  employeeId, +  section, +  accessLevel, +}: FeedbackSectionCardProps) => { +  const { t } = useTranslation() + +  if (!isSectionData<FeedbackSectionData>(section)) { +    return null +  } + +  const { records } = section.data +  const canWrite = accessLevel === 'RW' + +  return ( +    <div className="space-y-4" data-testid="feedback-section"> +      {records.length === 0 ? ( +        <p className="text-sm text-muted-foreground"> +          {t('employeeProfile.s8.empty')} +        </p> +      ) : ( +        <ul className="space-y-3"> +          {records.map(record => ( +            <FeedbackRecordItem +              key={record.id} +              employeeId={employeeId} +              record={record} +              canWrite={canWrite} +            /> +          ))} +        </ul> +      )} + +      {canWrite && <AddFeedbackForm employeeId={employeeId} />} +    </div> +  ) +} + +const FeedbackRecordItem = ({ +  employeeId, +  record, +  canWrite, +}: { +  employeeId: string +  record: FeedbackRecordRead | FeedbackRecord +  canWrite: boolean +}) => { +  const { t } = useTranslation() +  const { +    form, +    onSubmit, +    isMutating, +    toggleSharedWithEmployee, +    handleDelete, +  } = useFeedbackItem(employeeId, record) + +  return ( +    <li +      className="rounded-md border border-border p-3 text-sm" +      data-testid={`feedback-record-${record.id}`} +    > +      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground"> +        <span>{record.author.displayName}</span> +        <span>{record.recordedAt}</span> +      </div> +      <p className="mt-1 font-medium text-foreground">{record.context}</p> + +      {canWrite ? ( +        <Form form={form} onSubmit={onSubmit} className="mt-2 space-y-2"> +          <Input name="context" label={t('employeeProfile.s8.context')} /> +          <Textarea name="body" className="min-h-20" /> +          {isWritableFeedback(record) && ( +            <Switch +              checked={record.sharedWithEmployee} +              disabled={isMutating} +              label={t('employeeProfile.s8.toggleSharedWithEmployee')} +              onCheckedChange={checked => { +                void toggleSharedWithEmployee(checked) +              }} +              data-testid={`feedback-record-${record.id}-shared-employee`} +            /> +          )} +          <FormRootError /> +          <div className="flex gap-2"> +            <Button type="submit" size="sm" disabled={isMutating}> +              {t('employeeProfile.save')} +            </Button> +            <Button +              type="button" +              size="sm" +              variant="outline" +              disabled={isMutating} +              onClick={() => { +                void handleDelete() +              }} +            > +              {t('employeeProfile.s8.deleteRecord')} +            </Button> +          </div> +        </Form> +      ) : ( +        <p className="mt-2 whitespace-pre-wrap">{record.body}</p> +      )} +    </li> +  ) +} + +const AddFeedbackForm = ({ employeeId }: { employeeId: string }) => { +  const { t } = useTranslation() +  const { form, onSubmit, isCreatingFeedback } = useAddFeedbackForm(employeeId) + +  return ( +    <Form +      form={form} +      onSubmit={onSubmit} +      className="space-y-2 border-t border-border pt-4" +    > +      <h3 className="text-sm font-medium text-foreground"> +        {t('employeeProfile.s8.addRecord')} +      </h3> +      <Input +        name="recordedAt" +        type="date" +        label={t('employeeProfile.s8.recordedAt')} +        data-testid="feedback-add-recorded-at" +      /> +      <Input +        name="context" +        label={t('employeeProfile.s8.context')} +        data-testid="feedback-add-context" +      /> +      <Textarea +        name="body" +        className="min-h-20" +        data-testid="feedback-add-body" +      /> +      <Switch +        name="sharedWithEmployee" +        disabled={isCreatingFeedback} +        label={t('employeeProfile.s8.toggleSharedWithEmployee')} +        data-testid="feedback-add-shared-employee" +      /> +      <FormRootError /> +      <Button type="submit" size="sm" disabled={isCreatingFeedback}> +        {t('employeeProfile.s8.addRecord')} +      </Button> +    </Form> +  ) +}
+
+diff --git a/src/pages/EmployeeProfilePage/components/FeedbackSection/hooks/useFeedbackSection.ts b/src/pages/EmployeeProfilePage/components/FeedbackSection/hooks/useFeedbackSection.ts new file mode 100644 index 0000000..3da2991 --- /dev/null +++ b/src/pages/EmployeeProfilePage/components/FeedbackSection/hooks/useFeedbackSection.ts @@ -0,0 +1,131 @@ +import { zodResolver } from '@hookform/resolvers/zod' +import { useEffect, useMemo } from 'react' +import { useForm } from 'react-hook-form' +import { useTranslation } from 'react-i18next' +import { useFeedbackData } from '@/hooks/data/useFeedbackData' +import type { +  FeedbackRecord, +  FeedbackRecordRead, +} from '@/types/employee-profile' +import { +  createAddFeedbackFormSchema, +  createEditFeedbackFormSchema, +  type AddFeedbackFormValues, +  type EditFeedbackFormValues, +} from '../schemas/feedback-form.schema' + +const defaultRecordedAt = (): string => new Date().toISOString().slice(0, 10) + +export const isWritableFeedback = ( +  record: FeedbackRecordRead | FeedbackRecord, +): record is FeedbackRecord => 'sharedWithEmployee' in record + +export const useFeedbackItem = ( +  employeeId: string, +  record: FeedbackRecordRead | FeedbackRecord, +) => { +  const { t } = useTranslation() +  const { updateFeedback, deleteFeedback, isMutatingFeedback } = +    useFeedbackData(employeeId) +  const { schema } = useMemo(() => createEditFeedbackFormSchema(t), [t]) +  const defaultValues = useMemo<EditFeedbackFormValues>( +    () => ({ +      context: record.context, +      body: record.body, +    }), +    [record.context, record.body], +  ) + +  const form = useForm<EditFeedbackFormValues>({ +    resolver: zodResolver(schema), +    defaultValues, +    values: defaultValues, +  }) + +  useEffect(() => { +    form.reset(defaultValues) +  }, [defaultValues, form, record.id]) + +  const isMutating = isMutatingFeedback || form.formState.isSubmitting + +  const onSubmit = async (values: EditFeedbackFormValues) => { +    try { +      await updateFeedback(record.id, { +        context: values.context, +        body: values.body, +      }) +    } catch { +      form.setError('root', { message: t('employeeProfile.s8.saveFailed') }) +    } +  } + +  const toggleSharedWithEmployee = async (checked: boolean) => { +    try { +      await updateFeedback(record.id, { sharedWithEmployee: checked }) +    } catch { +      form.setError('root', { message: t('employeeProfile.s8.saveFailed') }) +    } +  } + +  const handleDelete = async () => { +    if (!window.confirm(t('employeeProfile.s8.confirmDelete'))) { +      return +    } + +    try { +      form.reset(defaultValues) +      await deleteFeedback(record.id) +    } catch { +      form.setError('root', { message: t('employeeProfile.s8.saveFailed') }) +    } +  } + +  return { +    form, +    onSubmit, +    isMutating, +    toggleSharedWithEmployee, +    handleDelete, +  } +} + +export const useAddFeedbackForm = (employeeId: string) => { +  const { t } = useTranslation() +  const { createFeedback, isCreatingFeedback } = useFeedbackData(employeeId) +  const { schema } = useMemo(() => createAddFeedbackFormSchema(t), [t]) + +  const form = useForm<AddFeedbackFormValues>({ +    resolver: zodResolver(schema), +    defaultValues: { +      recordedAt: defaultRecordedAt(), +      context: '', +      body: '', +      sharedWithEmployee: false, +    }, +  }) + +  const onSubmit = async (values: AddFeedbackFormValues) => { +    try { +      await createFeedback({ +        recordedAt: values.recordedAt, +        context: values.context, +        body: values.body, +        sharedWithEmployee: values.sharedWithEmployee, +      }) +      form.reset({ +        recordedAt: defaultRecordedAt(), +        context: '', +        body: '', +        sharedWithEmployee: false, +      }) +    } catch { +      form.setError('root', { message: t('employeeProfile.s8.saveFailed') }) +    } +  } + +  return { +    form, +    onSubmit, +    isCreatingFeedback, +  } +}
+
+diff --git a/src/pages/EmployeeProfilePage/components/FeedbackSection/schemas/feedback-form.schema.ts b/src/pages/EmployeeProfilePage/components/FeedbackSection/schemas/feedback-form.schema.ts new file mode 100644 index 0000000..4061e12 --- /dev/null +++ b/src/pages/EmployeeProfilePage/components/FeedbackSection/schemas/feedback-form.schema.ts @@ -0,0 +1,63 @@ +import { z } from 'zod' +import { createFormSchema } from '@/lib/form-schema' + +export const createAddFeedbackFormSchema = (t: (key: string) => string) => +  createFormSchema(() => +    z.object({ +      recordedAt: z +        .string() +        .min(1, { +          message: t('employeeProfile.s8.validation.recordedAtRequired'), +        }) +        .regex(/^\d{4}-\d{2}-\d{2}$/, { +          message: t('employeeProfile.s8.validation.recordedAtInvalid'), +        }), +      context: z +        .string() +        .trim() +        .min(1, { +          message: t('employeeProfile.s8.validation.contextRequired'), +        }) +        .max(500, { +          message: t('employeeProfile.s8.validation.contextTooLong'), +        }), +      body: z +        .string() +        .trim() +        .min(1, { message: t('employeeProfile.s8.validation.bodyRequired') }) +        .max(10_000, { +          message: t('employeeProfile.s8.validation.bodyTooLong'), +        }), +      sharedWithEmployee: z.boolean(), +    }), +  ) + +export const createEditFeedbackFormSchema = (t: (key: string) => string) => +  createFormSchema(() => +    z.object({ +      context: z +        .string() +        .trim() +        .min(1, { +          message: t('employeeProfile.s8.validation.contextRequired'), +        }) +        .max(500, { +          message: t('employeeProfile.s8.validation.contextTooLong'), +        }), +      body: z +        .string() +        .trim() +        .min(1, { message: t('employeeProfile.s8.validation.bodyRequired') }) +        .max(10_000, { +          message: t('employeeProfile.s8.validation.bodyTooLong'), +        }), +    }), +  ) + +export type AddFeedbackFormValues = ReturnType< +  typeof createAddFeedbackFormSchema +>['values'] + +export type EditFeedbackFormValues = ReturnType< +  typeof createEditFeedbackFormSchema +>['values']

@@ -333,3 +333,9 @@
 - `displayName` duplicated in `CampaignsService` and `ActionItemsService` — mirrors spec intent; shared helper is refactor outside story scope.
 
 - Pre-existing backend e2e failure in `rejects inactive added employee ids` — `employmentStatus: "inactive"` Prisma validation error unrelated to story 10.4.
+
+## Deferred from: code review of spec-11-1-record-feedback-with-a-visibility-flag (2026-09-08)
+
+- `formatFeedbackCalendarDate` uses `toISOString().slice(0,10)` — UTC calendar edge cases are a pre-existing class of date-handling issue; same approach as other modules; low user impact for HR feedback dates.
+
+- Unused `getFeedbacks()` client method — parallel GET API wrapper not needed while profile assembly is the only read surface in 11.1; can wire when a standalone feedback view is added.
