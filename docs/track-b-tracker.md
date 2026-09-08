@@ -8,12 +8,12 @@
 
 ## Current state (edit me)
 
-- **Wave:** Wave 1 — FieldRegistry (C2) landed; next is the filterable list
-- **Done:** `1-16`, `1-18`, `1-19`, `1-20`, `1-1`, `3-2` (real FieldRegistry)
-- **In progress (Track A):** remaining Epic 1 stories after `1-1`
-- **Next up (Track B):** `3-1` (sortable, filterable employee list)
-- **Blocked right now:** nothing — C1/C2 contracts and real FieldRegistry are on `main`
-- **Track B is currently blocking:** nothing until Epic 3 filter engine (`3-1`/`3-4`) is needed by Track A Epic 10 in Wave 2
+- **Wave:** Wave 1 — FieldRegistry + filterable list landed; next is inline editing
+- **Done:** Epic 1 complete (Track A); `3-2` (real FieldRegistry), `3-1` (sortable, filterable employee list)
+- **In progress (Track B):** `3-3` (inline editing on the list)
+- **Next up (Track B):** `3-3` → then `3-4` saved views
+- **Blocked right now:** nothing — C1/C2 contracts, real FieldRegistry, and list query are on `main`
+- **Track B is currently blocking:** nothing until Epic 3 saved views (`3-4`) is needed by Track A Epic 10 in Wave 2
 
 
 Status legend: `TODO` · `WIP` · `DONE` · `BLOCKED`
@@ -38,8 +38,8 @@ Read top-to-bottom = valid build order.
 | Status | Story | What | Depends on | Blocks | Stub available |
 |---|---|---|---|---|---|
 | DONE | **3.2** | Define Custom Fields at Runtime — **real FieldRegistry (C2)** | none (AccessResolver **stub** only) | `3.1` + all downstream field-visibility enforcement | — (this *is* the real impl) |
-| TODO | **3.1** | Sortable, Filterable Employee List | `3.2`, AccessResolver (**stub → real** mid-wave, transparent) | Epic 10 audience builder (esp. `10.2`); own `3.3/3.4/3.5/3.6`; NFR.2 | AccessResolver stub |
-| TODO | **3.3** | Inline Editing on the List | `3.1` | — | — |
+| DONE | **3.1** | Sortable, Filterable Employee List | `3.2`, AccessResolver (**real**) | Epic 10 audience builder (esp. `10.2`); own `3.3/3.4/3.5/3.6`; NFR.2 | — |
+| WIP | **3.3** | Inline Editing on the List | `3.1` | — | — |
 | TODO | **3.4** | Saved and Shared Views | `3.1` | Epic 10 Story `10.2` (audience-from-saved-view) | — |
 | TODO | **3.5** | Export to Excel | `3.1` | — | — |
 | TODO | **3.6** | Colleague Mode of the List | `3.1`, `1.8` (whitelist rule — coordinate w/ Track A, **same rule, independent enforcement, no blocking**) | — | — |
@@ -125,6 +125,6 @@ Everything Track B blocks is **real by the end of its wave**, so no other develo
 ## Fast-scan summary
 
 - **Start gate:** Wave 0 done (contracts frozen, decisions ratified, seed data + repo). Then go.
-- **Built first:** `3.2` (FieldRegistry) — **DONE**; unblocks the rest of Epic 3 and downstream field visibility. Next: `3-1`.
+- **Built first:** `3.2` (FieldRegistry) + `3.1` (filterable list) — **DONE**; unblocks inline edit, saved views, export, colleague mode. Next: `3-3`.
 - **Only real inbound waits are avoided by design:** AccessResolver (stub), profile sharing / S4 (real by Wave 1 end), Track C timeline/mentorship (Epic 2 done last).
 - **Track B's critical outbound:** the **filter engine (`3.1`/`3.4`)** is what Track A's campaigns (Epic 10) build on — keep it green.

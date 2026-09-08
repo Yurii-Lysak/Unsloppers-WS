@@ -221,3 +221,144 @@
 - Map `P2003` FK violations to `invalidAssigneeIds` — narrow window after active-employee validation passes.
 
 - Error precedence when invalid campaign fields and existing campaign rows both apply — invalid input should 400 before 409 count check; acceptable for callers.
+
+## Deferred from: code review of spec-10-1-create-a-form-campaign (2026-09-04)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-1-create-a-form-campaign.md`
+  summary: 'Story 10.1''s new `ActionItem.campaign` FK gives `ActionItemsService.createCampaignActionItems`''s `createMany` call a second column (`campaignId`, alongside the pre-existing `assigneeId`) that can now raise an unmapped Prisma `P2003` instead of a defined 400/404 if ever called with a well-formed but non-existent campaign id.'
+  evidence: Extends the identical, already-deferred gap from spec-4-4's own review ("Map P2003 FK violations to invalidAssigneeIds — narrow window after active-employee validation passes") to the new column. Currently unreachable in production — no controller calls `createCampaignActionItems` yet (Story 10.3 owns that wiring) — and every reachable test path in this story's own diff first creates a real `FormCampaign` row via a new `createTestCampaign()` e2e helper, so nothing exercises the "id doesn't exist" branch today. Flagged by the verification-gap review layer; whoever wires Story 10.3's activation call should add the P2003→clean-error mapping alongside the existing `isCampaignUniqueViolation` (P2002) check in `action-items.service.ts`.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-1-create-a-form-campaign.md`
+  summary: Campaign field validation (title/description/purpose/link/dueDate limits and shape) is independently re-encoded in three places — the backend DTO's class-validator decorators, `campaigns/campaign-input.ts`'s hand-rolled normalizers, and the frontend's `campaign-form.schema.ts` zod schema — with no shared source of truth.
+  evidence: Matches the same duplication pattern already present in every sibling module (risks, action-items) rather than being novel to this story, so it's an existing architectural pattern, not a regression. Consolidating it would mean introducing a shared validation package across the backend/frontend submodule boundary — a real design decision, not a mechanical fix. Flagged by the blind-hunter and verification-gap review layers.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-1-create-a-form-campaign.md`
+  summary: Frontend campaign-save failures (400 validation / 403 lost permission / 404 stale id / 409 no-longer-draft) all surface through the same generic "Couldn't save. Try again." toast, with no per-status-code messaging.
+  evidence: Consistent with the existing mutation-hook pattern elsewhere in the app (e.g. `useRiskMutations`), not a deviation introduced by this story. Differentiating messages would need product/copy input on wording per status code. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-1-create-a-form-campaign.md`
+  summary: '`CampaignForm`''s title/description/purpose inputs have no client-side `maxLength` attribute or character counter — the documented limits (200/500/2000) only surface as a zod error after a failed submit.'
+  evidence: Cosmetic UX polish, not a functional gap (the limits are enforced server-side and by the zod schema at submit time). Flagged by the blind-hunter review layer as low severity.
+
+## Deferred from: code review of spec-10-1 (2026-09-04)
+
+- `npm run test:e2e -- campaigns` exits non-zero due to pre-existing global teardown access-matrix gaps — campaign tests themselves pass (13/13).
+
+- `PermissionCheckerService.getGrantedPermissions` runs three extra `count` queries (direct reports, PP assignees, active PM/DM assignments) for every caller without short-circuiting when a functional-role grant already includes `CREATE_FORM_CAMPAIGNS` — acceptable tradeoff for Story 10.1 scope.
+
+- Non-draft (active) campaign list rows are disabled with no tooltip or explanatory copy — deferred until Story 10.3 makes active campaigns common in the UI.
+
+- `title` and `link` columns lack DB-level length constraints (`TEXT` unbounded); application-layer validation enforces limits — low risk while campaigns are draft-only.
+
+## Deferred from: code review of spec-10-2-build-and-freeze-campaign-audience (2026-09-04)
+
+- `previewAudience` performs an extra `listEmployees` call solely to sample `fields` for the response — acceptable at bootcamp scale; revisit if preview becomes hot-path at 500+ employees.
+
+## Deferred from: code review of spec-10-3-activate-a-campaign (2026-09-07)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: '`activateCampaign` resolves the audience `employeeId[]` via `EmployeeDirectory.listEmployees` before opening the `prisma.$transaction`, so a concurrent `PUT :campaignId/audience` save landing in that gap is not detected — the frozen action-item recipients can end up one save behind the campaign''s persisted audience definition at commit time.'
+  evidence: Flagged independently by the blind-hunter and edge-case-hunter review layers. The spec''s frozen Boundaries explicitly sanctioned resolving outside the transaction and justified staleness only for per-employee active-status drift (which C6 re-validates and rejects); it did not address drift in the audience *definition* itself (filters/added/excluded changing underneath the read). Narrow race window (requires a concurrent audience-save request landing in the few-millisecond gap between the read and the transaction's atomic status flip) and matches the same class of accepted risk spec-4-4's own review deferred ("Assignee employmentStatus changing between validation and createMany — inherent race without serializable isolation"). Full closure would require re-resolving the audience from inside the transaction (restructuring `EmployeeDirectory.listEmployees` to accept a tx-scoped client), which is a design decision beyond this story's scope — the campaign-metadata half of the same class of race (title/description/link/dueDate read pre-transaction) was cheap to close and was patched directly in this story instead of deferred.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: No e2e races a real concurrent `PATCH :campaignId` against `POST :campaignId/activate` against real Postgres.
+  evidence: The in-transaction re-fetch behavior (guarding against stale title/description/link/dueDate) is already deterministically covered by a mocked unit test (`campaigns.service.spec.ts` — "flips the campaign to active and calls C6 with a fresh in-transaction read, not the pre-transaction snapshot"); a true DB-timing race test would be flaky in CI. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: No frontend test exercises the 400 invalid-assignees branch of useActivateCampaign's onError, or a generic network/5xx failure during activation.
+  evidence: Backend e2e already covers the C6-rejection scenario end to end; the frontend gap is low priority since the generic-toast fallback path is low risk. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: The NotFoundException branch for freshCampaign === null inside the activation transaction is untested.
+  evidence: Effectively unreachable in the current app surface — no campaign-delete endpoint exists, and the row was just updated in the same transaction/connection immediately before the re-fetch. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: SwaggerActivateCampaign's 409 response doc only describes "already active," not the race-loss path the concurrent-activation e2e test covers.
+  evidence: Minor doc completeness gap; both causes return the identical response body (Only draft campaigns can be activated), so API consumers aren't misled, just under-informed. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Theoretical double-submit race if a user double-clicks "Activate campaign" before React commits the disabled state to the DOM.
+  evidence: Low real-world risk — React 18 batches the isPending state update and re-render synchronously within the same click-handler flush, and the backend's atomic updateMany + 409 already backstops a genuine double-fire with no data corruption, only a spurious error toast. Flagged by the edge-case-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: useActivateCampaign's onError doesn't special-case a 403 (no employee record) response the way it does for 400/404/409.
+  evidence: Pre-existing pattern shared by every other campaign mutation hook (useCreateCampaign, useUpdateCampaign, useSaveCampaignAudience) — not a regression introduced by this story, and reaching it requires the authenticated user's employee record to disappear mid-session, which no code path in this app can do today. Flagged by the edge-case-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Diff bundles unrelated Prettier-only formatting churn (several directory/risks backend files, saved-views.service.ts) alongside the activation feature.
+  evidence: Verified as formatting-only (arrow-function parens, line wrapping) with one accompanying no-op type cleanup (saved-views.service.ts's redundant "as unknown as Prisma.InputJsonValue" cast removal on columnIds, harmless since string[] is already JSON-compatible). Commit-hygiene note, not a code defect — makes the real diff harder to review in isolation. Flagged by the blind-hunter review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: '`useActivateCampaign` `onError` invalidates only the detail query on 409/404, not the campaigns list — the list can still show `draft` after concurrent activation elsewhere.'
+  evidence: Flagged by the edge-case-hunter review layer. Low user impact while the creator remains on the detail page (which refetches correctly); list staleness clears on next navigation or manual refresh.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Backend activate happy-path e2e does not assert persisted action-item metadata (`title`, `description`, `link`, `dueDate`) — only count, `source`, `status`, and `assigneeId`.
+  evidence: Flagged by the verification-gap review layer. The unit test already asserts C6 receives the in-transaction-fresh metadata; e2e metadata assertion would be belt-and-suspenders, not blocking.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: '`POST :campaignId/activate` has no 403 e2e for authenticated users without an employee record.'
+  evidence: Create and list 403 cases exist in `campaigns.e2e-spec.ts`; activate reuses the same `resolveViewerEmployeeId` guard. Flagged by the verification-gap review layer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Playwright 409 recovery test uses unscoped `getByText('Active')` instead of a status-specific test id.
+  evidence: Flagged by the blind-hunter review layer. Cosmetic test brittleness — would fail only if unrelated copy introduced the word "Active".
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Activation confirmation copy does not show resolved recipient count or zero-recipient warning.
+  evidence: Flagged by the blind-hunter review layer. UX polish — empty-audience activation is allowed per spec; dialog could surface count from audience preview.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Creator can activate while audience builder has unsaved local changes — activation uses persisted server audience, not in-memory draft.
+  evidence: Flagged by the blind-hunter review layer. Same class as other save-before-act UX gaps; no spec requirement to block or warn.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-10-3-activate-a-campaign.md`
+  summary: Playwright happy-path activate test skips the audience-build step — creates campaign and activates immediately.
+  evidence: Flagged by the blind-hunter review layer. Backend e2e covers multi-recipient activation; frontend e2e only proves lock-UI wiring.
+
+## Deferred from: code review of spec-3-3-inline-editing-on-the-list (2026-09-04)
+
+- Per-row `writableFieldIds` resolves access per row × field (N+1) — acceptable for Wave 1; Story 3.7 owns list perf at scale.
+
+- Self-edit S4 built-ins not covered by e2e — spec default is yes when S4 is RW; no regression signal yet.
+
+- Frontend e2e mocks API for inline edit — custom-field and non-text types not exercised in Playwright; backend e2e covers custom text PATCH.
+
+## Deferred from: code review of spec-10-4-track-campaign-completion (2026-09-07)
+
+- Completion loading/error and 60s polling behavior untested in e2e — wired correctly in production; timer-based assertions deferred as brittle/low ROI.
+
+- Draft detail completion prefetch untested — `enabled: status === 'active'` is correct; no network-count assertion added.
+
+- `displayName` duplicated in `CampaignsService` and `ActionItemsService` — mirrors spec intent; shared helper is refactor outside story scope.
+
+- Pre-existing backend e2e failure in `rejects inactive added employee ids` — `employmentStatus: "inactive"` Prisma validation error unrelated to story 10.4.
+
+## Deferred from: code review of spec-11-1-record-feedback-with-a-visibility-flag (2026-09-08)
+
+- `formatFeedbackCalendarDate` uses `toISOString().slice(0,10)` — UTC calendar edge cases are a pre-existing class of date-handling issue; same approach as other modules; low user impact for HR feedback dates.
+
+- Unused `getFeedbacks()` client method — parallel GET API wrapper not needed while profile assembly is the only read surface in 11.1; can wire when a standalone feedback view is added.
+
+## Deferred from: code review of spec-11-2-view-feedback-over-time-and-compare-periods (2026-09-08)
+
+- Profile invalidation AC (records edited in another session while in compare mode) — no multi-tab/session mutation harness in frontend e2e; compare does not cache records client-side, so risk is low.
+
+- Dedicated SharedLink `R` compare e2e — Self `R` path exercises the same `FeedbackSectionCard` renderer; shared-link page uses identical profile section wiring.
+
+## Deferred from: code review of spec-11-3-request-feedback-from-named-colleagues-via-a-form-campaign (2026-09-08)
+
+- E2e for employees-list fetch error inline state in `RequestFeedbackDialog` — picker error UI is implemented; automated stub ordering for list failure alongside create/audience stubs is fragile; manual check sufficient for bootcamp scope.
+
+## Deferred from: code review of spec-3-5-export-to-excel (2026-09-08)
+
+- `listAllEmployees` reuses `listEmployees` and recomputes `writableFieldIds` per row during export pagination — acceptable for v1; optimize in Story 3.7 if export latency becomes an issue.
+
+- Workbook is fully buffered in memory before `StreamableFile` response — matches current spec task; revisit only if infra timeouts appear at 500+ rows.
+
+- E2E global teardown access-matrix coverage failure — pre-existing harness gap unrelated to export (9/9 export e2e cases pass; teardown exits non-zero).
+
+## Deferred from: code review of spec-3-6-colleague-mode-of-the-list (2026-09-08) — RESOLVED 2026-09-08
+
+- ~~AC #3 Self-row S4~~ — implemented via Self-only S4 in catalog with `filterable: false` / `sortable: false` for non-elevated viewers; `years_with_company` stays excluded.
+- ~~EmployeeCardList unit tests~~ — covered by `services/frontend/e2e/directory-card-layout.spec.ts`.

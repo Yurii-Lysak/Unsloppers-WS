@@ -200,8 +200,13 @@ documented as passing:
    When section access lands, drive the cases from `matrixCells()` and call
    `assertMatrixCoverage()` so an unmapped pair fails the build.
 3. **Accessibility tooling** — decide on an axe integration.
-4. **CI wiring.** `bmad-testarch-ci` has not been run; nothing here is hooked to
-   a pipeline yet. `failOnFlakyTests` and the junit reporter only take effect
-   when `CI` is set.
+4. **CI wiring.** Done — `bmad-testarch-ci` ran on 2026-09-04 and both suites are
+   hooked to GitHub Actions: `services/backend/.github/workflows/ci.yml`
+   (module boundaries, build, unit, lint, access-control e2e, full e2e) and
+   `services/frontend/.github/workflows/test.yml` (lint/typecheck, 2-shard
+   Playwright, coverage reconciliation, burn-in). `CI` is set by the runner, so
+   `failOnFlakyTests` and the junit reporter are active there. See
+   `ci-pipeline-progress.md` — the backend `build` and `e2e` jobs are red on
+   first run against three pre-existing, reported bugs on `origin/main`.
 5. **Full-stack Playwright runs.** Starting the backend and Postgres from
    `webServer` would let the frontend suite cover flows end to end.
