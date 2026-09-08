@@ -349,3 +349,11 @@
 ## Deferred from: code review of spec-11-3-request-feedback-from-named-colleagues-via-a-form-campaign (2026-09-08)
 
 - E2e for employees-list fetch error inline state in `RequestFeedbackDialog` — picker error UI is implemented; automated stub ordering for list failure alongside create/audience stubs is fragile; manual check sufficient for bootcamp scope.
+
+## Deferred from: code review of spec-3-5-export-to-excel (2026-09-08)
+
+- `listAllEmployees` reuses `listEmployees` and recomputes `writableFieldIds` per row during export pagination — acceptable for v1; optimize in Story 3.7 if export latency becomes an issue.
+
+- Workbook is fully buffered in memory before `StreamableFile` response — matches current spec task; revisit only if infra timeouts appear at 500+ rows.
+
+- E2E global teardown access-matrix coverage failure — pre-existing harness gap unrelated to export (9/9 export e2e cases pass; teardown exits non-zero).
