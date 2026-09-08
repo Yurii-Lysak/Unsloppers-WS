@@ -323,3 +323,29 @@
 - Self-edit S4 built-ins not covered by e2e — spec default is yes when S4 is RW; no regression signal yet.
 
 - Frontend e2e mocks API for inline edit — custom-field and non-text types not exercised in Playwright; backend e2e covers custom text PATCH.
+
+## Deferred from: code review of spec-10-4-track-campaign-completion (2026-09-07)
+
+- Completion loading/error and 60s polling behavior untested in e2e — wired correctly in production; timer-based assertions deferred as brittle/low ROI.
+
+- Draft detail completion prefetch untested — `enabled: status === 'active'` is correct; no network-count assertion added.
+
+- `displayName` duplicated in `CampaignsService` and `ActionItemsService` — mirrors spec intent; shared helper is refactor outside story scope.
+
+- Pre-existing backend e2e failure in `rejects inactive added employee ids` — `employmentStatus: "inactive"` Prisma validation error unrelated to story 10.4.
+
+## Deferred from: code review of spec-11-1-record-feedback-with-a-visibility-flag (2026-09-08)
+
+- `formatFeedbackCalendarDate` uses `toISOString().slice(0,10)` — UTC calendar edge cases are a pre-existing class of date-handling issue; same approach as other modules; low user impact for HR feedback dates.
+
+- Unused `getFeedbacks()` client method — parallel GET API wrapper not needed while profile assembly is the only read surface in 11.1; can wire when a standalone feedback view is added.
+
+## Deferred from: code review of spec-11-2-view-feedback-over-time-and-compare-periods (2026-09-08)
+
+- Profile invalidation AC (records edited in another session while in compare mode) — no multi-tab/session mutation harness in frontend e2e; compare does not cache records client-side, so risk is low.
+
+- Dedicated SharedLink `R` compare e2e — Self `R` path exercises the same `FeedbackSectionCard` renderer; shared-link page uses identical profile section wiring.
+
+## Deferred from: code review of spec-11-3-request-feedback-from-named-colleagues-via-a-form-campaign (2026-09-08)
+
+- E2e for employees-list fetch error inline state in `RequestFeedbackDialog` — picker error UI is implemented; automated stub ordering for list failure alongside create/audience stubs is fragile; manual check sufficient for bootcamp scope.
