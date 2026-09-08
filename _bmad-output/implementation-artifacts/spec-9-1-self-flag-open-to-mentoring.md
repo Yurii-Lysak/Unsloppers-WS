@@ -107,6 +107,8 @@ PATCH DTO: `{ openToMentoring: boolean }` only — use `@Allow()` whitelist or s
 
 ## Spec Change Log
 
+- **2026-09-08:** Story marked `done` after PRs opened (BE #54, FE #37, WS #67).
+
 ## Suggested Review Order
 
 **Schema & derived status**
