@@ -1,5 +1,12 @@
 # Deferred Work
 
+## Deferred from: code review of spec-6-3-dm-reviews-and-approves-rejects-candidates (2026-09-09)
+
+- Concurrent headcount-race e2e under real DB contention — transactional unit tests cover the conditional-update path; full parallel e2e disproportionate for this story.
+- Frontend Playwright coverage for reviewing-DM UI (approve/reject/reverse, reason dialog, shared-link link) — frontend has no component-test harness; manual/bootcamp verification applies.
+- Partial shared-link creation on submit failure — 6.2 orchestration pattern; atomic rollback out of 6.3 scope.
+- Frontend unit test for `expiresInHours: 168` submit fix — no vitest in frontend; backend consume path covered by e2e.
+
 ## Deferred from: code review of spec-12-3-delivery-manager-dashboard-with-project-selector.md (2026-09-09)
 
 - Missing frontend e2e for unassigned/clear-selection paths in `dashboard-engine.spec.ts` — selector refetch e2e covers primary flow; unassigned UX deferred to manual or follow-up.
@@ -13,3 +20,9 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-12-4-project-manager-dashboard.md`
   summary: A PM dashboard viewer who is also listed as `dmId` on some `ProjectAssignment` row (independent of holding the Delivery Manager functional role) would see that project's DM-level resourcing requests and comp-band data through `ResourcingService.listRequests`/`canViewExpectedCompBand`, not just their own PM-authored requests.
   evidence: Verified in `prisma/schema.prisma` (`Employee.pmProjectAssignments` / `dmProjectAssignments` are independent relations with no constraint tying `dmId`/`pmId` to functional-role holdings) and `resourcing.service.ts`'s `buildListWhere`, whose DM-visibility OR-clause activates on raw `dmId` match regardless of caller context. This is Story 6.1's existing, deliberate authorization model (employee-level `dmId`/`pmId` grants visibility everywhere, not dashboard-variant-scoped) — spec-12-4's own Boundaries explicitly forbid changing `ResourcingService.listRequests`/`buildListWhere`, calling it "already correct." Worth revisiting only if dashboard-variant scoping is later required to be stricter than raw employee-level resourcing authorization.
+
+## Deferred from: investigation for spec-6-3-dm-reviews-and-approves-rejects-candidates (2026-09-09)
+
+- source_spec: none
+  summary: `CLOSE_RESOURCING_REQUESTS` permission is defined and seeded onto the Delivery Manager role (`permission-keys.ts`, `seed.functional-roles.ts`), but no epic-6 story (6.1–6.4 per `sprint-status.yaml`) has an acceptance criterion for an explicit "DM closes the request" action, and 6.3's own epics.md ACs only cover approve/reject — the permission has no consuming endpoint or UI anywhere in the codebase.
+  evidence: Confirmed via grep — `CLOSE_RESOURCING_REQUESTS` appears only in the permission catalog and seed grant list, never in `resourcing.controller.ts`/`resourcing.service.ts` routes or any frontend action. D18 (`decisions.md`) requires "only the DM's explicit close ends the request," but no story currently owns building it; kept out of spec-6-3's scope to match its epics.md ACs and the SCOPE STANDARD single-goal target — needs a home in 6.4 or a new small story.

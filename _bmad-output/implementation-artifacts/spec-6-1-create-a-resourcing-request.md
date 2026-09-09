@@ -2,7 +2,7 @@
 title: 'Create a Resourcing Request'
 type: 'feature'
 created: '2026-09-08'
-status: 'in-review'
+status: 'done'
 review_loop_iteration: 0
 baseline_commit: '2f04487efde50b9c020c220221c64c28d3fa0cc8'
 story_key: '6-1-create-a-resourcing-request'
