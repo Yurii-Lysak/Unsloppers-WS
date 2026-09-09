@@ -1,5 +1,10 @@
 # Deferred Work
 
+## Deferred from: code review of spec-8-2-idp-records (2026-09-09)
+
+- Playwright coverage for IDP UI (create/edit/self-complete/checkbox absence for non-Self viewers) — frontend e2e not in story 8.2 verification commands; backend profile e2e covers API contract.
+- `idp-record-input.ts` service-layer normalization duplicates DTO rules — intentional defense-in-depth; validator imports shared `isValidIdpDeadline` helper.
+
 ## Deferred from: code review of spec-8-1-skills-matrix-link-and-assessment-log (2026-09-09)
 
 - S12-specific shared-link 400 beyond-grant e2e — `shared-link.service.spec.ts` already covers grant validation generically with S6.
