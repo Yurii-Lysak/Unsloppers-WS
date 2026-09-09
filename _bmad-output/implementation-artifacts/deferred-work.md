@@ -1,5 +1,10 @@
 # Deferred Work
 
+## Deferred from: code review of spec-8-4-filter-by-assessment-recency-and-open-idp (2026-09-10)
+
+- Campaign-audience filters for `last_assessment_date` / `has_open_idp` — export resolved; campaigns remain out of story 8.4 scope.
+- Provider-unavailable (503) over HTTP e2e — requires module-level provider unregistration harness; display/export `fieldsUnavailable` covered by unit tests.
+
 ## Deferred from: code review of spec-8-3-manager-pp-maintain-assessments-and-conclusions (2026-09-09)
 
 - `forbidNonWhitelisted` 400 on PATCH with extra body fields — global `ValidationPipe` in `bootstrap.ts` strips unknown properties before the route-level pipe runs; behavior matches IDP routes; not observable at e2e boundary.
