@@ -1,5 +1,10 @@
 # Deferred Work
 
+## Deferred from: code review of spec-8-3-manager-pp-maintain-assessments-and-conclusions (2026-09-09)
+
+- `forbidNonWhitelisted` 400 on PATCH with extra body fields — global `ValidationPipe` in `bootstrap.ts` strips unknown properties before the route-level pipe runs; behavior matches IDP routes; not observable at e2e boundary.
+- Playwright coverage for CDS assessment create/conclusion-edit UI and write gating in `CdsSection.tsx` — frontend has no employee-profile e2e harness (same gap as stories 8.1/8.2); backend profile e2e covers API contract.
+
 ## Deferred from: code review of spec-8-2-idp-records (2026-09-09)
 
 - Playwright coverage for IDP UI (create/edit/self-complete/checkbox absence for non-Self viewers) — frontend e2e not in story 8.2 verification commands; backend profile e2e covers API contract.
