@@ -2,7 +2,7 @@
 title: 'Fulfil a Request with Internal or External Candidates'
 type: 'feature'
 created: '2026-09-08'
-status: 'in-progress'
+status: 'done'
 review_loop_iteration: 0
 baseline_commit: '8bf7efe0b36cc9e81a6e406b37fe71fa2176ca64'
 baseline_revision: '8bf7efe0b36cc9e81a6e406b37fe71fa2176ca64'
