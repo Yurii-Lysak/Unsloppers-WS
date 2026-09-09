@@ -366,3 +366,10 @@
 ## Deferred from: code review of spec-12-1-build-shared-dashboard-engine (2026-09-08)
 
 - `RisksDashboardService.getScopedData` trusts orchestrator-passed `subjectIds` without per-subject S6 re-validation — acceptable while `dashboards` is the sole caller via AD-1; add defense-in-depth if another consumer invokes scoped `getSummary` later.
+
+## Deferred from: code review of spec-12-2-unit-manager-dashboard (2026-09-09)
+
+- ~~Leave AD-8 stale indicator not propagated~~ — **RESOLVED 2026-09-09:** `EmployeeListLeaveCell.stale` + `LeavesSyncService` expired-cache fallback + dashboard propagation.
+- ~~Per-provider unit tests for the five new `dashboard-summary` providers~~ — **RESOLVED 2026-09-09:** dedicated specs for `action-items`, `resourcing`, `campaigns`, `leave`, and `employment` providers (16 tests).
+- ~~Serial N+1 leave/employment cell fetches per subordinate~~ — **RESOLVED 2026-09-09:** UM orchestrator paginates `subjectIds` before leave/employment provider calls (page slice only).
+- ~~Quick-nav frontend e2e asserts link visibility only, not click-through navigation to target routes~~ — **RESOLVED 2026-09-09:** `dashboard-engine.spec.ts` click-through test for all six UM quick-nav destinations.
