@@ -1,5 +1,12 @@
 # Deferred Work
 
+## Deferred from: code review of spec-6-4-request-history (2026-09-09)
+
+- S15 OpenAPI on profile endpoint — section entities documented but profile assembly stays generic envelope like other sections.
+- Frontend Playwright for S15 card — no component-test harness in frontend; manual/bootcamp verification applies.
+- Bootcamp seed manual S15 fixture — no decided-proposal seed row; flag at manual QA time per spec Ask First.
+- FixedClock reversal timestamp distinctness — e2e uses single instant; unit tests assert `decidedAt` write on each decide.
+
 ## Deferred from: code review of spec-6-3-dm-reviews-and-approves-rejects-candidates (2026-09-09)
 
 - Concurrent headcount-race e2e under real DB contention — transactional unit tests cover the conditional-update path; full parallel e2e disproportionate for this story.
