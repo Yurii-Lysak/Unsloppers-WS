@@ -1,5 +1,11 @@
 # Deferred Work
 
+## Deferred from: code review of spec-8-1-skills-matrix-link-and-assessment-log (2026-09-09)
+
+- S12-specific shared-link 400 beyond-grant e2e — `shared-link.service.spec.ts` already covers grant validation generically with S6.
+- Playwright coverage for `CdsSectionCard` UI branches — frontend e2e not in story 8.1 verification commands; backend profile e2e covers the API contract.
+- Resourcing auto-generated manager links should include S12 by default — cross-epic gap (epic-8-context UX pattern); frozen spec change-log item 5 keeps this out of story 8.1 scope.
+
 ## Deferred from: code review of spec-6-4-request-history (2026-09-09)
 
 - S15 OpenAPI on profile endpoint — section entities documented but profile assembly stays generic envelope like other sections.
