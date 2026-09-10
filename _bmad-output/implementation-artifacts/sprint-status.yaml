@@ -31,7 +31,7 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 generated: 08-21-2026 00:00
-last_updated: 09-10-2026 16:10
+last_updated: 09-10-2026 17:00
 project: people management
 project_key: NOKEY
 tracking_system: file-system
@@ -150,7 +150,7 @@ development_status:
   12-2-unit-manager-dashboard: done
   12-3-delivery-manager-dashboard-with-project-selector: done
   12-4-project-manager-dashboard: done
-  12-5-people-partner-dashboard: backlog
+  12-5-people-partner-dashboard: in-progress
   12-6-accessibility-and-responsive-layout-pass: backlog
   epic-12-retrospective: optional
 
