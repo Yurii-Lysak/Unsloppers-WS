@@ -1,5 +1,10 @@
 # Deferred Work
 
+## Deferred from: code review of spec-2-2-edit-own-personal-and-emergency-contacts (2026-09-10)
+
+- Playwright e2e for S2/S3 profile UI (add/edit/delete, read-only manager rendering) — frontend has no employee-profile e2e harness yet; backend profile e2e covers API contract.
+- Dedicated service/controller unit tests beyond section providers — write paths covered by `employee-profile.e2e-spec.ts` I/O matrix; provider specs cover access denial.
+
 ## Deferred from: code review of spec-2-1-view-own-employment-summary (2026-09-10)
 
 - Manual seed verification after `db:seed` — spec Verification requires confirming S4 empty-state copy on real Story 1.16 accounts; fixture/stub e2e cannot substitute; manual gate only.
