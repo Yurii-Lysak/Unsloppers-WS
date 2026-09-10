@@ -2,7 +2,7 @@
 title: 'People Partner Dashboard'
 type: 'feature'
 created: '2026-09-10'
-status: 'in-progress'
+status: 'done'
 review_loop_iteration: 0
 story_key: '12-5-people-partner-dashboard'
 context:
