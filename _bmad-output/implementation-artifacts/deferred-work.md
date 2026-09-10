@@ -1,5 +1,10 @@
 # Deferred Work
 
+## Deferred from: code review of spec-2-3-upload-photo-and-certificates (2026-09-10)
+
+- Playwright e2e for photo/certificate upload UI — frontend has no employee-profile e2e harness yet; backend profile e2e covers API contract per spec Verification commands.
+- Swagger `@ApiConsumes` / `@ApiBody` multipart docs for new identity/documents routes — follows same gap as other feature controllers; not required by story AC.
+
 ## Deferred from: code review of spec-2-2-edit-own-personal-and-emergency-contacts (2026-09-10)
 
 - Playwright e2e for S2/S3 profile UI (add/edit/delete, read-only manager rendering) — frontend has no employee-profile e2e harness yet; backend profile e2e covers API contract.

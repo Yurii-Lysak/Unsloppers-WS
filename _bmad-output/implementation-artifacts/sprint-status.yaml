@@ -31,7 +31,7 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 generated: 08-21-2026 00:00
-last_updated: 09-10-2026 11:30
+last_updated: 09-10-2026 12:50
 project: people management
 project_key: NOKEY
 tracking_system: file-system
@@ -73,7 +73,7 @@ development_status:
   # Track B / Wave 2 — pick up last (consumes Epic 7/8/9/11 outputs)
   2-1-view-own-employment-summary: done
   2-2-edit-own-personal-and-emergency-contacts: done
-  2-3-upload-photo-and-certificates: backlog
+  2-3-upload-photo-and-certificates: done
   2-4-view-own-timeline-leaves-projects-cds-and-mentorship: backlog
   2-5-view-shared-feedback-flagged-notes-and-own-action-items: backlog
   epic-2-retrospective: optional
