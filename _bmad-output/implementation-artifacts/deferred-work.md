@@ -1,5 +1,9 @@
 # Deferred Work
 
+## Deferred from: code review of spec-12-5-people-partner-dashboard (2026-09-10)
+
+- Extract shared HR-line walk helper with `AccessResolverService` — story design notes accept per-service duplication for now; lock-step parity is enforced by tests rather than shared code.
+
 ## Deferred from: code review of spec-2-5-view-shared-feedback-flagged-notes-and-own-action-items (2026-09-10)
 
 - `SELF_RISK_INVISIBLE` dashboards/notifications scope — profile-only assertion matches story backend scope; dashboard risk surfaces are out of story 2.5.
