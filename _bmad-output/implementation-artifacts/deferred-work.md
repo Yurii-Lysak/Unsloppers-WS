@@ -1,5 +1,9 @@
 # Deferred Work
 
+## Deferred from: code review of spec-2-5-view-shared-feedback-flagged-notes-and-own-action-items (2026-09-10)
+
+- `SELF_RISK_INVISIBLE` dashboards/notifications scope — profile-only assertion matches story backend scope; dashboard risk surfaces are out of story 2.5.
+
 ## Deferred from: code review of spec-2-4-view-own-timeline-leaves-projects-cds-and-mentorship (2026-09-10)
 
 - `confirmedAt` freshness filtering for S11 active assignments — spec open Q2; current filter covers `confirmed: false` and past `endDate` only.
