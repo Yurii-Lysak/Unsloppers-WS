@@ -1,5 +1,10 @@
 # Deferred Work
 
+## Deferred from: code review of spec-2-1-view-own-employment-summary (2026-09-10)
+
+- Manual seed verification after `db:seed` — spec Verification requires confirming S4 empty-state copy on real Story 1.16 accounts; fixture/stub e2e cannot substitute; manual gate only.
+- Wire `EmploymentSectionDto` into `EmployeeProfileEntity` OpenAPI — section entities exist but profile assembly uses generic `Record<string, unknown>` envelope like other sections (same gap as S15, 6.4 review).
+
 ## Deferred from: code review of spec-8-4-filter-by-assessment-recency-and-open-idp (2026-09-10)
 
 - Campaign-audience filters for `last_assessment_date` / `has_open_idp` — export resolved; campaigns remain out of story 8.4 scope.
