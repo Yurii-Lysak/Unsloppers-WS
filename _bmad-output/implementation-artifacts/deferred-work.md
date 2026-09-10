@@ -1,5 +1,10 @@
 # Deferred Work
 
+## Deferred from: code review of spec-2-4-view-own-timeline-leaves-projects-cds-and-mentorship (2026-09-10)
+
+- `confirmedAt` freshness filtering for S11 active assignments — spec open Q2; current filter covers `confirmed: false` and past `endDate` only.
+- SharedLinkManagerDialog S10/S11 label Playwright coverage — no shared-link e2e harness exists yet; `sectionLabel` keys updated to `.title` paths.
+
 ## Deferred from: code review of spec-2-3-upload-photo-and-certificates (2026-09-10)
 
 - Playwright e2e for photo/certificate upload UI — frontend has no employee-profile e2e harness yet; backend profile e2e covers API contract per spec Verification commands.
