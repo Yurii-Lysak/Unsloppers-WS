@@ -1,5 +1,17 @@
 # Deferred Work
 
+## Deferred from: code review of spec-vercel-spa-routing-404 (2026-09-11)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-vercel-spa-routing-404.md`
+  summary: No automated regression coverage for the fixed bug (a hard reload/new-tab navigation to a deep client-side route no longer 404ing on Vercel).
+  evidence: Playwright e2e in `e2e/` runs against the local Vite dev server, which already serves the SPA shell for any path (Vite's dev middleware has its own history-API fallback) — it never reproduced the Vercel-only 404, so a local e2e assertion can't guard against regressing the `vercel.json` rewrite. Verifying this needs a real Vercel preview deployment (e.g. curling a deep route directly), which is outside this fix's scope.
+- source_spec: `_bmad-output/implementation-artifacts/spec-vercel-spa-routing-404.md`
+  summary: `vercel.json` has no `headers` block controlling cache lifetime for `index.html` vs. hashed build assets.
+  evidence: Standard companion to an SPA catch-all rewrite (e.g. `Cache-Control: no-cache` on `index.html`, long-lived immutable caching on hashed `/assets/*` files) so users don't get stuck on a stale app shell after a future deploy; not required to fix the reported 404s, and out of scope for this one-shot.
+- source_spec: `_bmad-output/implementation-artifacts/spec-vercel-spa-routing-404.md`
+  summary: No CI step validates the deployed routing behavior (e.g. via Vercel CLI build or hitting a preview URL) to confirm a deep-link hard reload returns 200 instead of 404.
+  evidence: `.github/workflows/test.yml` runs build/lint/test against the local dev/build pipeline only, which — same as the e2e gap above — cannot observe Vercel's static-hosting 404 behavior; would need a dedicated deploy-preview smoke check.
+
 ## Deferred from: code review of spec-12-5-people-partner-dashboard (2026-09-10)
 
 - Extract shared HR-line walk helper with `AccessResolverService` — story design notes accept per-service duplication for now; lock-step parity is enforced by tests rather than shared code.
