@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oksana Petrenko — Employee Profile (mock)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;color:#1c1b29;background:#F7F7FA;display:flex;min-height:100vh}
+.sidebar{width:240px;background:#15112E;color:#cfc9ea;flex-shrink:0;padding:20px 14px}.sidebar .brand{color:#fff;font-weight:700;font-size:15px;margin:0 8px 16px}.sidebar nav a{display:flex;gap:10px;padding:9px 10px;border-radius:6px;color:#cfc9ea;text-decoration:none;font-size:13.5px}.sidebar nav a.active{background:#5B4FE0;color:#fff}
+.main{flex:1;padding:24px;max-width:1180px}
+.header{background:#fff;border:1px solid #e2e0f0;border-radius:10px;padding:20px;display:flex;gap:18px;align-items:center;margin-bottom:16px}
+.avatar{width:48px;height:48px;border-radius:9999px;background:#e4e0f7;color:#4a3f9e;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+h1{font-size:24px;font-weight:600}.sub{color:#666;font-size:13px;margin-top:2px}.rels{display:flex;gap:16px;margin-top:10px;font-size:13px;flex-wrap:wrap}.rels b{font-weight:600}
+.pill{display:inline-block;border-radius:9999px;padding:3px 11px;font-size:12px;font-weight:500}.p-med{background:#FDE8D3;color:#9A4A0A}.p-low{background:#E8F7EF;color:#157A52}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid #e2e0f0;border-radius:10px;padding:16px 18px}.card h2{font-size:18px;font-weight:600;margin-bottom:10px}.card h2 .tag{font-size:11px;color:#888;font-weight:400;margin-left:8px}
+.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #f0eef8;font-size:13.5px}.row:last-child{border:0}.k{color:#666}.mono{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}
+.tl{border-left:2px solid #d5d2e8;margin:6px 0 0 6px;padding-left:16px}.tl div{position:relative;padding:0 0 12px}.tl div::before{content:"";position:absolute;left:-23px;top:4px;width:10px;height:10px;border-radius:50%;background:#5B4FE0}.tl .d{font-size:12px;color:#777}.tl .corr{font-size:11.5px;color:#92620E;background:#FCF1DC;border-radius:4px;padding:1px 6px;margin-left:6px}
+.gated{background:#f4f2fb;border:1px dashed #c9c4e4;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#6b6390;margin-top:8px}
+table.mini{width:100%;border-collapse:collapse;font-size:13px}table.mini td{padding:7px 4px;border-bottom:1px solid #f0eef8}
+.overdue{color:#A61D2B;font-weight:600}.done{color:#157A52;font-weight:600}
+.actions{margin-top:14px;display:flex;gap:8px}.btn{border:1px solid #d5d2e8;background:#fff;border-radius:6px;padding:8px 14px;font-size:13.5px;cursor:pointer}.btn.primary{background:#5B4FE0;border-color:#5B4FE0;color:#fff;font-weight:600}
+</style></head><body>
+<aside class="sidebar"><div class="brand">◆ People Mgmt</div><nav>
+<a href="04-dashboard-um.html">Dashboard (UM)</a><a href="05-dashboard-dm.html">Dashboard (DM)</a><a href="01-directory.html">All Employees</a><a href="02-employee-profile.html" class="active">Employee Profile</a><a href="03-my-profile.html">My Profile</a><a href="08-risk-dashboard.html">Risk Dashboard</a><a href="09-campaigns-list.html">Campaigns</a><a href="11-mentorship-hub.html">Mentorship</a><a href="06-resourcing-list.html">Resourcing</a><a href="12-admin.html">Admin</a>
+</nav></aside>
+<div class="main">
+<div style="font-size:12px;color:#6b6390;margin-bottom:8px">Viewed as Olena K. (UM, reporting line) — mentor + comp-band visible per audience. Colleague variant: mentor, S2, S6, S7 absent (no placeholder).</div>
+<div class="header"><div class="avatar">OP</div><div style="flex:1">
+<h1>Oksana Petrenko</h1><div class="sub">Senior Java Engineer · Payments · <span class="mono">EMP-01024</span> · active</div>
+<div class="rels"><span><b>Manager:</b> Olena Kovalenko</span><span><b>People Partner:</b> Marta Danylo</span><span><b>Mentor:</b> Iryna Shevchenko</span><span>Risk <span class="pill p-med">medium ▲up</span></span></div>
+</div><div><button class="btn">Share link…</button> <button class="btn primary">Open quick actions</button></div></div>
+<div class="grid">
+<div class="card"><h2>S1 · Identity &amp; employment</h2>
+<div class="row"><span class="k">Preferred name</span><span>Oksana Petrenko</span></div>
+<div class="row"><span class="k">Position / grade</span><span>Senior Java Eng. · G4</span></div>
+<div class="row"><span class="k">Department</span><span>Payments (relationship screen to change)</span></div>
+<div class="row"><span class="k">FTE</span><span>1.0 · employee</span></div>
+<div class="row"><span class="k">Start date</span><span>12 Sep 2022</span></div></div>
+<div class="card"><h2>S2 · Compensation <span class="tag">author / UM / DM only</span></h2>
+<div class="row"><span class="k">Comp band</span><span class="mono">G4 · ₴ band 41–46</span></div>
+<div class="row"><span class="k">Last review</span><span>01 Mar 2026</span></div></div>
+<div class="card"><h2>S4 · Skills &amp; position</h2>
+<div class="row"><span class="k">Primary stack</span><span>Java 21, Spring, Kafka</span></div>
+<div class="row"><span class="k">English</span><span>B2 — verified 2026</span></div></div>
+<div class="card"><h2>S5 · Documents</h2>
+<table class="mini"><tr><td>📄 CV_Oksana_2026.pdf</td><td class="mono">dept-key: payments</td><td><a href="#">open</a></td></tr>
+<tr><td>📄 AWS-Certificate.pdf</td><td class="mono">dept-key: payments</td><td><a href="#">open</a></td></tr></table>
+<p style="font-size:12px;color:#777;margin-top:6px">Project-line viewers see CV + certificates only — contract / W8 / Diia never listed.</p></div>
+<div class="card"><h2>S6 · Risks <span class="pill p-med">medium ▲up</span></h2>
+<table class="mini"><tr><td><b>Workload concentration</b> — single owner of settlement pipeline.<br><span style="font-size:12px;color:#666">Opened 02 Aug 2026 · owner Olena K. · due 30 Sep 2026</span></td></tr>
+<tr><td><b>Flight concern</b> — market outreach noted in 1:1.<br><span style="font-size:12px;color:#666">Opened 20 Aug 2026 · level raised low→medium</span></td></tr></table></div>
+<div class="card"><h2>S8 · Feedback</h2>
+<table class="mini"><tr><td>“Strong incident ownership during July outage.” — I. Shevchenko · Q3 <span style="color:#157A52">· shared with employee ✓</span></td></tr>
+<tr><td>Peer note (Q2) — <span style="color:#666">visible to management only</span></td></tr></table></div>
+<div class="card"><h2>S9 · Career timeline</h2><div class="tl">
+<div><b>Grade G3 → G4</b> <span class="corr">corrected</span><br><span class="d">01 Mar 2026 · manual entry by Olena K. — “A system update was skipped here — 02 Mar 2026”</span></div>
+<div><b>Mentorship pair started</b> with Iryna S.<br><span class="d">15 May 2026 · system</span></div>
+<div><b>Joined Payments</b><br><span class="d">12 Sep 2022 · system</span></div>
+</div><p style="font-size:12px;color:#777">No departure event ever appears here (CAP-14).</p></div>
+<div class="card"><h2>S10–S11 · Leave &amp; projects</h2>
+<div class="row"><span class="k">Current leave</span><span>Annual · 14–21 Sep 2026 (no balances shown)</span></div>
+<div class="row"><span class="k">Projects</span><span>Ledger migration (0.7), Settlement hardening (0.3)</span></div></div>
+<div class="card"><h2>S12 · CDS — growth</h2>
+<div class="row"><span class="k">Skills matrix</span><span><a href="#">matrix file ↗</a> <span class="mono">dept: payments</span></span></div>
+<div class="row"><span class="k">Last assessment</span><span>10 Jun 2026 · assessor: Olena K.</span></div>
+<div class="row"><span class="k">IDP</span><span class="done">✓ Complete — “Kafka internals” (closed 28 Aug 2026)</span></div></div>
+<div class="card"><h2>S13 · Mentorship</h2>
+<div class="row"><span class="k">As mentee</span><span>paired with Iryna S. since 15 May 2026</span></div>
+<div class="row"><span class="k">As mentor</span><span class="done">○ open to mentoring: on</span></div></div>
+<div class="card"><h2>S14 · Action items</h2>
+<table class="mini">
+<tr><td>Complete security refresher <span class="overdue">· overdue 3 d (due 10 Sep 2026)</span></td><td><span class="pill p-low">open</span></td></tr>
+<tr><td>Q3 feedback form (campaign) <span>· due 30 Sep 2026</span></td><td><span class="pill p-low">open</span></td></tr>
+<tr><td>Update settlement runbook <span class="done">· done 05 Sep 2026</span></td><td>✓</td></tr>
+</table></div>
+<div class="card"><h2>S15–S16 · Resourcing &amp; notes</h2>
+<div class="row"><span class="k">Request history</span><span>PROP-118 (Ledger) — approved May 2026</span></div>
+<div class="row"><span class="k">Flagged note</span><span>“Prefers backend-heavy scope.” — mgmt visible</span></div>
+<div class="gated" data-mock-note="MOCK-ONLY — do not implement. Production renders nothing here (absent-not-hidden).">⦸ <b>S7 · Sensitive personal data (gated — absent for this viewer):</b> this section exists in the model but is not fetched or rendered for a Unit Manager without Full-access grant. No placeholder gap is shown in production — noted here only for the mock. (S3 compensation-history, S7, S13-pool internals, S14-foreign items follow the same absent-not-hidden rule.)</div>
+</div>
+</div>
+<div class="actions"><button class="btn primary">Record risk</button><button class="btn">Assign action item</button><button class="btn">Request feedback</button><button class="btn">Propose to request</button></div>
+</div></body></html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>All Employees — People Management (mock)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;color:#1c1b29;background:#F7F7FA;display:flex;min-height:100vh}
+.sidebar{width:240px;background:#15112E;color:#cfc9ea;flex-shrink:0;padding:20px 14px;display:flex;flex-direction:column;gap:4px}
+.sidebar .brand{color:#fff;font-weight:700;font-size:15px;margin:0 8px 16px}.sidebar nav a{display:flex;gap:10px;padding:9px 10px;border-radius:6px;color:#cfc9ea;text-decoration:none;font-size:13.5px}.sidebar nav a.active{background:#5B4FE0;color:#fff}.sidebar nav a:hover{background:rgba(255,255,255,.08)}
+.main{flex:1;padding:24px;max-width:1280px}.crumb{font-size:12px;color:#6b6b80;margin-bottom:4px}
+h1{font-size:24px;font-weight:600;margin-bottom:14px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid #e2e0f0;margin-bottom:14px}
+.tabs button{border:0;background:none;padding:10px 14px;font-size:13.5px;color:#555;cursor:pointer;border-bottom:2px solid transparent}
+.tabs button.active{color:#15112E;font-weight:600;border-bottom-color:#5B4FE0}
+.filterbar{background:#fff;border:1px solid #e2e0f0;border-radius:10px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.search{border:1px solid #d5d2e8;border-radius:4px;padding:8px 12px;min-width:220px;font-size:13.5px}
+.chip{background:#efedfb;border-radius:4px;padding:5px 6px 5px 10px;font-size:12.5px;display:inline-flex;gap:8px;align-items:center}.chip b{font-weight:600}.chip button{border:0;background:#d9d4f5;border-radius:4px;width:20px;height:20px;cursor:pointer}
+.btn{border:1px solid #d5d2e8;background:#fff;border-radius:6px;padding:8px 14px;font-size:13.5px;cursor:pointer}.btn.primary{background:#5B4FE0;border-color:#5B4FE0;color:#fff;font-weight:600}.btn.ghost{border-color:transparent;color:#5B4FE0}
+table{width:100%;background:#fff;border:1px solid #e2e0f0;border-radius:10px;border-collapse:collapse;overflow:hidden;font-size:13.5px}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#6b6b80;text-align:left;padding:10px 12px;border-bottom:1px solid #e2e0f0;background:#faf9fe;white-space:nowrap}
+th .sort{color:#5B4FE0}td{padding:0 12px;height:56px;border-bottom:1px solid #f0eef8;vertical-align:middle}tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#f7f5ff;cursor:pointer}.avatar{display:inline-flex;width:32px;height:32px;border-radius:9999px;background:#e4e0f7;color:#4a3f9e;font-weight:600;font-size:12px;align-items:center;justify-content:center;margin-right:8px;vertical-align:middle}
+.pill{display:inline-block;border-radius:9999px;padding:3px 11px;font-size:12px;font-weight:500;white-space:nowrap}
+.p-low{background:#E8F7EF;color:#157A52}.p-att{background:#FCF1DC;color:#92620E}.p-med{background:#FDE8D3;color:#9A4A0A}.p-high{background:#FBE7E9;color:#A61D2B}.p-leaver{background:#EDE7F6;color:#5B4A8A}.p-neutral{background:#eee;color:#666}
+.editcell{border:1px dashed #5B4FE0;border-radius:4px;padding:6px 8px;background:#fbfaff}.editcell small{color:#5B4FE0;font-size:11px;display:block}
+.note{background:#FCF1DC;border:1px solid #ecd9ac;color:#6d4c08;border-radius:10px;padding:10px 14px;margin-top:14px;font-size:13px}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:#555}.foot{color:#777;font-size:12px;margin-top:10px}
+</style></head><body>
+<aside class="sidebar"><div class="brand">◆ People Mgmt</div><nav>
+<a href="05-dashboard-dm.html">Dashboard (PM scope)</a><a href="01-directory.html" class="active">All Employees</a><a href="02-employee-profile.html">Employee Profile</a><a href="03-my-profile.html">My Profile</a><a href="06-resourcing-list.html">Resourcing</a><a href="08-risk-dashboard.html">Risk Dashboard</a><a href="11-mentorship-hub.html">Mentorship</a>
+</nav></aside>
+<div class="main">
+<div class="crumb">Directory / All Employees — viewed as Olena K. (Unit Manager)</div>
+<h1>All Employees <span class="mono" style="font-weight:400">· 512 shown</span></h1>
+<div class="tabs" role="tablist">
+<button class="active">Everyone</button><button>My department (84)</button><button>Needs review ★ shared</button><button>Bench (saved view)</button><button>+ Save current</button>
+</div>
+<div class="filterbar">
+<input class="search" value="" placeholder="Search name or EMP- id…  ( / to focus )">
+<span class="chip"><b>Dept:</b> Payments × <button>×</button></span>
+<span class="chip"><b>Risk:</b> medium+ × <button>×</button></span>
+<span class="chip"><b>Last assessment:</b> never assessed × <button>×</button></span>
+<button class="btn">+ Add filter</button>
+<button class="btn">Columns ▾</button>
+<span style="flex:1"></span>
+<button class="btn primary">Export .xlsx</button>
+</div>
+<table><thead><tr>
+<th>Name <span class="sort">▲</span></th><th>ID</th><th>Department <span class="sort">⇅</span></th><th>Position</th>
+<th>Manager</th><th>Risk <span class="sort">⇅</span></th><th>Title (inline-edit)</th><th>Status</th>
+</tr></thead><tbody>
+<tr><td><span class="avatar">OP</span><b><a href="02-employee-profile.html">Oksana Petrenko</a></b></td><td class="mono">EMP-01024</td><td>Payments</td><td>Senior Java Eng.</td><td>Olena K.</td><td><span class="pill p-med">medium ▲up</span></td><td><span class="editcell">Senior Java Engineer <small>✎ editing — Enter/blur commits</small></span></td><td>active</td></tr>
+<tr><td><span class="avatar">TB</span><b><a href="02-employee-profile.html">Taras Boyko</a></b></td><td class="mono">EMP-01137</td><td>Payments</td><td>QA Engineer</td><td>Olena K.</td><td><span class="pill p-high">high ▲up</span></td><td>QA Engineer</td><td>active</td></tr>
+<tr><td><span class="avatar">IS</span><b><a href="02-employee-profile.html">Iryna Shevchenko</a></b></td><td class="mono">EMP-00982</td><td>Payments</td><td>Team Lead</td><td>Olena K.</td><td><span class="pill p-att">need attention</span></td><td>Engineering Team Lead</td><td>active</td></tr>
+<tr><td><span class="avatar">DM</span><b><a href="02-employee-profile.html">Dmytro Melnyk</a></b></td><td class="mono">EMP-01201</td><td>Ledger</td><td>Delivery Mgr</td><td>Sofia R.</td><td><span class="pill p-leaver">leaver · prediction</span></td><td>Delivery Manager</td><td>active</td></tr>
+<tr><td><span class="avatar">NK</span><b><a href="02-employee-profile.html">Natalia Koval</a></b></td><td class="mono">EMP-00871</td><td>Payments</td><td>UX Designer</td><td>Olena K.</td><td><span class="pill p-low">low</span></td><td>Product Designer</td><td>active</td></tr>
+<!-- Departed (e.g. EMP-01355 dismissed) excluded from default view per EXPERIENCE Departure read-only; reachable via Status=dismissed filter only. -->
+
+</tbody></table>
+<p class="foot">Sortable columns: name, department, risk. Manager / department cells are read-only here — changes go via the dedicated relationship screen. Pagination: page 1 of 86 · 2s budget at 500+ rows (virtualized). Row drill: name cell is a real link (Enter drills, row itself never tabindex=0; SR announces name, position, project). &lt;md: sidebar becomes Sheet; table reflows to stacked row-drill lists, no h-scroll; 200% zoom keeps drill + sort reachable.</p>
+<!-- Empty state (not shown): "No employees match." + current filter recap + single primary action clears filters. Failed inline write: retain edit + error toast (role=alert) + retry; never silent loss. Disabled actions use aria-disabled=true + reason toast, never disabled attr. Toasts role=status aria-live=polite; conflicts role=alert. Quick-view Sheet (not mocked): entitled summary only + explicit "Open full profile" button; never substitutes for full render. -->
+<div class="note"><b>Colleague-mode note:</b> a Colleague viewer sees only name + department on this table — risk, manager, leave and custom restricted columns are <i>absent from the response</i> (never masked with “—”). Saved shared views re-resolve per viewer to their entitled subset.</div>
+</div></body></html>

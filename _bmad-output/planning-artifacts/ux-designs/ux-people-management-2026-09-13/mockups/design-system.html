@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>People Management — Design System (DESIGN.md spine)</title>
+<style>
+*{box-sizing:border-box}
+:root{color-scheme:light dark}
+:root,[data-theme="light"]{
+--background:#FFFFFF;--foreground:#15112E;--card:#FFFFFF;--popover:#FFFFFF;
+--primary:#5B4FE0;--primary-foreground:#FFFFFF;--secondary:#F1F0FA;--secondary-foreground:#15112E;
+--muted:#F4F3FA;--muted-foreground:#6B6B80;--accent:#ECEBFA;--accent-foreground:#15112E;
+--destructive:#DC3545;--destructive-foreground:#FFFFFF;--border:#E4E2F0;--input:#E4E2F0;--ring:#5B4FE0;
+--sidebar:#15112E;--sidebar-foreground:#EDECF7;
+--success:#157A52;--success-fg:#FFFFFF;
+--risk-low-bg:#E8F7EF;--risk-low-fg:#157A52;
+--risk-attention-bg:#FCF1DC;--risk-attention-fg:#92620E;
+--risk-medium-bg:#FDE8D3;--risk-medium-fg:#9A4A0A;
+--risk-high-bg:#FBE7E9;--risk-high-fg:#A61D2B;
+--risk-leaver-bg:#EDE7F6;--risk-leaver-fg:#5B4A8A;
+--radius-sm:4px;--radius-md:6px;--radius-lg:10px;--radius-xl:14px;--radius-full:9999px;
+--shadow-card:0 1px 3px rgba(21,17,46,.12);--shadow-modal:0 12px 40px rgba(21,17,46,.28);
+--banner-warn-bg:#FCF1DC;--banner-warn-fg:#92620E;--banner-warn-border:#E8C97A;
+--surface:#FFFFFF;--elevated:#FFFFFF;--stripe:rgba(21,17,46,.02);--scrim:rgba(21,17,46,.4);
+--text-secondary:#6B6B80;--text-disabled:#A8A6BF;
+}
+[data-theme="dark"]{
+--background:#0D0A1F;--foreground:#EDECF7;--card:#171331;--popover:#1D1840;
+--primary:#7D95F7;--primary-foreground:#0D0A1F;--secondary:#221D4A;--secondary-foreground:#EDECF7;
+--muted:#1B1638;--muted-foreground:#A6ADD9;--accent:#262055;--accent-foreground:#EDECF7;
+--destructive:#E95B6C;--destructive-foreground:#0D0A1F;--border:#2E2851;--input:#2E2851;--ring:#7D95F7;
+--sidebar:#0D0A1F;--sidebar-foreground:#EDECF7;
+--success:#4CAF79;--success-fg:#1C1B29;
+--risk-low-bg:#1A3D2A;--risk-low-fg:#4CAF79;
+--risk-attention-bg:#3D3420;--risk-attention-fg:#D4A845;
+--risk-medium-bg:#42260F;--risk-medium-fg:#E89B4C;
+--risk-high-bg:#3D1F25;--risk-high-fg:#E95B6C;
+--risk-leaver-bg:#2B2145;--risk-leaver-fg:#C0B3E8;
+--shadow-card:0 1px 3px rgba(0,0,0,.5);--shadow-modal:0 12px 40px rgba(0,0,0,.6);
+--banner-warn-bg:#3D3420;--banner-warn-fg:#D4A845;--banner-warn-border:#92620E;
+--surface:#171331;--elevated:#1D1840;--stripe:rgba(255,255,255,.03);--scrim:rgba(0,0,0,.8);
+--text-secondary:#A6ADD9;--text-disabled:#5E5A85;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="dark"]){color-scheme:dark}}
+body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--background);color:var(--foreground);font-size:14px;line-height:1.5}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;padding:10px 24px;background:var(--sidebar);color:var(--sidebar-foreground);min-height:48px}
+.topbar h1{font-size:16px;margin:0;font-weight:600}
+.topbar .spacer{flex:1}
+.wrap{max-width:1160px;margin:0 auto;padding:24px 24px 120px}
+section.block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin:0 0 24px;box-shadow:var(--shadow-card)}
+section.block h2{font-size:18px;font-weight:600;margin:0 0 4px}
+section.block p.sub{margin:0 0 16px;color:var(--text-secondary);font-size:13px}
+.tok{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;background:var(--muted);color:var(--text-secondary);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1px 6px;display:inline-block;margin:2px 4px 2px 0}
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.g3{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.swatch{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--card)}
+.swatch .c{height:64px;display:flex;align-items:flex-end;padding:6px 8px;font-size:11px;font-weight:600}
+.swatch .m{padding:8px 10px;font-size:12px}
+.swatch code{font-size:11px}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--radius-md);border:1px solid transparent;font-size:14px;font-weight:500;cursor:pointer;padding:0 16px;height:40px}
+.btn-sm{height:32px;padding:0 12px;font-size:13px}.btn-lg{height:48px;padding:0 24px;font-size:15px}
+.btn-icon{width:40px;padding:0}
+.btn-primary{background:var(--primary);color:var(--primary-foreground)}
+.btn-secondary{background:var(--secondary);color:var(--secondary-foreground)}
+.btn-outline{background:transparent;border-color:var(--border);color:var(--foreground)}
+.btn-ghost{background:transparent;color:var(--foreground)}
+.btn-destructive{background:var(--destructive);color:var(--destructive-foreground)}
+.btn-success{background:var(--success);color:var(--success-fg)}
+.btn:hover{filter:brightness(.96)}.btn:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.btn:disabled{background:var(--muted);color:var(--text-disabled);cursor:not-allowed;border-color:var(--border)}
+.spinner{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-top-color:transparent;display:inline-block;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* pills/badges */
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:var(--radius-full);font-size:12px;font-weight:500;padding:3px 12px;white-space:nowrap}
+.pill small{font-weight:400;opacity:.85}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:var(--radius-full);font-size:12px;font-weight:500;padding:3px 10px;background:var(--muted);color:var(--foreground);border:1px solid var(--border)}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:var(--radius-sm);font-size:13px;padding:4px 8px;background:var(--accent);border:1px solid var(--border)}
+.chip button{border:0;background:none;cursor:pointer;font-size:14px;line-height:1}
+/* avatar/card */
+.avatar{border-radius:var(--radius-full);background:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-weight:500;flex:none}
+.av-32{width:32px;height:32px;font-size:12px}.av-40{width:40px;height:40px;font-size:14px}.av-48{width:48px;height:48px;font-size:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-card)}
+/* table */
+.tablewrap{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:auto;max-height:320px;background:var(--card)}
+table.demo{border-collapse:collapse;width:100%;min-width:640px}
+table.demo thead th{position:sticky;top:0;background:var(--card);text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--border);z-index:2}
+table.demo tbody td{padding:8px 12px;border-bottom:1px solid var(--border);height:56px;vertical-align:middle}
+table.demo tbody tr:nth-child(even){background:var(--stripe)}
+table.demo tbody tr:hover{background:var(--accent)}
+.cellinput{border:1px solid var(--ring);border-radius:var(--radius-sm);padding:6px 8px;font-size:14px;width:140px;background:var(--background);color:var(--foreground)}
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.tab{border:0;background:none;padding:10px 14px;font-size:14px;font-weight:500;color:var(--text-secondary);cursor:pointer;border-bottom:2px solid transparent}
+.tab[aria-selected="true"]{color:var(--foreground);border-bottom-color:var(--primary)}
+/* overlays */
+.overlay{position:fixed;inset:0;background:var(--scrim);display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
+.overlay.open{display:flex}
+.dialog{background:var(--elevated);border-radius:var(--radius-lg);box-shadow:var(--shadow-modal);max-width:440px;width:100%;padding:20px}
+.sheet-wrap{position:fixed;inset:0;background:var(--scrim);display:none;justify-content:flex-end;z-index:100}
+.sheet-wrap.open{display:flex}
+.sheet{background:var(--elevated);width:480px;max-width:100%;height:100%;display:flex;flex-direction:column;border-radius:var(--radius-lg) 0 0 var(--radius-lg)}
+.sheet header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--border)}
+.sheet .body{padding:16px;overflow:auto;flex:1}
+.sheet footer{padding:16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+@media(max-width:640px){.sheet{width:100%;border-radius:0}}
+.pop{position:relative;display:inline-block}
+.popmenu{position:absolute;top:calc(100% + 6px);left:0;background:var(--elevated);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 8px 24px rgba(0,0,0,.18);min-width:200px;padding:6px;display:none;z-index:60}
+.pop.open .popmenu{display:block}
+.popmenu button{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 10px;border-radius:6px;cursor:pointer;color:var(--foreground);font-size:14px}
+.popmenu button:hover{background:var(--accent)}
+.cmdk{border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--elevated);box-shadow:0 8px 24px rgba(0,0,0,.18);max-width:520px}
+.cmdk input{width:100%;border:0;border-bottom:1px solid var(--border);padding:12px 14px;font-size:14px;background:transparent;color:var(--foreground)}
+.cmdk ul{list-style:none;margin:0;padding:6px}
+.cmdk li{padding:8px 10px;border-radius:6px;font-size:14px}
+.cmdk li.active{background:var(--accent)}
+select.native,.txt{border:1px solid var(--input);border-radius:var(--radius-sm);padding:8px 10px;font-size:14px;background:var(--background);color:var(--foreground);min-width:180px}
+textarea.txt{width:100%;min-height:70px;resize:vertical}
+label.f{display:block;font-size:14px;font-weight:500;margin:10px 0 4px}
+.hint{font-size:12px;color:var(--text-secondary)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.timeline{border-left:2px solid var(--border);margin:8px 0 0 8px;padding:0 0 0 16px;list-style:none}
+.timeline li{position:relative;padding:0 0 16px}
+.timeline .dot{position:absolute;left:-23px;top:2px;width:12px;height:12px;border-radius:50%;border:2px solid var(--background)}
+.empty{border:1px dashed var(--border);border-radius:var(--radius-xl);padding:32px;text-align:center}
+.skel{border-radius:6px;background:var(--muted);height:14px;margin:6px 0;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.5}}
+.toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:200}
+.toast{background:var(--elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;box-shadow:0 8px 24px rgba(0,0,0,.2);font-size:13px;min-width:240px}
+.banner{background:var(--banner-warn-bg);color:var(--banner-warn-fg);border:1px solid var(--banner-warn-border);border-radius:var(--radius-md);padding:10px 14px;font-size:13px;margin:8px 0}
+.tip{border-bottom:1px dotted var(--text-secondary);cursor:help}
+.type-row{display:flex;gap:16px;align-items:baseline;border-bottom:1px solid var(--border);padding:10px 0}
+kbd{border:1px solid var(--border);border-radius:4px;padding:0 6px;font-size:12px;background:var(--muted)}
+</style>
+</head>
+<body>
+<div class="topbar"><h1>People Management — Design System Mock</h1><span class="hint" style="color:#B9B6D9">DESIGN.md spine 2026-09-13 · Option A locked</span><span class="spacer"></span><button class="btn btn-secondary btn-sm" id="themeBtn" type="button">Toggle theme (light/dark)</button></div>
+<div class="wrap">
+
+<section class="block" id="tokens">
+<h2>1 · Token swatches</h2>
+<p class="sub">Base inherited verbatim from <span class="mono">services/frontend/src/index.css</span> (do not redefine). Delta owned here: success + 5 risk levels, Option A locked.</p>
+<div class="grid g4">
+<div class="swatch"><div class="c" style="background:#5B4FE0;color:#fff">#5B4FE0</div><div class="m"><b>primary</b> light<br><code>--primary #5B4FE0 · dark #7D95F7</code><br><span class="tok">--primary</span><span class="tok">--primary-foreground</span></div></div>
+<div class="swatch"><div class="c" style="background:#DC3545;color:#fff">#DC3545</div><div class="m"><b>destructive</b> light<br><code>--destructive #DC3545 · dark #E95B6C</code><br><span class="tok">--destructive</span></div></div>
+<div class="swatch"><div class="c" style="background:#15112E;color:#EDECF7">#15112E</div><div class="m"><b>sidebar</b> light<br><code>--sidebar #15112E · dark #0D0A1F</code><br><span class="tok">--sidebar</span><span class="tok">--sidebar-width</span></div></div>
+<div class="swatch"><div class="c" style="background:#F4F3FA;color:#6B6B80">Zinc / muted</div><div class="m"><b>base Zinc</b> inherited<br><code>--muted --border --input --ring</code><br><span class="tok">--muted</span><span class="tok">--border</span><span class="tok">--ring</span></div></div>
+<div class="swatch"><div class="c" style="background:#157A52;color:#fff">#157A52</div><div class="m"><b>success</b><br><code>light #157A52 / fg #FFFFFF · dark #4CAF79 / fg #1C1B29</code><br><span class="tok">{colors.success}</span></div></div>
+<div class="swatch"><div class="c" style="background:#E8F7EF;color:#157A52">#E8F7EF / #157A52</div><div class="m"><b>risk-low</b><br><code>light #E8F7EF/#157A52 · dark #1A3D2A/#4CAF79</code><br><span class="tok">{colors.risk-low}</span></div></div>
+<div class="swatch"><div class="c" style="background:#FCF1DC;color:#92620E">#FCF1DC / #92620E</div><div class="m"><b>risk-attention</b><br><code>light #FCF1DC/#92620E · dark #3D3420/#D4A845</code><br><span class="tok">{colors.risk-attention}</span></div></div>
+<div class="swatch"><div class="c" style="background:#FDE8D3;color:#9A4A0A">#FDE8D3 / #9A4A0A</div><div class="m"><b>risk-medium</b> (distinct orange)<br><code>light #FDE8D3/#9A4A0A · dark #42260F/#E89B4C</code><br><span class="tok">{colors.risk-medium}</span></div></div>
+<div class="swatch"><div class="c" style="background:#FBE7E9;color:#A61D2B">#FBE7E9 / #A61D2B</div><div class="m"><b>risk-high</b><br><code>light #FBE7E9/#A61D2B · dark #3D1F25/#E95B6C</code><br><span class="tok">{colors.risk-high}</span></div></div>
+<div class="swatch"><div class="c" style="background:#EDE7F6;color:#5B4A8A">#EDE7F6 / #5B4A8A</div><div class="m"><b>risk-leaver</b> plum, never red<br><code>light #EDE7F6/#5B4A8A · dark #2B2145/#C0B3E8</code><br><span class="tok">{colors.risk-leaver}</span></div></div>
+</div>
+</section>
+
+<section class="block" id="type">
+<h2>2 · Typography scale</h2>
+<p class="sub">Inherit shadcn sans/mono. Tokens: <span class="tok">{typography.page-title}</span><span class="tok">{typography.section-title}</span><span class="tok">{typography.label}</span><span class="tok">{typography.caption}</span></p>
+<div class="type-row"><div style="font-size:24px;font-weight:600;line-height:1.25;min-width:280px">Page title 24/600</div><span class="tok">{typography.page-title}</span><span class="hint">one per surface</span></div>
+<div class="type-row"><div style="font-size:18px;font-weight:600;line-height:1.35;min-width:280px">Section title 18/600</div><span class="tok">{typography.section-title}</span><span class="hint">profile S1–S16, dashboard blocks</span></div>
+<div class="type-row"><div style="font-size:14px;min-width:280px">Body 14px comfortable</div><span class="tok">body</span><span class="hint">table cells, profile fields</span></div>
+<div class="type-row"><div style="font-size:14px;font-weight:500;min-width:280px">Label 14/500</div><span class="tok">{typography.label}</span><span class="hint">form + filter labels; table headers uppercase 12px</span></div>
+<div class="type-row"><div style="font-size:12px;min-width:280px">Caption 12/400 — helper, timestamps, trend deltas</div><span class="tok">{typography.caption}</span></div>
+<div class="type-row"><div class="mono" style="font-size:13px;min-width:280px">EMP-00421 · PF-88213 · 2026-09-13T09:41Z</div><span class="tok">mono</span><span class="hint">IDs, PeopleForce links, journal timestamps</span></div>
+</section>
+
+<section class="block" id="space">
+<h2>3 · Spacing &amp; rounded</h2>
+<p class="sub"><span class="tok">{spacing.1} 4px</span><span class="tok">{spacing.2} 8px</span><span class="tok">{spacing.3} 12px</span><span class="tok">{spacing.4} 16px</span><span class="tok">{spacing.5} 24px</span><span class="tok">{spacing.6} 32px</span><span class="tok">{spacing.header-height} 3rem</span><span class="tok">{spacing.table-row-height} 56px</span><span class="tok">{spacing.sheet-width} 480px</span></p>
+<div class="row"><span class="chip">rounded-sm 4px <span class="tok">{rounded.sm}</span></span><span class="chip" style="border-radius:6px">rounded-md 6px <span class="tok">{rounded.md}</span></span><span class="chip" style="border-radius:10px">rounded-lg 10px <span class="tok">{rounded.lg}</span></span><span class="chip" style="border-radius:14px">rounded-xl 14px <span class="tok">{rounded.xl}</span></span><span class="pill" style="background:var(--accent)">rounded-full 9999px <span class="tok">{rounded.full}</span></span></div>
+</section>
+
+<section class="block" id="buttons">
+<h2>4 · Buttons</h2>
+<p class="sub"><span class="tok">--primary</span><span class="tok">--secondary</span><span class="tok">--border</span><span class="tok">--destructive</span><span class="tok">{colors.success}</span><span class="tok">{rounded.md}</span><span class="tok">--ring</span> · sizes sm 32 / default 40 / lg 48 / icon 40</p>
+<div class="row">
+<button class="btn btn-primary" type="button">Primary</button>
+<button class="btn btn-secondary" type="button">Secondary</button>
+<button class="btn btn-outline" type="button">Outline</button>
+<button class="btn btn-ghost" type="button">Ghost</button>
+<button class="btn btn-destructive" type="button">Destructive</button>
+<button class="btn btn-success" type="button">Success (confirm-complete)</button>
+</div><br>
+<div class="row">
+<button class="btn btn-primary btn-sm" type="button">Small</button>
+<button class="btn btn-primary" type="button">Default</button>
+<button class="btn btn-primary btn-lg" type="button">Large</button>
+<button class="btn btn-outline btn-icon" type="button" aria-label="icon">⌘</button>
+<button class="btn btn-primary" type="button" disabled>Disabled</button>
+<button class="btn btn-primary" type="button" aria-busy="true"><span class="spinner"></span> Loading (label retained)</button>
+</div>
+<p class="hint">Guardrails: destructive only in Dialog confirm (departure/revoke/pair-end/close); never two competing primaries; disabled still focusable.</p>
+</section>
+
+<section class="block" id="risk">
+<h2>5 · RiskPills (all 5 + trend arrows)</h2>
+<p class="sub"><span class="tok">{colors.risk-low}…{colors.risk-leaver}</span><span class="tok">{rounded.full}</span><span class="tok">{typography.caption} 12/500</span> · arrow in same fg, never color-alone</p>
+<div class="row">
+<span class="pill" style="background:var(--risk-low-bg);color:var(--risk-low-fg)">Low <small>▲ up</small></span>
+<span class="pill" style="background:var(--risk-attention-bg);color:var(--risk-attention-fg)">Need attention <small>— same</small></span>
+<span class="pill" style="background:var(--risk-medium-bg);color:var(--risk-medium-fg)">Medium <small>▼ down</small></span>
+<span class="pill" style="background:var(--risk-high-bg);color:var(--risk-high-fg)">High <small>▲ up</small></span>
+<span class="pill" style="background:var(--risk-leaver-bg);color:var(--risk-leaver-fg)">Leaver (prediction) <small>—</small></span>
+</div>
+<p class="hint">Hover = definition tooltip; leaver never red; arrow only on actual level change; absent for Self/Colleague audiences.</p>
+</section>
+
+<section class="block" id="badges">
+<h2>6 · Badges</h2>
+<p class="sub"><span class="tok">--muted</span><span class="tok">{rounded.full}</span> · neutral employment badge uses muted (dismissed)</p>
+<div class="row"><span class="badge">Active</span><span class="badge">Shared with employee</span><span class="badge">Corrected</span><span class="badge">Frozen · 2026-09-01 🔒</span><span class="badge">Ownerless view</span></div>
+</section>
+
+<section class="block" id="avatar">
+<h2>7 · Avatar</h2>
+<p class="sub"><span class="tok">{rounded.full}</span><span class="tok">--muted</span><span class="tok">{typography.label}</span> · initials fallback, name adjacent, no presence dot</p>
+<div class="row"><span class="avatar av-32">AK</span> Ana K. (32)<span class="avatar av-40">JM</span> Jonas M. (40)<span class="avatar av-48">RS</span> Rui S. (48)</div>
+</section>
+
+<section class="block" id="card">
+<h2>8 · Card</h2>
+<p class="sub"><span class="tok">--background-surface</span><span class="tok">{rounded.lg}</span><span class="tok">--border-card</span><span class="tok">shadow-card</span> · max one emphasized per surface, never nest &gt;1</p>
+<div class="grid g3"><div class="card"><b>Headcount · Project Atlas</b><div style="font-size:24px;font-weight:600">48</div><span class="hint">dashboard counter</span></div><div class="card"><b>Open risks</b><div style="font-size:24px;font-weight:600">12</div><span class="hint">low excluded</span></div><div class="card"><b>Identity · S1</b><div>Ana K. · <span class="mono">EMP-00421</span></div><span class="hint">profile identity card</span></div></div>
+</section>
+
+<section class="block" id="table">
+<h2>9 · Table (sticky header, sortable, inline-edit, 56px rows)</h2>
+<p class="sub"><span class="tok">{spacing.table-row-height}</span><span class="tok">{typography.label} 12px uppercase</span><span class="tok">--text-secondary</span><span class="tok">--border-subtle</span><span class="tok">{rounded.sm}</span> · denied columns absent, never inline-edit manager/PP/department</p>
+<div class="tablewrap"><table class="demo">
+<thead><tr><th>Name ▲</th><th>Project</th><th>Risk</th><th>Title (inline-edit)</th><th></th></tr></thead>
+<tbody>
+<tr><td><span class="avatar av-32">AK</span> Ana K.</td><td>Atlas</td><td><span class="pill" style="background:var(--risk-medium-bg);color:var(--risk-medium-fg)">Medium ▼</span></td><td><input class="cellinput" value="Senior Eng" aria-label="edit title"></td><td>›</td></tr>
+<tr><td><span class="avatar av-32">JM</span> Jonas M.</td><td>Unassigned</td><td><span class="pill" style="background:var(--risk-high-bg);color:var(--risk-high-fg)">High ▲</span></td><td>Staff Eng</td><td>›</td></tr>
+<tr><td><span class="avatar av-32">RS</span> Rui S.</td><td>Borealis</td><td><span class="pill" style="background:var(--risk-low-bg);color:var(--risk-low-fg)">Low —</span></td><td>Engineer II</td><td>›</td></tr>
+<tr><td><span class="avatar av-32">TP</span> T. Petrova</td><td>Atlas</td><td><span class="pill" style="background:var(--risk-leaver-bg);color:var(--risk-leaver-fg)">Leaver</span></td><td>Engineer I</td><td>›</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="block" id="tabs">
+<h2>10 · Tabs (saved views)</h2>
+<p class="sub"><span class="tok">--primary 2px active underline</span> · views re-resolve per viewer; ownerless = no owner chip</p>
+<div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="true" type="button">All (312)</button><button class="tab" role="tab" aria-selected="false" type="button">My reports</button><button class="tab" role="tab" aria-selected="false" type="button">Bench</button><button class="tab" role="tab" aria-selected="false" type="button">Shared: Atlas risks</button></div>
+<p class="hint">Active tab panel: directory table filtered to saved view.</p>
+</section>
+
+<section class="block" id="dialog">
+<h2>11 · Dialog demo</h2>
+<p class="sub"><span class="tok">--background-elevated</span><span class="tok">{rounded.lg}</span><span class="tok">shadow-modal</span><span class="tok">--background-scrim</span> · 1 level max, focus trap + return focus</p>
+<div class="row"><button class="btn btn-destructive" type="button" id="openDialog">Open destructive confirm</button></div>
+</section>
+
+<section class="block" id="sheet">
+<h2>12 · Side Sheet demo (right 480px)</h2>
+<p class="sub"><span class="tok">{spacing.sheet-width} 480px</span><span class="tok">{rounded.lg}</span> · header / scroll body / footer · focus trap · fullscreen ≤640px</p>
+<div class="row"><button class="btn btn-outline" type="button" id="openSheet">Open quick-view sheet</button></div>
+<p class="hint">Focus-trap note: focus moves to sheet title on open, trapped inside, returns to trigger on close. Quick-view shows only granted sections.</p>
+</section>
+
+<section class="block" id="popover">
+<h2>13 · Popover</h2>
+<p class="sub"><span class="tok">--background-elevated</span><span class="tok">{rounded.md}</span><span class="tok">shadow-lg</span> · filters/column chooser/avatar menu; never a full form</p>
+<div class="pop" id="pop1"><button class="btn btn-outline" type="button" id="popBtn">Columns ▾</button><div class="popmenu" role="menu"><button type="button">☑ Name</button><button type="button">☑ Project</button><button type="button">☐ Manager</button><button type="button">☐ Risk trend</button></div></div>
+</section>
+
+<section class="block" id="cmdk">
+<h2>14 · Command palette mock (CmdK)</h2>
+<p class="sub"><span class="tok">--background-selected</span> · header trigger <kbd>⌘K</kbd> · server-side audience filtering; never risk levels/leave types in results</p>
+<div class="cmdk"><input id="cmdInput" placeholder="Search people, projects, actions…" aria-label="command search"><ul id="cmdList"><li class="active">👤 Ana K. — Atlas</li><li>📁 Jump to Project Borealis</li><li>⚡ Record risk…</li><li>⚡ Create campaign…</li></ul></div>
+</section>
+
+<section class="block" id="select">
+<h2>15 · Select (single + multi)</h2>
+<p class="sub"><span class="tok">shadcn Select</span> desktop · native <span class="mono">&lt;select&gt;</span> on mobile · options user cannot set are absent</p>
+<div class="row">
+<div><label class="f" for="s1">Department (single)</label><select class="native" id="s1"><option>Engineering</option><option>Design</option><option>People Ops</option></select></div>
+<div><label class="f" for="s2">Projects (multi)</label><select class="native" id="s2" multiple size="3"><option selected>Atlas</option><option>Borealis</option><option>Unassigned</option></select></div>
+<div><label class="f">Risk level</label><select class="native"><option>Low</option><option selected>Medium</option><option>High</option></select></div>
+</div>
+</section>
+
+<section class="block" id="controls">
+<h2>16 · Checkbox / Switch / Radio</h2>
+<p class="sub"><span class="tok">--border-focus</span> focus ring · sharing flags default-off + plain-language consequence caption</p>
+<div class="row">
+<label><input type="checkbox" checked> IDP complete</label>
+<label><input type="checkbox"> Visible for employee <span class="hint">(Employee will see this)</span></label>
+<label>Open-to-mentoring <input type="checkbox" role="switch" checked></label>
+</div><br>
+<div class="row" role="radiogroup" aria-label="departure reason"><label><input type="radio" name="dr" checked> Voluntary</label><label><input type="radio" name="dr"> End of contract</label><label><input type="radio" name="dr"> Dismissed <span class="mono">(employment_status)</span></label></div>
+</section>
+
+<section class="block" id="inputs">
+<h2>17 · Input / Textarea / Date</h2>
+<p class="sub"><span class="tok">{rounded.sm}</span><span class="tok">--border-default</span><span class="tok">--border-focus</span> · comp band masked author/UM/DM-only</p>
+<label class="f" for="i1">Full name</label><input class="txt" id="i1" value="Ana Kovalenko">
+<label class="f" for="i2">PeopleForce ID + link</label><input class="txt mono" id="i2" value="PF-88213 · peopleforce.io/p/PF-88213">
+<label class="f" for="t1">Risk description (textarea)</label><textarea class="txt" id="t1">Workload concentration on Atlas; propose pair support.</textarea>
+<div class="row"><div><label class="f" for="d1">Effective departure date</label><input class="txt" id="d1" type="date" value="2026-10-31"></div><div><label class="f" for="d2">Assessment</label><select class="native" id="d2"><option>2026-08-01</option><option selected>Never assessed (distinct option)</option></select></div></div>
+</section>
+
+<section class="block" id="filters">
+<h2>18 · FilterBuilder chips</h2>
+<p class="sub"><span class="tok">{rounded.sm}</span><span class="tok">--background-selected</span> · Popover+Command+Badge chips · invalid = error caption, never silent drop</p>
+<div class="row"><span class="chip">project: Atlas <button aria-label="remove">×</button></span><span class="chip">risk ≥ medium <button aria-label="remove">×</button></span><span class="chip">manager: J. Moss <button aria-label="remove">×</button></span><button class="btn btn-outline btn-sm" type="button">+ Add filter</button></div>
+<p class="hint">No-inference-leak: filters on unseen fields rejected server-side; no count/gauge leaks distribution.</p>
+</section>
+
+<section class="block" id="timeline">
+<h2>19 · Timeline (typed dots)</h2>
+<p class="sub"><span class="tok">--border-default rail</span><span class="tok">chart-* dot hues</span> · always label+date, never color-alone · no departure event ever</p>
+<ul class="timeline">
+<li><span class="dot" style="background:#5B4FE0"></span><b>Joined</b> — Engineer I <span class="hint mono">2023-04-01</span></li>
+<li><span class="dot" style="background:#157A52"></span><b>Grade → Senior</b> <span class="badge">corrected</span> <span class="hint mono">2025-06-15 · manual entry kept</span></li>
+<li><span class="dot" style="background:#92620E"></span><b>FTE transition 1.0 → 0.8</b> <span class="hint mono">2026-02-01</span></li>
+<li><span class="dot" style="background:#A61D2B"></span><b>Leave</b> — dates only <span class="hint mono">2026-07-10 → 2026-07-24</span></li>
+</ul>
+</section>
+
+<section class="block" id="states">
+<h2>20 · Empty / Skeleton / Toast / Stale-banner</h2>
+<p class="sub"><span class="tok">{rounded.xl}</span> empty container · <span class="tok">--background-muted</span> skeleton · <span class="tok">z-toast</span> · <span class="tok">--accent-warning</span> banner (dismiss-forbidden during outage)</p>
+<div class="banner">⚠ TimeTracker degraded — project access may be stale. Dismiss forbidden while outage holds. <span class="tok">--accent-warning</span></div>
+<div class="grid g3">
+<div class="empty"><b>No active risks</b> (low excluded)<br><br><button class="btn btn-primary btn-sm" type="button">Create resourcing request</button></div>
+<div class="card"><div class="skel" style="width:60%"></div><div class="skel"></div><div class="skel" style="width:80%"></div><span class="hint">Skeleton mirrors table/profile shape; never for denied sections</span></div>
+<div><button class="btn btn-secondary btn-sm" type="button" id="toastBtn">Fire toast</button><div class="hint">Mutations toast onSuccess/onError, bottom-right</div></div>
+</div>
+</section>
+
+<section class="block" id="tooltip">
+<h2>21 · Tooltip</h2>
+<p class="sub"><span class="tok">caption</span> dark chip · never sole carrier of denied content · tap equivalent on touch</p>
+<p><span class="tip" title="Leaver = predicted flight-risk, still employed. Never conflated with dismissed.">Hover: Leaver definition</span> · <span class="tip" title="Change manager/PP/department on the dedicated relationship screen.">Access-switch hint</span> · <span class="tip" title="▲ level rose since last assessment (CAP-5).">Trend ▲</span></p>
+</section>
+
+<section class="block" id="project">
+<h2>22 · ProjectSelector</h2>
+<p class="sub">header Select-style, Command-backed · <span class="tok">Unassigned bucket</span> always selectable · selection never widens audience</p>
+<div class="row"><select class="native" aria-label="project selector"><option>All projects (aggregate)</option><option selected>Atlas</option><option>Borealis</option><option>Unassigned — 6 requests</option></select><span class="hint">Drives DM dashboard scope (page + counters re-resolve)</span></div>
+</section>
+
+</div>
+
+<div class="overlay" id="dlg"><div class="dialog" role="dialog" aria-modal="true" aria-label="confirm"><h3 style="margin:0 0 8px;color:var(--destructive)">End pairing?</h3><p class="hint">Destructive confirm — destructive button inside Dialog. Focus trapped; Esc closes.</p><div class="row" style="justify-content:flex-end"><button class="btn btn-outline" type="button" id="dlgCancel">Cancel</button><button class="btn btn-destructive" type="button" id="dlgConfirm">End pairing</button></div></div></div>
+<div class="sheet-wrap" id="sheetWrap"><div class="sheet" role="dialog" aria-modal="true" aria-label="quick view"><header><b id="sheetTitle" tabindex="-1">Quick view — Ana K.</b><button class="btn btn-ghost btn-sm" type="button" id="sheetClose">✕ Close</button></header><div class="body"><p><span class="pill" style="background:var(--risk-medium-bg);color:var(--risk-medium-fg)">Medium ▼</span> <span class="mono">EMP-00421</span></p><p>Only granted sections render here (same assembly as profile, never a superset). Comp-band hidden for PP.</p><label class="f">Note</label><textarea class="txt">Pairing proposal draft…</textarea></div><footer><button class="btn btn-outline" type="button" id="sheetCancel">Cancel</button><button class="btn btn-primary" type="button">Save</button></footer></div></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+var root=document.documentElement,btn=document.getElementById('themeBtn');
+function sys(){return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+btn.addEventListener('click',function(){root.setAttribute('data-theme',root.getAttribute('data-theme')==='dark'?'light':'dark')});
+if(!root.getAttribute('data-theme'))root.setAttribute('data-theme',sys());
+var dlg=document.getElementById('dlg');
+document.getElementById('openDialog').addEventListener('click',function(){dlg.classList.add('open');document.getElementById('dlgCancel').focus()});
+document.getElementById('dlgCancel').addEventListener('click',function(){dlg.classList.remove('open');document.getElementById('openDialog').focus()});
+dlg.addEventListener('click',function(e){if(e.target===dlg){dlg.classList.remove('open')}});
+var sw=document.getElementById('sheetWrap');
+document.getElementById('openSheet').addEventListener('click',function(){sw.classList.add('open');document.getElementById('sheetTitle').focus()});
+function closeSheet(){sw.classList.remove('open');document.getElementById('openSheet').focus()}
+document.getElementById('sheetClose').addEventListener('click',closeSheet);
+document.getElementById('sheetCancel').addEventListener('click',closeSheet);
+var pop=document.getElementById('pop1');
+document.getElementById('popBtn').addEventListener('click',function(){pop.classList.toggle('open')});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){dlg.classList.remove('open');sw.classList.remove('open');pop.classList.remove('open')}});
+document.getElementById('toastBtn').addEventListener('click',function(){var t=document.createElement('div');t.className='toast';t.textContent='✓ Risk note saved (onSuccess) — bottom-right, z-toast';document.getElementById('toasts').appendChild(t);setTimeout(function(){t.remove()},3200)});
+var ci=document.getElementById('cmdInput'),items=[].slice.call(document.querySelectorAll('#cmdList li'));
+ci.addEventListener('input',function(){var q=ci.value.toLowerCase();items.forEach(function(li){li.style.display=li.textContent.toLowerCase().indexOf(q)>-1?'':'none'})});
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --background: #FFFFFF; --foreground: #1C1B29;
+      --card: #FFFFFF; --border: #E4E4EE;
+      --muted-foreground: #6B6B80; --secondary: #F0F0F7; --primary: #5B4FE0;
+    }
+    body { margin: 0; font-family: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif; color: var(--foreground); }
+    h1 { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; margin: 0; }
+    .screen { width: 900px; padding: 40px 56px 64px; background: var(--background); }
+    a { color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .banner { background: var(--secondary); border-radius: 6px; padding: 10px 14px; font-size: 13px; color: var(--foreground); margin-top: 10px; }
+    .section-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-top: 16px; }
+    .section-title { font-size: 15px; font-weight: 700; margin: 0 0 10px; }
+    .kv { display: grid; grid-template-columns: 140px 1fr; gap: 6px 12px; font-size: 14px; }
+    .kv dt { color: var(--muted-foreground); }
+  </style>
+</helmet>
+<div class="screen">
+  <p style="font-size:13px; margin:0;"><a href="#"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>All Employees</a></p>
+  <h1 style="font-size:26px; font-weight:700; margin-top:6px;">Olena Borysenko</h1>
+  <div class="banner">Shared link — sections: Identity, Risks</div>
+
+  <div class="section-card">
+    <div class="section-title">Identity</div>
+    <div class="kv"><dt>Position</dt><dd style="margin:0;">Senior FE Engineer</dd><dt>Department</dt><dd style="margin:0;">Engineering</dd></div>
+  </div>
+  <div class="section-card">
+    <div class="section-title">Risks</div>
+    <p style="font-size:13.5px; margin:0;">No active risk flags.</p>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

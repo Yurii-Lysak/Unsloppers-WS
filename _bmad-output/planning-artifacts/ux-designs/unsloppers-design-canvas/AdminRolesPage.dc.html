@@ -1,0 +1,526 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --radius: 10px; --radius-sm: 6px; --radius-lg: 16px;
+      --background: #FFFFFF; --foreground: #1C1B29;
+      --card: #FFFFFF; --primary: #5B4FE0; --primary-foreground: #FFFFFF;
+      --secondary: #F0F0F7; --muted: #F7F7FB; --muted-foreground: #6B6B80;
+      --border: #E4E4EE; --input: #C7C7D6;
+      --sidebar: #15112E; --sidebar-hover: #241D4A; --sidebar-foreground: #A6ADD9;
+      --risk-low-bg: #E8F7EF; --risk-low-fg: #157A52;
+      --risk-attention-bg: #FCF1DC; --risk-attention-fg: #92620E;
+      --risk-high-bg: #FBE7E9; --risk-high-fg: #A61D2B;
+    }
+    body { margin: 0; font-family: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif; color: var(--foreground); }
+    h1, h2 { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; margin: 0; }
+    .screen { width: 1440px; min-height: 900px; display: flex; background: var(--muted); overflow: hidden; position: relative; }
+
+    .sidebar { width: 240px; flex-shrink: 0; background: var(--sidebar); display: flex; flex-direction: column; padding: 20px 14px; }
+    .brand { display: flex; align-items: center; gap: 10px; padding: 6px 10px 22px; }
+    .brand .mark { width: 30px; height: 30px; border-radius: var(--radius-sm); background: linear-gradient(155deg, var(--primary), #2F6FE0); display:flex; align-items:center; justify-content:center; font-family:'Manrope',sans-serif; font-weight:800; color:#fff; font-size:14px; }
+    .brand .name { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: #fff; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 600; color: var(--sidebar-foreground); margin-bottom: 2px; }
+    .nav-item.active { background: var(--primary); color: #fff; }
+    .nav-item svg { flex-shrink: 0; }
+    .nav-group-label { padding: 14px 12px 6px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #6B6B9C; }
+    .sidebar-footer-wrap { margin-top: auto; position: relative; }
+    .sidebar-footer { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 6px; border-top: 1px solid var(--sidebar-hover); cursor: pointer; }
+    .sidebar-footer:hover { background: var(--sidebar-hover); }
+    .sidebar-footer .avatar { width: 30px; height: 30px; border-radius: 999px; background: var(--primary); display:flex; align-items:center; justify-content:center; font-family:'Manrope',sans-serif; font-weight:700; font-size: 11px; color:#fff; flex-shrink:0; }
+    .sidebar-footer .who { min-width: 0; flex: 1; }
+    .sidebar-footer .who .n { font-size: 12px; font-weight: 700; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sidebar-footer .who .r { font-size: 11px; color: var(--sidebar-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sidebar-footer > svg { flex-shrink: 0; color: var(--sidebar-foreground); transition: transform .15s; }
+    .sidebar-footer.open > svg { transform: rotate(180deg); }
+    .account-popover { position: absolute; bottom: calc(100% + 8px); left: 0; width: 252px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 16px 40px rgba(20,17,46,.22); overflow: hidden; z-index: 40; }
+    .account-popover .ap-header { display: flex; align-items: center; gap: 10px; padding: 14px; border-bottom: 1px solid var(--border); }
+    .account-popover .ap-header .avatar { width: 36px; height: 36px; border-radius: 999px; background: var(--primary); display:flex; align-items:center; justify-content:center; font-family:'Manrope',sans-serif; font-weight:700; font-size: 13px; color:#fff; flex-shrink:0; }
+    .account-popover .ap-header .n { font-size: 13.5px; font-weight: 700; color: var(--foreground); }
+    .account-popover .ap-header .e { font-size: 11.5px; color: var(--muted-foreground); margin-top: 1px; }
+    .account-popover .ap-body { padding: 6px; }
+    .account-popover .ap-item { display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 7px; font-size: 13px; font-weight: 500; color: var(--foreground); cursor: pointer; }
+    .account-popover .ap-item:hover { background: var(--muted); }
+    .account-popover .ap-item svg { flex-shrink: 0; color: var(--muted-foreground); }
+    .account-popover .ap-item.danger { color: #DC3545; }
+    .account-popover .ap-item.danger svg { color: #DC3545; }
+    .account-popover .ap-divider { height: 1px; background: var(--border); margin: 5px 8px; }
+    .icon-btn { position: relative; width: 34px; height: 34px; border-radius: 999px; border: 1px solid var(--border); background: var(--background); display: flex; align-items: center; justify-content: center; color: var(--muted-foreground); cursor: pointer; }
+    .icon-btn .dot { position: absolute; top: 7px; right: 8px; width: 7px; height: 7px; border-radius: 999px; background: #DC3545; border: 1.5px solid var(--card); }
+    .np-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .np-row:last-child { border-bottom: none; }
+    .np-title { font-size: 13.5px; font-weight: 600; }
+    .np-desc { font-size: 12.5px; color: var(--muted-foreground); margin-top: 2px; max-width: 300px; }
+    .sw { width: 32px; height: 18px; border-radius: 999px; background: var(--muted); position: relative; flex-shrink: 0; margin-top: 2px; }
+    .sw.on { background: var(--primary); }
+    .sw .knob { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 999px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+    .sw.on .knob { left: 16px; }
+
+    .main-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .topbar { height: 56px; flex-shrink: 0; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; padding: 0 24px; }
+    .content { flex: 1; overflow: auto; padding: 28px 32px; }
+    .page-head .sub { font-size: 13px; color: var(--muted-foreground); margin-top: 4px; }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--radius); border: 1px solid transparent; font-size: 14px; font-weight: 600; height: 32px; padding: 0 12px; white-space: nowrap; cursor: pointer; }
+    .btn-default { background: var(--primary); color: var(--primary-foreground); }
+    .btn-outline { background: var(--background); color: var(--foreground); border-color: var(--border); }
+    .btn-outline:hover { background: var(--muted); }
+    .btn-ghost { background: transparent; color: var(--foreground); }
+    .btn-ghost:hover { background: var(--secondary); }
+    .btn-sm { height: 28px; padding: 0 10px; font-size: 12.8px; }
+
+    .banner { background: linear-gradient(135deg, #15112E, #2A2359); border-radius: var(--radius); padding: 22px 26px; margin-bottom: 22px; color: #fff; }
+    .banner .t { font-size: 14.5px; font-weight: 700; margin-bottom: 12px; }
+    .banner .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .banner .h { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+    .banner .d { font-size: 12.5px; color: #B9B6D6; line-height: 1.6; }
+
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+    .tab-item { padding: 9px 4px; margin-right: 26px; font-size: 13.5px; font-weight: 600; color: var(--muted-foreground); border-bottom: 2px solid transparent; cursor: pointer; }
+    .tab-item.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab-item:hover:not(.active) { color: var(--foreground); }
+
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    table.tt { width: 100%; border-collapse: collapse; }
+    table.tt th { text-align: left; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted-foreground); padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--muted); }
+    table.tt td { padding: 12px 16px; font-size: 13.5px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    table.tt tr:last-child > td { border-bottom: none; }
+    table.tt tr:hover > td { background: var(--muted); }
+    .avatar { border-radius: 999px; display: flex; align-items: center; justify-content: center; font-family: 'Manrope', sans-serif; font-weight: 700; color: #fff; flex-shrink: 0; width: 25px; height: 25px; font-size: 10px; border: 2px solid var(--card); }
+    .avatar-stack { display: flex; }
+    .avatar-stack .avatar:not(:first-child) { margin-left: -8px; }
+    .role-name { font-weight: 700; color: var(--foreground); }
+    .perm-chip { display: inline-flex; font-size: 11px; font-weight: 600; background: var(--accent, #EEECFC); color: var(--primary); padding: 3px 9px; border-radius: 999px; margin: 2px 4px 2px 0; }
+    .perm-chip.more { background: var(--secondary); color: var(--muted-foreground); }
+    .status-pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 3px 10px 3px 8px; font-size: 11.5px; font-weight: 600; }
+    .status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+    .status-active { background: var(--risk-low-bg); color: var(--risk-low-fg); }
+    .status-noaccess { background: var(--secondary); color: var(--muted-foreground); }
+    .detail-row td { background: var(--muted); padding: 18px 22px; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .detail-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted-foreground); margin-bottom: 10px; }
+    .perm-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; margin-bottom: 7px; }
+    .perm-row .chk { width: 15px; height: 15px; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .perm-row .chk.on { background: var(--primary); color: #fff; }
+    .perm-row .chk.off { border: 1px solid var(--input); }
+    .perm-row.muted { color: var(--muted-foreground); }
+    .demo-callout { background: var(--risk-attention-bg); border: 1px solid #F1DFB0; border-radius: 8px; padding: 12px 14px; font-size: 12.5px; color: #6B4D0E; line-height: 1.6; margin-bottom: 16px; }
+    .green-callout { background: var(--risk-low-bg); border: 1px solid #CDEBDB; border-radius: 8px; padding: 11px 13px; font-size: 12.5px; color: #10603F; line-height: 1.5; margin-bottom: 16px; }
+    .cb-row { display: flex; align-items: center; gap: 8px; font-size: 14px; padding: 5px 0; }
+    .cb-box { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--input); flex-shrink: 0; display:flex; align-items:center; justify-content:center; font-size:11px; color:#fff; }
+    .cb-box.checked { background: var(--primary); border-color: var(--primary); }
+    .field-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block; }
+    .input { width: 100%; font-size: 14px; padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid var(--input); background: var(--background); color: var(--foreground); margin-bottom: 14px; }
+    .fieldset-box { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; max-height: 200px; overflow-y: auto; }
+    .fieldset-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted-foreground); margin: 12px 0 6px; }
+    .select { width: 100%; font-size: 14px; padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid var(--input); background: var(--background); color: var(--foreground); margin-bottom: 14px; }
+    .type-badge { display: inline-flex; font-family: 'Manrope', ui-monospace, monospace; font-size: 11px; font-weight: 700; background: var(--secondary); color: var(--foreground); padding: 3px 8px; border-radius: 5px; }
+    .vis-pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 3px 10px 3px 8px; font-size: 11.5px; font-weight: 600; }
+    .vis-pill::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+    .vis-management { background: #E9EAFB; color: #4A44B0; }
+    .vis-employee { background: var(--risk-low-bg); color: var(--risk-low-fg); }
+    .vis-colleague { background: var(--risk-attention-bg); color: var(--risk-attention-fg); }
+    .status-draft { background: var(--secondary); color: var(--muted-foreground); }
+    .field-note { background: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 11px 13px; font-size: 12px; color: var(--muted-foreground); line-height: 1.5; margin-top: 4px; }
+    .backdrop { position: absolute; inset: 0; background: rgba(20,17,46,.4); display: flex; align-items: center; justify-content: center; z-index: 50; }
+    .modal { width: 460px; background: var(--card); border-radius: var(--radius-lg); box-shadow: 0 20px 50px rgba(20,17,46,.3); overflow: hidden; }
+    .modal-header { padding: 20px 20px 0; font-size: 17px; font-weight: 700; }
+    .modal-body { padding: 16px 20px; max-height: 60vh; overflow-y: auto; }
+    .modal-footer { padding: 14px 20px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border); background: var(--muted); }
+  </style>
+</helmet>
+
+<div class="screen">
+  <div class="sidebar">
+    <div class="brand"><div class="mark">U</div><div class="name">unsloppers</div></div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Home</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.4 3-5 5.5-5s4.9 1.6 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.2 14.2c2 .1 3.9 1.6 4.3 4.4"/></svg>All Employees</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Risks</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9c.9.9.9 4.1 0 5"/></svg>Campaigns</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Resourcing</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg>Mentorship</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Reports</div>
+    <div class="nav-group-label">Admin</div>
+    <div class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3.6v5.4c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5.6z"/></svg>Settings</div>
+    <div class="sidebar-footer-wrap">
+      <div class="sidebar-footer {{footerOpenClass}}" onClick="{{toggleAccountMenu}}">
+        <div class="avatar" style="width:30px;height:30px;font-size:11px;border:none;">KM</div>
+        <div class="who"><div class="n">Kateryna Moroz</div><div class="r">Delivery Manager</div></div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+      </div>
+      <sc-if value="{{accountMenuOpen}}">
+        <div class="account-popover">
+          <div class="ap-header">
+            <div class="avatar" style="width:36px;height:36px;font-size:13px;border:none;">KM</div>
+            <div style="min-width:0;">
+              <div class="n">Kateryna Moroz</div>
+              <div class="e">kateryna.moroz@altexsoft.com</div>
+            </div>
+          </div>
+          <div class="ap-body">
+            <div class="ap-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>My profile</div>
+            <div class="ap-item" onClick="{{openNotifPrefs}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>Notification preferences</div>
+            <div class="ap-divider"></div>
+            <div class="ap-item danger"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign out</div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div class="main-col">
+    <div class="topbar" style="justify-content:flex-end;"><button class="icon-btn" aria-label="Notifications"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="dot"></span></button></div>
+    <div class="content">
+      <div class="page-head" style="margin-bottom:18px;">
+        <h1 style="font-size:24px; font-weight:700;">Settings</h1>
+        <div class="sub">Manage functional roles, permissions, and custom fields</div>
+      </div>
+
+      <sc-if value="{{isRolesTab}}">
+      <div class="banner">
+        <div class="t">Two-dimensional access model</div>
+        <div class="grid">
+          <div><div class="h" style="color:#7DD3FC;">Access roles (from relationships)</div><div class="d">Derived from real-world relationships: Employee, Manager, People Partner. These determine what data a person can see about another person.</div></div>
+          <div><div class="h" style="color:#C4B5FD;">Functional roles (assigned)</div><div class="d">Assigned by HR Admin. Grant feature access (create campaigns, risks, resourcing, mentorship...) but do NOT grant employee data access by themselves.</div></div>
+        </div>
+      </div>
+      </sc-if>
+
+      <div class="tabs">
+        <div class="tab-item {{rolesTabClass}}" onClick="{{selectRolesTab}}">Functional Roles &amp; Permissions</div>
+        <div class="tab-item {{fieldsTabClass}}" onClick="{{selectFieldsTab}}">Custom Fields</div>
+      </div>
+
+      <sc-if value="{{isRolesTab}}">
+      <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
+        <button class="btn btn-default" onClick="{{openCreate}}">+ Create role</button>
+      </div>
+
+      <div class="panel">
+        <table class="tt">
+          <tr><th>Role</th><th>Users</th><th>Permissions</th><th>Status</th><th></th></tr>
+
+          <tr>
+            <td class="role-name">Team Lead</td>
+            <td>
+              <div class="avatar-stack">
+                <div class="avatar" style="background:#5B4FE0;">OB</div>
+                <div class="avatar" style="background:#2F6FE0;">DP</div>
+                <div class="avatar" style="background:#1E9E6C;">YV</div>
+              </div>
+            </td>
+            <td>
+              <span class="perm-chip">Create action items</span>
+              <span class="perm-chip">Maintain CDS records</span>
+              <span class="perm-chip more">+2 more</span>
+            </td>
+            <td><span class="status-pill status-active">Active</span></td>
+            <td><button class="btn btn-ghost btn-sm" onClick="{{toggleExpand_r1}}">{{expandLabel_r1}}</button></td>
+          </tr>
+          <sc-if value="{{isExpanded_r1}}">
+            <tr class="detail-row"><td colspan="5">
+              <div class="detail-grid">
+                <div>
+                  <div class="detail-label">Assigned users</div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;"><div class="avatar" style="background:#5B4FE0;">OB</div><span>Olena Borysenko</span><span style="color:var(--muted-foreground); font-size:11.5px;">Senior FE Engineer</span></div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;"><div class="avatar" style="background:#2F6FE0;">DP</div><span>Dmytro Panchenko</span><span style="color:var(--muted-foreground); font-size:11.5px;">DevOps Engineer</span></div>
+                  <div style="display:flex; align-items:center; gap:8px;"><div class="avatar" style="background:#1E9E6C;">YV</div><span>Yana Voronova</span><span style="color:var(--muted-foreground); font-size:11.5px;">SDET</span></div>
+                </div>
+                <div>
+                  <div class="detail-label">All permissions</div>
+                  <div class="perm-row"><span class="chk on">✓</span>Create action items</div>
+                  <div class="perm-row"><span class="chk on">✓</span>Maintain CDS records</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Create form campaigns</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Create resourcing requests</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Fulfil resourcing requests</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Assign mentors</div>
+                </div>
+              </div>
+            </td></tr>
+          </sc-if>
+
+          <tr>
+            <td class="role-name">Recruiter</td>
+            <td><div class="avatar-stack"><div class="avatar" style="background:#C98A1F;">IS</div></div></td>
+            <td><span class="perm-chip">Create resourcing requests</span></td>
+            <td><span class="status-pill status-active">Active</span></td>
+            <td><button class="btn btn-ghost btn-sm" onClick="{{toggleExpand_r2}}">{{expandLabel_r2}}</button></td>
+          </tr>
+          <sc-if value="{{isExpanded_r2}}">
+            <tr class="detail-row"><td colspan="5">
+              <div class="detail-grid">
+                <div>
+                  <div class="detail-label">Assigned users</div>
+                  <div style="display:flex; align-items:center; gap:8px;"><div class="avatar" style="background:#C98A1F;">IS</div><span>Ihor Savenko</span><span style="color:var(--muted-foreground); font-size:11.5px;">Talent Acquisition Specialist</span></div>
+                </div>
+                <div>
+                  <div class="detail-label">All permissions</div>
+                  <div class="perm-row"><span class="chk on">✓</span>Create resourcing requests</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Create action items</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Create form campaigns</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Fulfil resourcing requests — requires manager relationship</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Assign mentors — requires manager relationship</div>
+                </div>
+              </div>
+            </td></tr>
+          </sc-if>
+
+          <tr>
+            <td class="role-name">Finance Reviewer</td>
+            <td><span style="color:var(--muted-foreground); font-size:12.5px;">No users</span></td>
+            <td><span class="perm-chip">View dashboard</span></td>
+            <td><span class="status-pill status-noaccess">Inactive</span></td>
+            <td><button class="btn btn-ghost btn-sm" onClick="{{toggleExpand_r3}}">{{expandLabel_r3}}</button></td>
+          </tr>
+          <sc-if value="{{isExpanded_r3}}">
+            <tr class="detail-row"><td colspan="5">
+              <div class="detail-grid">
+                <div>
+                  <div class="detail-label">Assigned users</div>
+                  <div style="color:var(--muted-foreground); font-size:12.5px;">No one currently holds this role.</div>
+                </div>
+                <div>
+                  <div class="detail-label">All permissions</div>
+                  <div class="perm-row"><span class="chk on">✓</span>View dashboard</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Create action items</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Create resourcing requests</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Create form campaigns</div>
+                </div>
+              </div>
+            </td></tr>
+          </sc-if>
+
+          <tr>
+            <td class="role-name">Security Awareness Coordinator</td>
+            <td><div class="avatar-stack"><div class="avatar" style="background:#0E8F86;">MT</div></div></td>
+            <td><span class="perm-chip">Create form campaigns</span></td>
+            <td><span class="status-pill status-active">Active</span></td>
+            <td><button class="btn btn-ghost btn-sm" onClick="{{toggleExpand_r4}}">{{expandLabel_r4}}</button></td>
+          </tr>
+          <sc-if value="{{isExpanded_r4}}">
+            <tr class="detail-row"><td colspan="5">
+              <div class="green-callout"><strong>Demonstrates the model:</strong> this role grants only "Create form campaigns" — no Manager or People Partner data access. Mariana Tkach can create and send campaigns without being able to see anyone's risk level, personal contacts, or management notes.</div>
+              <div class="detail-grid">
+                <div>
+                  <div class="detail-label">Assigned users</div>
+                  <div style="display:flex; align-items:center; gap:8px;"><div class="avatar" style="background:#0E8F86;">MT</div><span>Mariana Tkach</span><span style="color:var(--muted-foreground); font-size:11.5px;">QA Engineer</span></div>
+                </div>
+                <div>
+                  <div class="detail-label">All permissions</div>
+                  <div class="perm-row"><span class="chk on">✓</span>Create form campaigns</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Create/edit risks — requires manager relationship</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Fulfil resourcing requests — requires manager relationship</div>
+                  <div class="perm-row muted"><span class="chk off"></span>Assign mentors — requires manager relationship</div>
+                </div>
+              </div>
+            </td></tr>
+          </sc-if>
+        </table>
+      </div>
+
+      <div class="note-strip" style="font-size:11.5px; color:var(--muted-foreground); margin-top:20px; padding-top:14px; border-top:1px solid var(--border); line-height:1.5;">Design proposal for the "Settings" screen (spec, sections 17–18) — combines the real <code>/admin/roles</code> screen with the not-yet-built Custom Fields admin screen into a single section, following the approach of the Team_5/Hi5 reference designer. The two-dimensional access model banner and the "Security Awareness Coordinator" row directly demonstrate the spec's core point: a functional role grants feature access, not access to employees' personal data (that's determined only by the Manager/People Partner/Colleague relationship).</div>
+      </sc-if>
+
+      <sc-if value="{{isFieldsTab}}">
+      <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
+        <button class="btn btn-default" onClick="{{openCreateField}}">+ Create field</button>
+      </div>
+
+      <div class="panel">
+        <table class="tt">
+          <tr><th>Field name</th><th>Type</th><th>Visibility</th><th>Appears in</th><th>Status</th><th>Created by</th></tr>
+
+          <tr>
+            <td class="role-name">Certification Level</td>
+            <td><span class="type-badge">Single Select</span></td>
+            <td><span class="vis-pill vis-management">Management</span></td>
+            <td><span class="perm-chip">Columns</span><span class="perm-chip">Filters</span></td>
+            <td><span class="status-pill status-active">Active</span></td>
+            <td style="color:var(--muted-foreground); font-size:12.5px;">Kateryna Moroz</td>
+          </tr>
+          <tr>
+            <td class="role-name">Contract End Date</td>
+            <td><span class="type-badge">Date</span></td>
+            <td><span class="vis-pill vis-management">Management</span></td>
+            <td><span class="perm-chip">Filters</span><span class="perm-chip">Profile</span></td>
+            <td><span class="status-pill status-active">Active</span></td>
+            <td style="color:var(--muted-foreground); font-size:12.5px;">Ihor Savenko</td>
+          </tr>
+          <tr>
+            <td class="role-name">Preferred Work Mode</td>
+            <td><span class="type-badge">Single Select</span></td>
+            <td><span class="vis-pill vis-employee">Employee</span></td>
+            <td><span class="perm-chip">Profile</span></td>
+            <td><span class="status-pill status-active">Active</span></td>
+            <td style="color:var(--muted-foreground); font-size:12.5px;">Kateryna Moroz</td>
+          </tr>
+          <tr>
+            <td class="role-name">Internal Mentor Notes</td>
+            <td><span class="type-badge">Text</span></td>
+            <td><span class="vis-pill vis-management">Management</span></td>
+            <td><span class="perm-chip">Profile</span></td>
+            <td><span class="status-pill status-draft">Draft</span></td>
+            <td style="color:var(--muted-foreground); font-size:12.5px;">Olena Borysenko</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="note-strip" style="font-size:11.5px; color:var(--muted-foreground); margin-top:20px; padding-top:14px; border-top:1px solid var(--border); line-height:1.5;">Design proposal for the "Custom Fields" screen (spec, section 18) — this admin screen is not yet built in the product. The HR Admin creates additional fields (Text/Number/Date/Single Select/Multi Select/Boolean), sets their visibility (Management/Employee/Colleague), and where each field appears — as a column, a filter, or on the profile. The layout follows the approach of the Team_5/Hi5 reference designer, adapted to our Ink/Indigo/Sky tokens.</div>
+      </sc-if>
+    </div>
+  </div>
+
+  <sc-if value="{{modalOpen}}">
+    <div class="backdrop">
+      <div class="modal">
+        <div class="modal-header">Create functional role</div>
+        <div class="modal-body">
+          <span class="field-label">Role name *</span>
+          <input class="input" placeholder="e.g. Security Awareness Coordinator">
+
+          <div class="demo-callout"><strong>Two-dimensional role model:</strong> functional roles grant feature access but never employee-data access by themselves. Data access always comes from the relationship (Manager, People Partner, Colleague).</div>
+
+          <div class="fieldset-label">Feature permissions</div>
+          <div class="fieldset-box">
+            <div class="cb-row"><div class="cb-box checked">✓</div>Create form campaigns</div>
+            <div class="cb-row"><div class="cb-box"></div>Create action items</div>
+            <div class="cb-row"><div class="cb-box"></div>View dashboard</div>
+          </div>
+          <div class="fieldset-label">Manager-level actions <span style="color:#A61D2B; font-weight:500; text-transform:none;">— also require a data relationship</span></div>
+          <div class="fieldset-box">
+            <div class="cb-row"><div class="cb-box"></div>Create/edit risks</div>
+            <div class="cb-row"><div class="cb-box"></div>Fulfil resourcing requests</div>
+            <div class="cb-row"><div class="cb-box"></div>Assign mentors</div>
+            <div class="cb-row"><div class="cb-box"></div>Maintain CDS records</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onClick="{{closeModal}}">Cancel</button>
+          <button class="btn btn-default" onClick="{{closeModal}}">Next: Assign users →</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{modalFieldOpen}}">
+    <div class="backdrop">
+      <div class="modal">
+        <div class="modal-header">Create custom field</div>
+        <div class="modal-body">
+          <span class="field-label">Field name *</span>
+          <input class="input" placeholder="e.g. Certification Level">
+
+          <span class="field-label">Field type *</span>
+          <select class="select">
+            <option>Text</option>
+            <option>Number</option>
+            <option>Date</option>
+            <option selected>Single Select</option>
+            <option>Multi Select</option>
+            <option>Boolean</option>
+          </select>
+
+          <span class="field-label">Options (for Single/Multi Select)</span>
+          <input class="input" placeholder="Junior, Middle, Senior, Expert" style="margin-bottom:6px;">
+          <div class="field-note" style="margin-bottom:14px;">Comma-separated list of selectable values.</div>
+
+          <span class="field-label">Visibility *</span>
+          <select class="select" style="margin-bottom:6px;">
+            <option>Management</option>
+            <option>Employee</option>
+            <option>Colleague</option>
+          </select>
+          <div class="field-note">Who can see this field's value: only Manager/People Partner, the employee themselves, or anyone with profile access.</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onClick="{{closeModalField}}">Cancel</button>
+          <button class="btn btn-default" onClick="{{closeModalField}}">Create field</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{notifOpen}}">
+    <div class="backdrop" style="z-index:60;">
+      <div class="modal" style="width:460px;">
+        <div class="modal-header">Notification preferences</div>
+        <div class="modal-body" style="padding-top:8px;">
+          <div class="np-row">
+            <div><div class="np-title">Risk level changes</div><div class="np-desc">Email me when a risk level changes for someone I manage</div></div>
+            <div class="sw on"><div class="knob"></div></div>
+          </div>
+          <div class="np-row">
+            <div><div class="np-title">Campaign deadlines</div><div class="np-desc">Remind me 3 days before a campaign I own is due</div></div>
+            <div class="sw on"><div class="knob"></div></div>
+          </div>
+          <div class="np-row">
+            <div><div class="np-title">Weekly summary</div><div class="np-desc">A digest of team and campaign changes every Monday morning</div></div>
+            <div class="sw"><div class="knob"></div></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onClick="{{closeNotifPrefs}}">Cancel</button>
+          <button class="btn btn-default" onClick="{{closeNotifPrefs}}">Save</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    const modalOpen = this.state.modalOpen ?? false;
+    const modalFieldOpen = this.state.modalFieldOpen ?? false;
+    const accountMenuOpen = this.state.accountMenuOpen ?? false;
+    const notifOpen = this.state.notifOpen ?? false;
+    const expandedRole = this.state.expandedRole ?? 'r1';
+    const settingsTab = this.state.settingsTab ?? 'roles';
+    return {
+      modalOpen,
+      openCreate: () => this.setState({ modalOpen: true }),
+      closeModal: () => this.setState({ modalOpen: false }),
+      modalFieldOpen,
+      openCreateField: () => this.setState({ modalFieldOpen: true }),
+      closeModalField: () => this.setState({ modalFieldOpen: false }),
+      isRolesTab: settingsTab === 'roles',
+      isFieldsTab: settingsTab === 'fields',
+      rolesTabClass: settingsTab === 'roles' ? 'active' : '',
+      fieldsTabClass: settingsTab === 'fields' ? 'active' : '',
+      selectRolesTab: () => this.setState({ settingsTab: 'roles' }),
+      selectFieldsTab: () => this.setState({ settingsTab: 'fields' }),
+      isExpanded_r1: expandedRole === 'r1',
+      expandLabel_r1: expandedRole === 'r1' ? 'Hide' : 'Details',
+      toggleExpand_r1: () => this.setState({ expandedRole: expandedRole === 'r1' ? null : 'r1' }),
+      isExpanded_r2: expandedRole === 'r2',
+      expandLabel_r2: expandedRole === 'r2' ? 'Hide' : 'Details',
+      toggleExpand_r2: () => this.setState({ expandedRole: expandedRole === 'r2' ? null : 'r2' }),
+      isExpanded_r3: expandedRole === 'r3',
+      expandLabel_r3: expandedRole === 'r3' ? 'Hide' : 'Details',
+      toggleExpand_r3: () => this.setState({ expandedRole: expandedRole === 'r3' ? null : 'r3' }),
+      isExpanded_r4: expandedRole === 'r4',
+      expandLabel_r4: expandedRole === 'r4' ? 'Hide' : 'Details',
+      toggleExpand_r4: () => this.setState({ expandedRole: expandedRole === 'r4' ? null : 'r4' }),
+      accountMenuOpen,
+      notifOpen,
+      footerOpenClass: accountMenuOpen ? 'open' : '',
+      toggleAccountMenu: () => this.setState({ accountMenuOpen: !this.state.accountMenuOpen }),
+      openNotifPrefs: () => this.setState({ accountMenuOpen: false, notifOpen: true }),
+      closeNotifPrefs: () => this.setState({ notifOpen: false }),
+    };
+  }
+}
+</script>
+</x-dc>
+</body>
+</html>

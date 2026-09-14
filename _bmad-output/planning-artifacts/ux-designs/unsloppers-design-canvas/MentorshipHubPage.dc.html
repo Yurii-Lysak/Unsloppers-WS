@@ -1,0 +1,327 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+
+    * { box-sizing: border-box; }
+    :root {
+      --background: #FFFFFF; --foreground: #1C1B29;
+      --card: #FFFFFF; --primary: #5B4FE0; --primary-hover:#4A3FC4; --primary-foreground: #FFFFFF;
+      --secondary: #F0F0F7; --accent: #EEECFC; --muted: #F7F7FB; --muted-foreground: #6B6B80;
+      --border: #E4E4EE; --input:#C7C7D6; --sidebar: #15112E; --sidebar-hover: #241D4A; --sidebar-foreground: #A6ADD9;
+      --destructive: #DC3545; --destructive-soft:#FBE7E9;
+      --risk-low-bg: #E8F7EF; --risk-low-fg: #157A52;
+      --risk-attention-bg: #FCF1DC; --risk-attention-fg: #92620E;
+      --risk-medium-bg: #FCF1DC; --risk-medium-fg: #92620E;
+      --risk-high-bg: #FBE7E9; --risk-high-fg: #A61D2B;
+      --risk-leaver-bg: #F0F0F7; --risk-leaver-fg: #6B6B80;
+    }
+    body { margin: 0; font-family: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif; color: var(--foreground); }
+    h1, h2, h3 { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; margin: 0; }
+    a { color: var(--primary); text-decoration: none; } a:hover { text-decoration: underline; }
+    .screen { width: 1440px; min-height: 900px; display: flex; background: var(--muted); overflow: hidden; position: relative; }
+
+    .sidebar { width: 240px; flex-shrink: 0; background: var(--sidebar); display: flex; flex-direction: column; padding: 20px 14px; }
+    .brand { display: flex; align-items: center; gap: 10px; padding: 6px 10px 22px; }
+    .brand .mark { width: 30px; height: 30px; border-radius: 6px; background: linear-gradient(155deg, var(--primary), #2F6FE0); display:flex; align-items:center; justify-content:center; font-family:'Manrope',sans-serif; font-weight:800; color:#fff; font-size:14px; }
+    .brand .name { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: #fff; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px; font-size: 13.5px; font-weight: 600; color: var(--sidebar-foreground); margin-bottom: 2px; }
+    .nav-item.active { background: var(--primary); color: #fff; }
+    .nav-item svg { flex-shrink: 0; }
+    .nav-group-label { padding: 14px 12px 6px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #6B6B9C; }
+    .sidebar-footer-wrap { margin-top: auto; position: relative; }
+    .sidebar-footer { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 6px; border-top: 1px solid var(--sidebar-hover); cursor: pointer; }
+    .sidebar-footer:hover { background: var(--sidebar-hover); }
+    .sidebar-footer .avatar { width: 30px; height: 30px; border-radius: 999px; background: var(--primary); display:flex; align-items:center; justify-content:center; font-family:'Manrope',sans-serif; font-weight:700; font-size: 11px; color:#fff; flex-shrink:0; }
+    .sidebar-footer .who { min-width: 0; flex: 1; }
+    .sidebar-footer .who .n { font-size: 12px; font-weight: 700; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sidebar-footer .who .r { font-size: 11px; color: var(--sidebar-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sidebar-footer > svg { flex-shrink: 0; color: var(--sidebar-foreground); transition: transform .15s; }
+    .sidebar-footer.open > svg { transform: rotate(180deg); }
+    .account-popover { position: absolute; bottom: calc(100% + 8px); left: 0; width: 252px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 16px 40px rgba(20,17,46,.22); overflow: hidden; z-index: 40; }
+    .account-popover .ap-header { display: flex; align-items: center; gap: 10px; padding: 14px; border-bottom: 1px solid var(--border); }
+    .account-popover .ap-header .avatar { width: 36px; height: 36px; border-radius: 999px; background: var(--primary); display:flex; align-items:center; justify-content:center; font-family:'Manrope',sans-serif; font-weight:700; font-size: 13px; color:#fff; flex-shrink:0; }
+    .account-popover .ap-header .n { font-size: 13.5px; font-weight: 700; color: var(--foreground); }
+    .account-popover .ap-header .e { font-size: 11.5px; color: var(--muted-foreground); margin-top: 1px; }
+    .account-popover .ap-body { padding: 6px; }
+    .account-popover .ap-item { display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 7px; font-size: 13px; font-weight: 500; color: var(--foreground); cursor: pointer; }
+    .account-popover .ap-item:hover { background: var(--muted); }
+    .account-popover .ap-item svg { flex-shrink: 0; color: var(--muted-foreground); }
+    .account-popover .ap-item.danger { color: #DC3545; }
+    .account-popover .ap-item.danger svg { color: #DC3545; }
+    .account-popover .ap-divider { height: 1px; background: var(--border); margin: 5px 8px; }
+    .icon-btn { position: relative; width: 34px; height: 34px; border-radius: 999px; border: 1px solid var(--border); background: var(--background); display: flex; align-items: center; justify-content: center; color: var(--muted-foreground); cursor: pointer; }
+    .icon-btn .dot { position: absolute; top: 7px; right: 8px; width: 7px; height: 7px; border-radius: 999px; background: #DC3545; border: 1.5px solid var(--card); }
+    .np-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .np-row:last-child { border-bottom: none; }
+    .np-title { font-size: 13.5px; font-weight: 600; }
+    .np-desc { font-size: 12.5px; color: var(--muted-foreground); margin-top: 2px; max-width: 300px; }
+    .sw { width: 32px; height: 18px; border-radius: 999px; background: var(--muted); position: relative; flex-shrink: 0; margin-top: 2px; }
+    .sw.on { background: var(--primary); }
+    .sw .knob { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 999px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+    .sw.on .knob { left: 16px; }
+    .backdrop { position: absolute; inset: 0; background: rgba(20,17,46,.4); display: flex; align-items: center; justify-content: center; z-index: 50; }
+    .modal { width: 460px; background: var(--card); border-radius: 16px; box-shadow: 0 20px 50px rgba(20,17,46,.3); overflow: hidden; }
+    .modal.wide { width: 520px; }
+    .modal-header { padding: 20px 20px 0; font-size: 17px; font-weight: 700; }
+    .modal-body { padding: 8px 20px 16px; }
+    .modal-footer { padding: 14px 20px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border); background: var(--muted); }
+
+    .main-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .topbar { height: 56px; flex-shrink: 0; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; padding: 0 24px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 10px; border: 1px solid var(--border); font-size: 13.5px; font-weight: 600; height: 32px; padding: 0 13px; background: var(--background); color: var(--foreground); cursor:pointer; }
+    .btn-default { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+    .btn-outline { background: var(--background); color: var(--foreground); border-color: var(--input); }
+    .btn-outline-danger { background: var(--background); color: #A61D2B; border-color: #F3C6CB; }
+    .btn-ghost { background: transparent; border-color: transparent; }
+    .btn-sm { height: 28px; padding: 0 10px; font-size: 12.8px; }
+    .btn[disabled] { opacity: .45; cursor: default; }
+    .content { flex: 1; overflow: auto; padding: 26px 32px 40px; }
+    .page-head { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px; }
+    .page-head h1 { font-size: 22px; font-weight: 700; }
+    .page-head .sub { font-size: 13px; color: var(--muted-foreground); margin-top: 4px; }
+
+    .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+    .risk-low { background: var(--risk-low-bg); color: var(--risk-low-fg); }
+    .risk-attention { background: var(--risk-attention-bg); color: var(--risk-attention-fg); }
+    .risk-medium { background: var(--risk-medium-bg); color: var(--risk-medium-fg); }
+    .risk-high { background: var(--risk-high-bg); color: var(--risk-high-fg); }
+    .risk-leaver { background: var(--risk-leaver-bg); color: var(--risk-leaver-fg); }
+
+    .status-pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 3px 10px 3px 8px; font-size: 11.5px; font-weight: 600; white-space:nowrap; }
+    .status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: currentColor; flex-shrink: 0; }
+    .status-draft { background: var(--secondary); color: #6B6B80; }
+    .status-open { background: #E3EEFC; color: #1C57B5; }
+    .status-pending { background: var(--risk-attention-bg); color: var(--risk-attention-fg); }
+    .status-approved, .status-closed, .status-complete, .status-active { background: var(--risk-low-bg); color: var(--risk-low-fg); }
+    .status-rejected, .status-reversed, .status-ended { background: var(--destructive-soft); color: #A61D2B; }
+
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+    .tab-item { padding: 9px 4px; margin-right: 24px; font-size: 13.5px; font-weight: 600; color: var(--muted-foreground); border-bottom: 2px solid transparent; cursor: pointer; }
+    .tab-item.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab-item .count { color: var(--muted-foreground); font-weight: 600; margin-left: 4px; }
+    .tab-item.active .count { color: var(--primary); }
+
+    .avatar { border-radius: 999px; display: flex; align-items: center; justify-content: center; font-family: 'Manrope', sans-serif; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+    .panel-pad { padding: 18px 20px; }
+    .panel-title { font-size: 14px; font-weight: 700; }
+
+    .counter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 4px; }
+    .counter-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; cursor: pointer; transition: border-color .15s, box-shadow .15s; position: relative; }
+    .counter-card:hover { border-color: var(--primary); box-shadow: 0 4px 14px rgba(91,79,224,.12); }
+    .counter-card.selected { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(91,79,224,.18); }
+    .counter-card.tone-warn { background: var(--risk-attention-bg); border-color: #F1DFB0; }
+    .counter-card.tone-danger { background: var(--risk-high-bg); border-color: #F3C6CB; }
+    .counter-card.tone-info { background: #E3EEFC; border-color: #C7DBF5; }
+    .counter-card.tone-neutral-strong { background: var(--foreground); border-color: var(--foreground); }
+    .counter-card.tone-neutral-strong .label, .counter-card.tone-neutral-strong .value { color: #fff; }
+    .counter-card .icon { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .counter-card .value { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 25px; }
+    .counter-card .label { font-size: 12px; color: var(--muted-foreground); margin-top: 2px; font-weight: 600; }
+    .counter-card .chev { position: absolute; top: 14px; right: 14px; color: var(--muted-foreground); opacity: 0; transition: opacity .15s; }
+    .counter-card:hover .chev { opacity: 1; }
+
+    table.tt { width: 100%; border-collapse: collapse; }
+    table.tt th { text-align: left; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted-foreground); padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    table.tt td { padding: 10px; font-size: 13.5px; border-bottom: 1px solid var(--muted); vertical-align: middle; }
+    table.tt tr:last-child td { border-bottom: none; }
+    table.tt tr:hover td { background: var(--muted); }
+    .p-cell { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .p-cell .avatar { width: 27px; height: 27px; font-size: 10.5px; }
+    .p-name { font-weight: 600; color: #2F6FE0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .p-role { font-size: 11px; color: var(--muted-foreground); }
+
+    .side-stack { display: flex; flex-direction: column; gap: 16px; }
+    .action-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--muted); }
+    .action-item:last-child { border-bottom: none; }
+    .action-item .dot-ic { width: 22px; height: 22px; border-radius: 999px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .action-item .t { font-size: 13px; font-weight: 600; }
+    .action-item .d { font-size: 11px; color: var(--muted-foreground); margin-top: 2px; }
+
+    .res-item { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--muted); }
+    .res-item:last-child { border-bottom: none; }
+    .res-item .t { font-size: 13.5px; font-weight: 600; }
+    .res-item .d { font-size: 11.5px; color: var(--muted-foreground); margin-top: 2px; }
+    .res-item .right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+    .section-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
+    .section-card .sc-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+    .section-card .sc-head.attention { background: var(--risk-attention-bg); border-bottom-color: #F1DFB0; }
+    .section-card .sc-title { font-size: 14.5px; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+    .section-card .sc-body { padding: 4px 18px; }
+
+    .progress-track { height: 8px; border-radius: 999px; background: var(--muted); overflow: hidden; width: 160px; }
+    .progress-fill { height: 100%; background: var(--primary); border-radius: 999px; }
+    .progress-fill.complete { background: #1E9E6C; }
+
+    .proposal-card { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px 14px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; }
+    .proposal-card:last-child { margin-bottom: 0; }
+    .proposal-card .left { display: flex; align-items: center; gap: 11px; min-width: 0; }
+    .proposal-card .meta { font-size: 11.5px; color: var(--muted-foreground); margin-top: 2px; }
+    .proposal-card.external { background: var(--muted); border-style: dashed; }
+
+    .dl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 24px; }
+    .dl-item .dt { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted-foreground); font-weight: 700; margin-bottom: 5px; }
+    .dl-item .dd { font-size: 14px; font-weight: 600; }
+
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 34px 20px; color: var(--muted-foreground); }
+    .empty-state .ic { width: 40px; height: 40px; border-radius: 999px; background: var(--muted); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .empty-state.error .ic { background: var(--risk-high-bg); color: #A61D2B; }
+    .empty-state .t { font-size: 13px; font-weight: 700; color: var(--foreground); }
+    .empty-state .d { font-size: 12px; margin-top: 3px; max-width: 260px; }
+
+    .pager { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 14px; }
+    .pager .pg-num { font-size: 12.5px; font-weight: 700; color: var(--foreground); }
+    .filter-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--primary); background: var(--accent); border-radius: 999px; padding: 4px 6px 4px 12px; }
+    .filter-chip button { border: none; background: transparent; color: var(--primary); cursor: pointer; width:16px; height:16px; display:flex; align-items:center; justify-content:center; }
+
+    .note-strip { font-size: 11.5px; color: var(--muted-foreground); margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--border); line-height: 1.5; }
+  </style>
+</helmet>
+<div class="screen">
+  <div class="sidebar">
+    <div class="brand"><div class="mark">U</div><div class="name">unsloppers</div></div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Home</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.4 3-5 5.5-5s4.9 1.6 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.2 14.2c2 .1 3.9 1.6 4.3 4.4"/></svg>All Employees</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Risks</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9c.9.9.9 4.1 0 5"/></svg>Campaigns</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Resourcing</div>
+    <div class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg>Mentorship</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Reports</div>
+    <div class="nav-group-label">Admin</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3.6v5.4c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5.6z"/></svg>Settings</div>
+    <div class="sidebar-footer-wrap">
+      <div class="sidebar-footer {{footerOpenClass}}" onClick="{{toggleAccountMenu}}">
+        <div class="avatar">KM</div>
+        <div class="who"><div class="n">Kateryna Moroz</div><div class="r">Delivery Manager</div></div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+      </div>
+      <sc-if value="{{accountMenuOpen}}">
+        <div class="account-popover">
+          <div class="ap-header">
+            <div class="avatar">KM</div>
+            <div style="min-width:0;">
+              <div class="n">Kateryna Moroz</div>
+              <div class="e">kateryna.moroz@altexsoft.com</div>
+            </div>
+          </div>
+          <div class="ap-body">
+            <div class="ap-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>My profile</div>
+            <div class="ap-item" onClick="{{openNotifPrefs}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>Notification preferences</div>
+            <div class="ap-divider"></div>
+            <div class="ap-item danger"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign out</div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+  <div class="main-col">
+    <div class="topbar"><button class="icon-btn" aria-label="Notifications"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="dot"></span></button></div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Mentorship Hub</h1><div class="sub">Pairs and willing mentors across the organization</div></div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab-item">All<span class="count">8</span></div>
+        <div class="tab-item active">Active<span class="count">6</span></div>
+        <div class="tab-item">Ended<span class="count">2</span></div>
+      </div>
+
+      <div class="panel-title" style="margin-bottom:10px;">Mentor pairs</div>
+      <div class="panel" style="margin-bottom:24px;">
+        <table class="tt">
+          <tr><th>Mentor</th><th>Mentee</th><th>Started</th><th>Status</th><th></th></tr>
+          <tr>
+      <td><div class="p-cell"><div class="avatar" style="width:27px;height:27px;font-size:10px;background:#1E9E6C;">IS</div><a href="#" class="p-name" title="Ihor Sydorenko">Ihor Sydorenko</a></div></td>
+      <td><div class="p-cell"><div class="avatar" style="width:27px;height:27px;font-size:10px;background:#C98A1F;">MT</div><a href="#" class="p-name" title="Mariana Tkach">Mariana Tkach</a></div></td>
+      <td>2026-03-01</td>
+      <td><span class="status-pill status-active">Active</span></td>
+      <td><button class="btn btn-outline-danger btn-sm">End pair</button></td>
+    </tr>
+          <tr>
+      <td><div class="p-cell"><div class="avatar" style="width:27px;height:27px;font-size:10px;background:#5B4FE0;">OB</div><a href="#" class="p-name" title="Olena Borysenko">Olena Borysenko</a></div></td>
+      <td><div class="p-cell"><div class="avatar" style="width:27px;height:27px;font-size:10px;background:#5B4FE0;">NL</div><a href="#" class="p-name" title="Nazar Lisovyi">Nazar Lisovyi</a></div></td>
+      <td>2026-01-15</td>
+      <td><span class="status-pill status-active">Active</span></td>
+      <td><button class="btn btn-outline-danger btn-sm">End pair</button></td>
+    </tr>
+          <tr>
+      <td><div class="p-cell"><div class="avatar" style="width:27px;height:27px;font-size:10px;background:#0E8F86;">KM</div><a href="#" class="p-name" title="Kateryna Moroz">Kateryna Moroz</a></div></td>
+      <td><div class="p-cell"><div class="avatar" style="width:27px;height:27px;font-size:10px;background:#0E8F86;">YV</div><a href="#" class="p-name" title="Yana Voronova">Yana Voronova</a></div></td>
+      <td>2025-09-10</td>
+      <td><span class="status-pill status-ended">Ended</span></td>
+      <td><a href="#" style="font-size:12.5px;font-weight:600;">View →</a></td>
+    </tr>
+        </table>
+      </div>
+
+      <div class="panel-title" style="margin-bottom:10px;">Willing mentors</div>
+      <div class="panel">
+        <table class="tt">
+          <tr><th>Employee</th><th>Position</th><th>Capacity</th><th></th></tr>
+          <tr><td><div class="p-cell"><div class="avatar" style="width:27px;height:27px;font-size:10px;background:#2F6FE0;">DP</div><a href="#" class="p-name" title="Dmytro Panchenko">Dmytro Panchenko</a></div></td><td>DevOps Engineer</td><td>1 of 2 slots free</td><td><button class="btn btn-outline btn-sm">Assign mentee</button></td></tr>
+          <tr><td><div class="p-cell"><div class="avatar" style="width:27px;height:27px;font-size:10px;background:#C98A1F;">SH</div><a href="#" class="p-name" title="Sofiya Hrytsenko">Sofiya Hrytsenko</a></div></td><td>People Partner</td><td>2 of 2 slots free</td><td><button class="btn btn-outline btn-sm">Assign mentee</button></td></tr>
+        </table>
+      </div>
+
+      <div class="note-strip">Design proposal for <code>MentorshipHubPage</code>. Both tables are moved onto the shared table component (currently mentor pairs are laid out as a plain HTML <code>&lt;table&gt;</code>, with no row striping and no shadcn <code>Table</code> — the only such spot in the product). The status filter is a real <code>Tabs</code> component with an underline and count instead of three buttons with <code>ring-2</code>. Avatars have been added to both tables. "End pair" uses <code>.btn-outline-danger</code>, since it's an event that lands on the employee's career timeline, not a secondary action on par with "View".</div>
+    </div>
+  </div>
+  <sc-if value="{{notifOpen}}">
+    <div class="backdrop">
+      <div class="modal">
+        <div class="modal-header">Notification preferences</div>
+        <div class="modal-body">
+          <div class="np-row">
+            <div><div class="np-title">Risk level changes</div><div class="np-desc">Email me when a risk level changes for someone I manage</div></div>
+            <div class="sw on"><div class="knob"></div></div>
+          </div>
+          <div class="np-row">
+            <div><div class="np-title">Campaign deadlines</div><div class="np-desc">Remind me 3 days before a campaign I own is due</div></div>
+            <div class="sw on"><div class="knob"></div></div>
+          </div>
+          <div class="np-row">
+            <div><div class="np-title">Weekly summary</div><div class="np-desc">A digest of team and campaign changes every Monday morning</div></div>
+            <div class="sw"><div class="knob"></div></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onClick="{{closeNotifPrefs}}">Cancel</button>
+          <button class="btn btn-default" onClick="{{closeNotifPrefs}}">Save</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accountMenuOpen = this.state.accountMenuOpen ?? false;
+    const notifOpen = this.state.notifOpen ?? false;
+    
+    return {
+      accountMenuOpen,
+      notifOpen,
+      footerOpenClass: accountMenuOpen ? 'open' : '',
+      toggleAccountMenu: () => this.setState({ accountMenuOpen: !this.state.accountMenuOpen }),
+      openNotifPrefs: () => this.setState({ accountMenuOpen: false, notifOpen: true }),
+      closeNotifPrefs: () => this.setState({ notifOpen: false }),
+      
+    };
+  }
+}
+</script>
+</x-dc>
+</body>
+</html>

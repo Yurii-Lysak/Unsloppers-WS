@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --background: #FFFFFF; --foreground: #1C1B29;
+      --card: #FFFFFF; --border: #E4E4EE; --input: #C7C7D6;
+      --muted-foreground: #6B6B80; --primary: #5B4FE0; --primary-foreground: #FFFFFF;
+      --destructive: #DC3545;
+    }
+    body { margin: 0; font-family: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif; color: var(--foreground); background: #F4F4F7; }
+    h1 { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; margin: 0; }
+    .wrap { display: flex; gap: 48px; padding: 64px; flex-wrap: wrap; }
+    main.pane { width: 384px; min-height: 480px; display: grid; place-items: center; background: var(--background); border-radius: 16px; }
+    .card { width: 100%; max-width: 340px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 24px; }
+    .card-title { font-size: 20px; font-weight: 700; margin: 0; }
+    .card-desc { font-size: 13.5px; color: var(--muted-foreground); margin-top: 4px; }
+    .field-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block; margin-top: 16px; }
+    .input { width: 100%; font-size: 14px; padding: 7px 10px; border-radius: 6px; border: 1px solid var(--input); background: var(--background); }
+    .btn { width: 100%; height: 34px; border-radius: 10px; border: none; background: var(--primary); color: var(--primary-foreground); font-size: 14px; font-weight: 600; margin-top: 18px; cursor: pointer; }
+    .err { font-size: 13px; color: var(--destructive); margin-top: 8px; }
+    .caption { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted-foreground); margin-bottom: 10px; }
+  </style>
+</helmet>
+<div class="wrap">
+  <div>
+    <div class="caption">LoginPage — default</div>
+    <main class="pane">
+      <div class="card">
+        <h1 class="card-title">Sign in</h1>
+        <p class="card-desc">Use your bootcamp account credentials.</p>
+        <span class="field-label">Email</span>
+        <input class="input" type="email" placeholder="you@unsloppers.dev">
+        <span class="field-label">Password</span>
+        <input class="input" type="password" placeholder="••••••••">
+        <p class="err">The email or password is incorrect.</p>
+        <button class="btn">Sign in</button>
+      </div>
+    </main>
+  </div>
+  <div>
+    <div class="caption">LoginPage — session unavailable</div>
+    <main class="pane">
+      <div class="card">
+        <h1 class="card-title">We couldn't verify your session</h1>
+        <p class="card-desc">Check your connection and try again. You have not been signed out.</p>
+        <button class="btn">Try again</button>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

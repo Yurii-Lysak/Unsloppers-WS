@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --background: #FFFFFF; --foreground: #1C1B29;
+      --muted: #F7F7FB; --muted-foreground: #6B6B80; --border: #E4E4EE;
+      --destructive: #DC3545; --destructive-foreground: #FFFFFF;
+    }
+    body { margin: 0; font-family: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif; color: var(--foreground); }
+    h1 { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; margin: 0; }
+    .screen { width: 900px; height: 600px; display: flex; align-items: center; justify-content: center; background: var(--background); }
+    .box { max-width: 380px; width: 100%; text-align: center; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 16px; border-radius: 10px; border: none; background: var(--destructive); color: var(--destructive-foreground); font-size: 14px; font-weight: 600; margin-top: 20px; }
+    .details { background: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-top: 10px; text-align: left; }
+  </style>
+</helmet>
+<div class="screen">
+  <div class="box">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    <h1 style="font-size:22px; font-weight:700; margin:16px 0 8px;">Application Error</h1>
+    <p style="color:var(--muted-foreground); margin:0; font-size:14px;">An unexpected error occurred.</p>
+    <div class="details">
+      <p style="font-size:12.5px; color:var(--muted-foreground); margin:0;">Error details:</p>
+      <p style="font-size:12.5px; font-family:ui-monospace,monospace; margin-top:4px;">TypeError: Cannot read property 'id' of undefined</p>
+    </div>
+    <button class="btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Back to Home</button>
+    <p style="font-size:11.5px; color:var(--muted-foreground); border-top:1px solid var(--border); margin-top:20px; padding-top:12px;">If the problem persists, please contact support or try refreshing the page.</p>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

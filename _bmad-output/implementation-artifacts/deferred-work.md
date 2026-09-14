@@ -1,17 +1,5 @@
 # Deferred Work
 
-## Deferred from: code review of spec-vercel-spa-routing-404 (2026-09-11)
-
-- source_spec: `_bmad-output/implementation-artifacts/spec-vercel-spa-routing-404.md`
-  summary: No automated regression coverage for the fixed bug (a hard reload/new-tab navigation to a deep client-side route no longer 404ing on Vercel).
-  evidence: Playwright e2e in `e2e/` runs against the local Vite dev server, which already serves the SPA shell for any path (Vite's dev middleware has its own history-API fallback) — it never reproduced the Vercel-only 404, so a local e2e assertion can't guard against regressing the `vercel.json` rewrite. Verifying this needs a real Vercel preview deployment (e.g. curling a deep route directly), which is outside this fix's scope.
-- source_spec: `_bmad-output/implementation-artifacts/spec-vercel-spa-routing-404.md`
-  summary: `vercel.json` has no `headers` block controlling cache lifetime for `index.html` vs. hashed build assets.
-  evidence: Standard companion to an SPA catch-all rewrite (e.g. `Cache-Control: no-cache` on `index.html`, long-lived immutable caching on hashed `/assets/*` files) so users don't get stuck on a stale app shell after a future deploy; not required to fix the reported 404s, and out of scope for this one-shot.
-- source_spec: `_bmad-output/implementation-artifacts/spec-vercel-spa-routing-404.md`
-  summary: No CI step validates the deployed routing behavior (e.g. via Vercel CLI build or hitting a preview URL) to confirm a deep-link hard reload returns 200 instead of 404.
-  evidence: `.github/workflows/test.yml` runs build/lint/test against the local dev/build pipeline only, which — same as the e2e gap above — cannot observe Vercel's static-hosting 404 behavior; would need a dedicated deploy-preview smoke check.
-
 ## Deferred from: code review of spec-12-5-people-partner-dashboard (2026-09-10)
 
 - Extract shared HR-line walk helper with `AccessResolverService` — story design notes accept per-service duplication for now; lock-step parity is enforced by tests rather than shared code.
@@ -94,3 +82,26 @@
 - source_spec: none
   summary: `CLOSE_RESOURCING_REQUESTS` permission is defined and seeded onto the Delivery Manager role (`permission-keys.ts`, `seed.functional-roles.ts`), but no epic-6 story (6.1–6.4 per `sprint-status.yaml`) has an acceptance criterion for an explicit "DM closes the request" action, and 6.3's own epics.md ACs only cover approve/reject — the permission has no consuming endpoint or UI anywhere in the codebase.
   evidence: Confirmed via grep — `CLOSE_RESOURCING_REQUESTS` appears only in the permission catalog and seed grant list, never in `resourcing.controller.ts`/`resourcing.service.ts` routes or any frontend action. D18 (`decisions.md`) requires "only the DM's explicit close ends the request," but no story currently owns building it; kept out of spec-6-3's scope to match its epics.md ACs and the SCOPE STANDARD single-goal target — needs a home in 6.4 or a new small story.
+
+## Deferred from: blind review of spec-design-system-compliance-fixes.md (2026-09-13)
+
+- source_spec: _bmad-output/implementation-artifacts/spec-design-system-compliance-fixes.md`n  summary: Mock tables/counters lack showing-X-of-Y continuity and pagination notes (01, 05, 06, 08).
+  evidence: Pre-existing mock annotation gaps, not caused by token/cell compliance change; needs per-surface pagination treatment.
+
+- source_spec: _bmad-output/implementation-artifacts/spec-design-system-compliance-fixes.md`n  summary: Mock a11y gaps remain (filter-chip names, 12 tab panels, 06 checkbox glyph, 03 label associations).
+  evidence: Pre-existing; fixing needs interactive-behavior decisions beyond static mock compliance pass.
+
+- source_spec: _bmad-output/implementation-artifacts/spec-design-system-compliance-fixes.md`n  summary: Mock content gaps remain (dismissed-filter control, save-model conflict, banner timestamps, pool counts, journal wording, date validation).
+  evidence: Pre-existing copy/scope issues for PO/design follow-up, out of token-compliance scope.
+
+## Deferred from: review of spec-frontend-ui-ux-updates.md (2026-09-13)
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-frontend-ui-ux-updates.md`
+  summary: AudienceBuilder filter chips show field name only with no operator/value.
+  evidence: Verified in `AudienceBuilder.tsx:69-76`; remove-name a11y met, but chip content needs a product decision on what filter detail to display.
+- source_spec: `_bmad-output/implementation-artifacts/spec-frontend-ui-ux-updates.md`
+  summary: Duplicate fieldId filters could collide on chip React keys.
+  evidence: Unverified (maybe-false, would be medium); settle by checking whether `definition.filters` permits duplicate fieldIds, then key by `${fieldId}-${index}` if so.
+- source_spec: `_bmad-output/implementation-artifacts/spec-frontend-ui-ux-updates.md`
+  summary: Row-drill SR label announces name only while the AC asks for name, position, project.
+  evidence: Row types carry displayName plus partial labels but no position; needs a product call on announcement wording versus extending row data.

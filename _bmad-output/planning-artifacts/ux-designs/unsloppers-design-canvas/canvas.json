@@ -1,0 +1,34 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1280, "h": 2700, "page": "page-1", "title": "Foundations" },
+    { "file": "Components.dc.html", "x": 0, "y": 0, "w": 1280, "h": 2200, "page": "page-2", "title": "Components" },
+    { "file": "Modals.dc.html", "x": 0, "y": 0, "w": 1400, "h": 2450, "page": "page-3", "title": "Modals & Popovers" },
+
+    { "file": "HomePage.dc.html", "x": 0, "y": 0, "w": 1440, "h": 1000, "page": "page-4", "title": "Dashboard — DM variant" },
+    { "file": "LoginPage.dc.html", "x": 1540, "y": 0, "w": 960, "h": 660, "page": "page-4", "title": "Login" },
+    { "file": "SharedLinkViewPage.dc.html", "x": 2600, "y": 0, "w": 900, "h": 460, "page": "page-4", "title": "Shared link view" },
+
+    { "file": "AllEmployeesPage.dc.html", "x": 0, "y": 1000, "w": 1440, "h": 900, "page": "page-4", "title": "All Employees" },
+    { "file": "EmployeeProfilePage.dc.html", "x": 1540, "y": 1000, "w": 1440, "h": 900, "page": "page-4", "title": "Employee Profile" },
+    { "file": "AdminRolesPage.dc.html", "x": 3080, "y": 1000, "w": 1440, "h": 1220, "page": "page-4", "title": "Settings" },
+
+    { "file": "CampaignsPage.dc.html", "x": 0, "y": 2000, "w": 1440, "h": 900, "page": "page-4", "title": "Campaigns" },
+    { "file": "CampaignDetailPage.dc.html", "x": 1540, "y": 2000, "w": 1440, "h": 900, "page": "page-4", "title": "Campaign Detail" },
+    { "file": "ErrorPage.dc.html", "x": 3080, "y": 2320, "w": 900, "h": 600, "page": "page-4", "title": "Error" },
+
+    { "file": "DashboardUMPage.dc.html", "x": 0, "y": 0, "w": 1440, "h": 920, "page": "page-5", "title": "Dashboard — UM variant" },
+    { "file": "RiskDashboardPage.dc.html", "x": 1540, "y": 0, "w": 1440, "h": 920, "page": "page-5", "title": "Risk Dashboard" },
+    { "file": "ResourcingPage.dc.html", "x": 0, "y": 1020, "w": 1440, "h": 920, "page": "page-5", "title": "Resourcing" },
+    { "file": "ResourcingDetailPage.dc.html", "x": 1540, "y": 1020, "w": 1440, "h": 920, "page": "page-5", "title": "Resourcing Detail" },
+    { "file": "MentorshipHubPage.dc.html", "x": 0, "y": 2040, "w": 1440, "h": 920, "page": "page-5", "title": "Mentorship Hub" },
+    { "file": "ReportsPage.dc.html", "x": 1540, "y": 2040, "w": 1440, "h": 940, "page": "page-5", "title": "Reports" }
+  ],
+  "pages": [
+    { "id": "page-1", "name": "Foundations" },
+    { "id": "page-2", "name": "Components" },
+    { "id": "page-3", "name": "Modals & Popovers" },
+    { "id": "page-4", "name": "Pages" },
+    { "id": "page-5", "name": "New screens (Dashboard, Risks, Resourcing, Mentorship)" }
+  ],
+  "launch": { "view": "canvas", "page": "page-4" }
+}

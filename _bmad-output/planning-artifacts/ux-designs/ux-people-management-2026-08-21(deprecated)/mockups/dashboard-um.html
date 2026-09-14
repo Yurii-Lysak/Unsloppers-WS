@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Key Screen — Unit Manager Dashboard</title>
+<style>
+/*
+  Illustrates: EXPERIENCE.md — Information Architecture (Dashboard row),
+  Component Patterns (Risk Badge + Trend Arrow, Action Item Row + Overdue
+  Indicator), Responsive & Platform (>= lg breakpoint, sidebar expanded).
+  DESIGN.md — Colors (risk-*, success), Shapes (rounded.full badges),
+  Components (Risk Badge, Trend Arrow, Overdue Indicator).
+  Canonical state only (no error/loading variant in this mock).
+*/
+:root{
+  --background:oklch(1 0 0); --foreground:oklch(0.145 0.004 286);
+  --card:oklch(1 0 0); --card-foreground:oklch(0.145 0.004 286);
+  --primary:oklch(0.488 0.243 264.376); --primary-foreground:oklch(0.985 0 0);
+  --secondary:oklch(0.961 0.003 286); --secondary-foreground:oklch(0.205 0.008 286);
+  --muted:oklch(0.961 0.003 286); --muted-foreground:oklch(0.556 0.012 286);
+  --destructive:oklch(0.577 0.245 27.325); --destructive-foreground:oklch(0.985 0 0);
+  --border:oklch(0.898 0.003 286);
+  --sidebar:oklch(0.985 0 0); --sidebar-foreground:oklch(0.145 0.004 286); --sidebar-border:oklch(0.898 0.003 286);
+  --success:oklch(0.6 0.15 145); --success-foreground:oklch(0.985 0 0);
+  --risk-low:oklch(0.6 0.15 145); --risk-low-fg:oklch(0.985 0 0);
+  --risk-attention:oklch(0.75 0.15 90); --risk-attention-fg:oklch(0.205 0.008 286);
+  --risk-medium:oklch(0.72 0.19 60); --risk-medium-fg:oklch(0.205 0.008 286);
+  --risk-high:oklch(0.577 0.245 27.325); --risk-high-fg:oklch(0.985 0 0);
+  --radius:0.625rem; --header-height:3rem; --sidebar-width:15rem;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--muted);color:var(--foreground);font-size:14px}
+.browser{max-width:1280px;margin:16px auto;border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.browser-bar{background:#e8e8ea;padding:8px 12px;display:flex;gap:6px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:#c9c9cc}
+.app{display:flex;height:760px;background:var(--background)}
+.sidebar{width:var(--sidebar-width);background:var(--sidebar);border-right:1px solid var(--sidebar-border);color:var(--sidebar-foreground);flex-shrink:0;padding:12px 0}
+.logo{padding:0 16px 16px;font-weight:700;font-size:15px}
+.navitem{padding:9px 16px;display:flex;gap:10px;align-items:center;font-size:13px;color:var(--sidebar-foreground)}
+.navitem.active{background:var(--secondary);border-radius:8px;margin:0 8px;width:calc(100% - 16px)}
+.main{flex:1;overflow:auto}
+header.top{height:var(--header-height);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.chip{background:var(--secondary);color:var(--secondary-foreground);border-radius:999px;padding:3px 10px;font-size:12px}
+.content{padding:20px}
+h1{font-size:18px;margin:0 0 16px}
+.counters{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.counter{border:1px solid var(--border);border-radius:var(--radius);padding:14px;background:var(--card)}
+.counter .n{font-size:22px;font-weight:700}
+.counter .l{font-size:12px;color:var(--muted-foreground);margin-top:2px}
+.grid2{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.card{border:1px solid var(--border);border-radius:var(--radius);background:var(--card);overflow:hidden}
+.card h2{font-size:13px;margin:0;padding:12px 14px;border-bottom:1px solid var(--border);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--muted-foreground);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.03em;padding:8px 14px}
+td{padding:8px 14px;border-top:1px solid var(--border)}
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:600}
+.badge.high{background:var(--risk-high);color:var(--risk-high-fg)}
+.badge.medium{background:var(--risk-medium);color:var(--risk-medium-fg)}
+.badge.low{background:var(--risk-low);color:var(--risk-low-fg)}
+.badge.attention{background:var(--risk-attention);color:var(--risk-attention-fg)}
+.arrow-up{color:var(--risk-medium)}
+.arrow-down{color:var(--success)}
+.actionitem{padding:10px 14px;border-top:1px solid var(--border);font-size:13px;display:flex;gap:8px;align-items:flex-start}
+.actionitem.overdue{border-left:3px solid var(--destructive);margin-left:-1px;padding-left:11px}
+.overdue-label{color:var(--destructive);font-size:11px;font-weight:600}
+.cb{width:14px;height:14px;border:1.5px solid var(--border);border-radius:4px;flex-shrink:0;margin-top:2px}
+</style>
+</head>
+<body>
+<div class="browser">
+  <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+  <div class="app">
+    <nav class="sidebar">
+      <div class="logo">People Platform</div>
+      <div class="navitem active">🏠 Home</div>
+      <div class="navitem">👥 Directory</div>
+      <div class="navitem">📋 Resourcing</div>
+      <div class="navitem">⚠️ Risks</div>
+      <div class="navitem">📨 Campaigns</div>
+      <div class="navitem">🤝 Mentorship</div>
+    </nav>
+    <div class="main">
+      <header class="top">
+        <strong style="font-size:13px">Dashboard</strong>
+        <span class="chip">Viewing as Unit Manager</span>
+      </header>
+      <div class="content">
+        <h1>Good morning, Alex</h1>
+        <div class="counters">
+          <div class="counter"><div class="n">27</div><div class="l">Subordinates</div></div>
+          <div class="counter"><div class="n">3</div><div class="l">High / leaver risk</div></div>
+          <div class="counter"><div class="n">8</div><div class="l">Open action items</div></div>
+          <div class="counter"><div class="n">2</div><div class="l">Overdue</div></div>
+          <div class="counter"><div class="n">1</div><div class="l">Open campaigns</div></div>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <h2>Your people</h2>
+            <table>
+              <tr><th>Name</th><th>Project</th><th>Risk</th><th>Leave</th></tr>
+              <tr><td>Priya Nadar</td><td>Atlas Migration</td><td><span class="badge high">High</span> <span class="arrow-up">↑</span></td><td>—</td></tr>
+              <tr><td>Tomasz Wik</td><td>Atlas Migration</td><td><span class="badge attention">Need attention</span></td><td>—</td></tr>
+              <tr><td>Elena Cruz</td><td>Billing v2</td><td><span class="badge low">Low</span> <span class="arrow-down">↓</span></td><td>On vacation</td></tr>
+              <tr><td>Jonas Berg</td><td>Billing v2</td><td><span class="badge low">Low</span></td><td>—</td></tr>
+              <tr><td>Mira Solheim</td><td>Atlas Migration</td><td><span class="badge medium">Medium</span></td><td>—</td></tr>
+            </table>
+          </div>
+          <div class="card">
+            <h2>Your action items</h2>
+            <div class="actionitem overdue"><div class="cb"></div><div>1:1 follow-up with Priya<div class="overdue-label">Overdue — was due Aug 18</div></div></div>
+            <div class="actionitem"><div class="cb"></div><div>Review Tomasz's IDP<div style="color:var(--muted-foreground);font-size:11px">Due Aug 25</div></div></div>
+            <div class="actionitem"><div class="cb"></div><div>Approve resourcing request #204<div style="color:var(--muted-foreground);font-size:11px">Due Aug 27</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

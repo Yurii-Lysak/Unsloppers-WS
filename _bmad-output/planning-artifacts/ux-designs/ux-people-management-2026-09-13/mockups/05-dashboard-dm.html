@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard — Delivery Manager (mock)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;color:#1c1b29;background:#F7F7FA;display:flex;min-height:100vh}
+.sidebar{width:240px;background:#15112E;color:#cfc9ea;flex-shrink:0;padding:20px 14px}.sidebar .brand{color:#fff;font-weight:700;font-size:15px;margin:0 8px 16px}.sidebar nav a{display:flex;gap:10px;padding:9px 10px;border-radius:6px;color:#cfc9ea;text-decoration:none;font-size:13.5px}.sidebar nav a.active{background:#5B4FE0;color:#fff}
+.main{flex:1;padding:24px;max-width:1220px}h1{font-size:24px;font-weight:600}.sub{color:#666;font-size:13px;margin:2px 0 14px}
+.selbar{background:#fff;border:1px solid #e2e0f0;border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+select{border:1px solid #d5d2e8;border-radius:4px;padding:8px 10px;font-size:13.5px}
+.counters{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}@media(max-width:900px){.counters{grid-template-columns:repeat(2,1fr)}}
+.counter{background:#fff;border:1px solid #e2e0f0;border-radius:10px;padding:12px 14px}.counter .n{font-size:22px;font-weight:700}.counter .l{font-size:12px;color:#666;margin-top:2px}
+.pill{display:inline-block;border-radius:9999px;padding:2px 10px;font-size:12px;font-weight:500}.p-high{background:#FBE7E9;color:#A61D2B}.p-med{background:#FDE8D3;color:#9A4A0A}.p-att{background:#FCF1DC;color:#92620E}.p-leaver{background:#EDE7F6;color:#5B4A8A}.p-low{background:#E8F7EF;color:#157A52}
+.card{background:#fff;border:1px solid #e2e0f0;border-radius:10px;padding:14px 16px;margin-bottom:14px}.card h2{font-size:18px;font-weight:600;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th{font-size:12px;text-transform:uppercase;color:#777;text-align:left;padding:8px;border-bottom:1px solid #e7e5f2}td{padding:0 8px;height:56px;border-bottom:1px solid #f0eef8;vertical-align:middle}tbody tr:hover{background:#f7f5ff;cursor:pointer}
+tr.od{background:#FBE7E9}tr.od td:first-child{border-left:4px solid #A61D2B}.odtag{color:#A61D2B;font-weight:700;font-size:12px}
+.banner{background:#efedfb;border:1px solid #d5d2e8;color:#4a3f9e;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px}
+</style></head><body>
+<aside class="sidebar"><div class="brand">◆ People Mgmt</div><nav>
+<a href="04-dashboard-um.html">Dashboard (UM)</a><a href="05-dashboard-dm.html" class="active">Dashboard (DM)</a><a href="01-directory.html">All Employees</a><a href="02-employee-profile.html">Employee Profile</a><a href="03-my-profile.html">My Profile</a><a href="08-risk-dashboard.html">Risk Dashboard</a><a href="06-resourcing-list.html">Resourcing</a>
+</nav></aside>
+<div class="main">
+<h1>Dashboard — Delivery Manager</h1><div class="sub">Dmytro Melnyk · delivery scope: 6 projects · screen-reader: “Dashboard, Delivery Manager, 6 projects”</div>
+<div class="selbar"><label for="ps"><b>Project selector</b> — scopes whole page + counters:</label>
+<select id="ps"><option>All projects (aggregate)</option><option selected>Ledger migration</option><option>Settlement hardening</option><option>Mobile onboarding</option><option>Unassigned — project-less requests (2)</option></select>
+<button style="border:1px solid #d5d2e8;background:#fff;border-radius:6px;padding:8px 12px">Clear → aggregate</button>
+<span style="font-size:12.5px;color:#666">Selection never widens audience; counters re-resolve.</span></div>
+<div class="counters">
+<div class="counter"><div class="n">46</div><div class="l">People on <b>Ledger migration</b></div></div>
+<div class="counter"><div class="n">2 <span class="pill p-high">high</span></div><div class="l">Active risk on project</div></div>
+<div class="counter"><div class="n">3</div><div class="l">Open requests (project)</div></div>
+<div class="counter"><div class="n">1 of 2</div><div class="l">Headcount filled (REQ-204)</div></div>
+<div class="counter"><div class="n">2</div><div class="l">Unassigned bucket items</div></div>
+</div>
+<div class="card"><h2>Projects — Ledger migration scope</h2>
+<table><thead><tr><th>Request</th><th>Department</th><th>Headcount</th><th>State / decision</th></tr></thead><tbody>
+<tr><td><b><a href="07-resourcing-detail.html">REQ-204</a></b> · Senior Java, settlement</td><td>Payments</td><td>1 of 2 filled</td><td>Internal candidate approved w/ note · 1 slot left</td></tr>
+<tr class="od"><td><b><a href="07-resourcing-detail.html">REQ-207</a></b> · DevOps, ledger cutover</td><td>Platform</td><td>0 of 1 filled</td><td><span class="odtag">OVERDUE 5 d</span> — awaiting DM decision (external reject needs written reason)</td></tr>
+<tr><td><b><a href="07-resourcing-detail.html">REQ-209</a></b> · QA automation</td><td>Payments</td><td>0 of 1 filled</td><td>Proposed by Olena K. — review via auto Shared Link</td></tr>
+</tbody></table></div>
+<div class="card"><h2>People on project (active-only risk)</h2>
+<table><thead><tr><th>Person</th><th>Allocation</th><th>Risk</th><th>Overdue items</th></tr></thead><tbody>
+<tr><td><b><a href="02-employee-profile.html">Oksana Petrenko</a></b> · Sr Java</td><td>0.7</td><td><span class="pill p-med">medium ▲up</span></td><td><span class="odtag">OVERDUE 1 d</span> — runbook update</td></tr>
+<tr><td><b><a href="02-employee-profile.html">Viktor Hryshko</a></b> · DevOps</td><td>0.5</td><td><span class="pill p-leaver">leaver · prediction</span></td><td></td></tr>
+<tr><td><b><a href="02-employee-profile.html">Maria Lysenko</a></b> · Analyst</td><td>1.0</td><td></td><td></td></tr>
+</tbody></table></div>
+<div class="banner"><b>Unassigned bucket (2):</b> REQ-215 “Support engineer” and REQ-218 “Data contractor” have no project — always reachable here, never invisible. “No unattached requests” when empty (not an error).</div>
+</div></body></html>
