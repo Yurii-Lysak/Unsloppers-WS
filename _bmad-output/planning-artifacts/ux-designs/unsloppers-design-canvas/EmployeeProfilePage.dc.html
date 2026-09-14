@@ -1,0 +1,437 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --radius: 10px; --radius-sm: 6px; --radius-lg: 16px;
+      --background: #FFFFFF; --foreground: #1C1B29;
+      --card: #FFFFFF; --primary: #5B4FE0; --primary-hover: #4A3FC4; --primary-foreground: #FFFFFF;
+      --secondary: #F0F0F7; --muted: #F7F7FB; --muted-foreground: #6B6B80;
+      --border: #E4E4EE; --input: #C7C7D6;
+      --sidebar: #15112E; --sidebar-hover: #241D4A; --sidebar-foreground: #A6ADD9;
+      --risk-low-bg: #E8F7EF; --risk-low-fg: #157A52;
+    }
+    body { margin: 0; font-family: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif; color: var(--foreground); }
+    h1, h2, h3 { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; margin: 0; }
+    a { color: var(--primary); text-decoration: none; } a:hover { text-decoration: underline; }
+    .screen { width: 1440px; height: 900px; display: flex; background: var(--muted); overflow: hidden; position: relative; }
+
+    .sidebar { width: 240px; flex-shrink: 0; background: var(--sidebar); display: flex; flex-direction: column; padding: 20px 14px; }
+    .brand { display: flex; align-items: center; gap: 10px; padding: 6px 10px 22px; }
+    .brand .mark { width: 30px; height: 30px; border-radius: var(--radius-sm); background: linear-gradient(155deg, var(--primary), #2F6FE0); display:flex; align-items:center; justify-content:center; font-family:'Manrope',sans-serif; font-weight:800; color:#fff; font-size:14px; }
+    .brand .name { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: #fff; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 600; color: var(--sidebar-foreground); margin-bottom: 2px; }
+    .nav-item.active { background: var(--primary); color: #fff; }
+    .nav-item svg { flex-shrink: 0; }
+
+    .nav-group-label { padding: 14px 12px 6px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #6B6B9C; }
+    .sidebar-footer-wrap { margin-top: auto; position: relative; }
+    .sidebar-footer { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 6px; border-top: 1px solid var(--sidebar-hover); cursor: pointer; }
+    .sidebar-footer:hover { background: var(--sidebar-hover); }
+    .sidebar-footer .avatar { width: 30px; height: 30px; border-radius: 999px; background: var(--primary); display:flex; align-items:center; justify-content:center; font-family:'Manrope',sans-serif; font-weight:700; font-size: 11px; color:#fff; flex-shrink:0; }
+    .sidebar-footer .who { min-width: 0; flex: 1; }
+    .sidebar-footer .who .n { font-size: 12px; font-weight: 700; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sidebar-footer .who .r { font-size: 11px; color: var(--sidebar-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sidebar-footer > svg { flex-shrink: 0; color: var(--sidebar-foreground); transition: transform .15s; }
+    .sidebar-footer.open > svg { transform: rotate(180deg); }
+    .account-popover { position: absolute; bottom: calc(100% + 8px); left: 0; width: 252px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 16px 40px rgba(20,17,46,.22); overflow: hidden; z-index: 40; }
+    .account-popover .ap-header { display: flex; align-items: center; gap: 10px; padding: 14px; border-bottom: 1px solid var(--border); }
+    .account-popover .ap-header .avatar { width: 36px; height: 36px; border-radius: 999px; background: var(--primary); display:flex; align-items:center; justify-content:center; font-family:'Manrope',sans-serif; font-weight:700; font-size: 13px; color:#fff; flex-shrink:0; }
+    .account-popover .ap-header .n { font-size: 13.5px; font-weight: 700; color: var(--foreground); }
+    .account-popover .ap-header .e { font-size: 11.5px; color: var(--muted-foreground); margin-top: 1px; }
+    .account-popover .ap-body { padding: 6px; }
+    .account-popover .ap-item { display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 7px; font-size: 13px; font-weight: 500; color: var(--foreground); cursor: pointer; }
+    .account-popover .ap-item:hover { background: var(--muted); }
+    .account-popover .ap-item svg { flex-shrink: 0; color: var(--muted-foreground); }
+    .account-popover .ap-item.danger { color: #DC3545; }
+    .account-popover .ap-item.danger svg { color: #DC3545; }
+    .account-popover .ap-divider { height: 1px; background: var(--border); margin: 5px 8px; }
+    .icon-btn { position: relative; width: 34px; height: 34px; border-radius: 999px; border: 1px solid var(--border); background: var(--background); display: flex; align-items: center; justify-content: center; color: var(--muted-foreground); cursor: pointer; }
+    .icon-btn .dot { position: absolute; top: 7px; right: 8px; width: 7px; height: 7px; border-radius: 999px; background: #DC3545; border: 1.5px solid var(--card); }
+    .np-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .np-row:last-child { border-bottom: none; }
+    .np-title { font-size: 13.5px; font-weight: 600; }
+    .np-desc { font-size: 12.5px; color: var(--muted-foreground); margin-top: 2px; max-width: 300px; }
+    .sw { width: 32px; height: 18px; border-radius: 999px; background: var(--muted); position: relative; flex-shrink: 0; margin-top: 2px; }
+    .sw.on { background: var(--primary); }
+    .sw .knob { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 999px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+    .sw.on .knob { left: 16px; }
+
+    .main-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .topbar { height: 56px; flex-shrink: 0; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; padding: 0 24px; }
+    .content { flex: 1; overflow: auto; padding: 28px 32px; }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--radius); border: 1px solid transparent; font-size: 14px; font-weight: 600; height: 32px; padding: 0 12px; white-space: nowrap; cursor: pointer; }
+    .btn-default { background: var(--primary); color: var(--primary-foreground); }
+    .btn-outline { background: var(--background); color: var(--foreground); border-color: var(--border); }
+    .btn-outline:hover { background: var(--muted); }
+    .btn-sm { height: 28px; padding: 0 10px; font-size: 12.8px; }
+    .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 600; background: var(--risk-low-bg); color: var(--risk-low-fg); }
+    .section-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px; }
+    .section-title { font-size: 15px; font-weight: 700; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+    .kv { display: grid; grid-template-columns: 160px 1fr; gap: 8px 12px; font-size: 14px; }
+    .kv dt { color: var(--muted-foreground); }
+    .trend { display: inline-flex; align-items: center; }
+    .record { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 10px; }
+    .record-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; }
+    .record .author { font-size: 12px; color: var(--muted-foreground); margin-top: 2px; }
+    .record .desc { font-weight: 600; margin-top: 6px; font-size: 13.5px; }
+    .record .details { color: var(--muted-foreground); margin-top: 3px; font-size: 13px; line-height: 1.5; }
+    .note-visibility { display: flex; gap: 16px; margin-top: 8px; }
+    .vis-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted-foreground); }
+    .form-block { border-top: 1px solid var(--border); margin-top: 14px; padding-top: 14px; }
+    .field-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block; }
+    .input { width: 100%; font-size: 14px; padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid var(--input); background: var(--background); color: var(--foreground); margin-bottom: 12px; }
+    textarea.input { min-height: 60px; font-family: inherit; resize: vertical; }
+    .cf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; font-size: 13.5px; }
+    .cf-grid dt { color: var(--muted-foreground); font-size: 12px; margin-bottom: 2px; }
+    .cf-grid dd { margin: 0; font-weight: 500; }
+
+    .status-pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 3px 10px 3px 8px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+    .status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: currentColor; flex-shrink: 0; }
+    .status-draft { background: var(--secondary); color: #6B6B80; }
+    .status-open, .status-pending { background: #FCF1DC; color: #92620E; }
+    .status-approved, .status-complete, .status-active { background: var(--risk-low-bg); color: var(--risk-low-fg); }
+    .status-rejected, .status-ended { background: #FBE7E9; color: #A61D2B; }
+    .btn-outline-danger { background: var(--background); color: #A61D2B; border-color: #F3C6CB; }
+    .avatar { width: 30px; height: 30px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 11px; color: #fff; flex-shrink: 0; }
+    .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; padding: 2px; gap: 2px; }
+    .seg button { border: none; background: transparent; font-size: 12.8px; font-weight: 600; padding: 5px 12px; border-radius: 6px; color: var(--muted-foreground); cursor: pointer; }
+    .seg button.active { background: var(--primary); color: #fff; }
+    .idp-item { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .idp-item .t { font-size: 13.5px; font-weight: 600; }
+    .idp-item .d { font-size: 12px; color: var(--muted-foreground); margin-top: 2px; }
+    .fb-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .compare-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border: 1px dashed var(--border); border-radius: 8px; padding: 12px; background: var(--muted); }
+    .compare-preview .cp-h { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: var(--muted-foreground); margin-bottom: 6px; }
+    .mentor-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+    .mentor-row .left { display: flex; align-items: center; gap: 10px; }
+
+    .backdrop { position: absolute; inset: 0; background: rgba(20,17,46,.4); display: flex; align-items: center; justify-content: center; z-index: 10; }
+    .modal { width: 440px; background: var(--card); border-radius: var(--radius-lg); box-shadow: 0 20px 50px rgba(20,17,46,.3); overflow: hidden; }
+    .modal-header { padding: 20px 20px 0; font-size: 17px; font-weight: 700; }
+    .modal-body { padding: 16px 20px; }
+    .modal-footer { padding: 14px 20px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border); background: var(--muted); }
+    .cb-row { display: flex; align-items: center; gap: 8px; font-size: 14px; padding: 5px 0; }
+    .cb-box { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--input); flex-shrink: 0; display:flex; align-items:center; justify-content:center; font-size:11px; color:#fff; }
+    .cb-box.checked { background: var(--primary); border-color: var(--primary); }
+    .fieldset-box { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; }
+  </style>
+</helmet>
+
+<div class="screen">
+  <div class="sidebar">
+    <div class="brand"><div class="mark">U</div><div class="name">unsloppers</div></div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Home</div>
+    <div class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.4 3-5 5.5-5s4.9 1.6 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.2 14.2c2 .1 3.9 1.6 4.3 4.4"/></svg>All Employees</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Risks</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9c.9.9.9 4.1 0 5"/></svg>Campaigns</div>
+<div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Resourcing</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg>Mentorship</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Reports</div>
+    <div class="nav-group-label">Admin</div>
+    <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3.6v5.4c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5.6z"/></svg>Settings</div>
+    <div class="sidebar-footer-wrap">
+      <div class="sidebar-footer {{footerOpenClass}}" onClick="{{toggleAccountMenu}}">
+        <div class="avatar">KM</div>
+        <div class="who"><div class="n">Kateryna Moroz</div><div class="r">Delivery Manager</div></div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+      </div>
+      <sc-if value="{{accountMenuOpen}}">
+        <div class="account-popover">
+          <div class="ap-header">
+            <div class="avatar">KM</div>
+            <div style="min-width:0;">
+              <div class="n">Kateryna Moroz</div>
+              <div class="e">kateryna.moroz@altexsoft.com</div>
+            </div>
+          </div>
+          <div class="ap-body">
+            <div class="ap-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>My profile</div>
+            <div class="ap-item" onClick="{{openNotifPrefs}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>Notification preferences</div>
+            <div class="ap-divider"></div>
+            <div class="ap-item danger"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign out</div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+  <div class="main-col">
+    <div class="topbar" style="justify-content:flex-end;"><button class="icon-btn" aria-label="Notifications"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="dot"></span></button></div>
+    <div class="content">
+      <p style="font-size:13px; margin:0 0 4px;"><a href="#" style="display:inline-flex; align-items:center; gap:6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>All Employees</a></p>
+      <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:16px; margin-bottom:20px;">
+        <div>
+          <h1 style="font-size:26px; font-weight:700; display:flex; align-items:center; gap:10px;">Olena Borysenko <span class="badge">Low</span></h1>
+          <p style="font-size:13px; color:var(--muted-foreground); margin-top:4px;">Manager: <a href="#">Kateryna Moroz</a> · People partner: <a href="#">Ihor Savenko</a> · <a href="#">Functional roles →</a></p>
+        </div>
+        <button class="btn btn-default" onClick="{{openShare}}">Share…</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap:20px;">
+        <div>
+          <div class="section-card">
+            <div class="section-title">Identity</div>
+            <div class="kv">
+              <dt>Position</dt><dd style="margin:0;">Senior FE Engineer</dd>
+              <dt>Department</dt><dd style="margin:0;">Engineering</dd>
+              <dt>Email</dt><dd style="margin:0;">olena.b@unsloppers.dev</dd>
+              <dt>Employment type</dt><dd style="margin:0;">FTE</dd>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <div class="section-title">
+              Risks
+              <span class="badge">Low</span>
+              <span class="trend" title="Risk improving"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#157A52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14l5-5 5 5"/></svg></span>
+            </div>
+            <div class="record">
+              <div class="record-head"><span style="font-weight:600;">Low</span><span style="color:var(--muted-foreground);">2026-08-02</span></div>
+              <div class="author">Kateryna Moroz</div>
+              <div class="desc">Stable after Q2 workload rebalance</div>
+              <div class="details">No open concerns raised in the last 1:1. Continuing on the Atlas migration with good pace.</div>
+            </div>
+            <div class="record">
+              <div class="record-head"><span style="font-weight:600;">Medium</span><span style="color:var(--muted-foreground);">2026-05-14</span></div>
+              <div class="author">Kateryna Moroz</div>
+              <div class="desc">Flagged after missed sprint commitment</div>
+              <div class="details">Discussed workload with employee; agreed to reduce concurrent project count from 3 to 2.</div>
+            </div>
+            <div class="form-block">
+              <div class="field-label" style="margin-bottom:10px;">Record risk</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 12px;">
+                <div><span class="field-label">Risk level</span><input class="input" placeholder="Low"></div>
+                <div><span class="field-label">Date recorded</span><input class="input" placeholder="2026-09-04"></div>
+              </div>
+              <span class="field-label">Description</span>
+              <input class="input" placeholder="Short summary">
+              <span class="field-label">Details</span>
+              <textarea class="input" style="margin-bottom:0;"></textarea>
+              <div style="margin-top:12px;"><button class="btn btn-default btn-sm">Record risk</button></div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <div class="fb-row">
+              <div class="seg"><button class="active">List</button><button>Compare</button></div>
+              <button class="btn btn-outline btn-sm">Request feedback</button>
+            </div>
+            <div class="section-title" style="margin-bottom:10px;">Feedback</div>
+            <div class="record">
+              <div class="record-head"><span style="font-weight:600;">Kateryna Moroz</span><span style="color:var(--muted-foreground);">2026-07-18</span></div>
+              <div class="details" style="margin-top:6px;">Consistently delivers ahead of estimate on the Atlas migration. Could be more proactive flagging blockers in standup rather than waiting for 1:1.</div>
+            </div>
+            <div class="record">
+              <div class="record-head"><span style="font-weight:600;">Ihor Savenko · People Partner</span><span style="color:var(--muted-foreground);">2026-04-02</span></div>
+              <div class="details" style="margin-top:6px;">Peer feedback from Q1 campaign: strong technical mentor for junior FE engineers on the team.</div>
+            </div>
+            <div class="compare-preview" style="margin-top:12px;">
+              <div><div class="cp-h">Period A · Q1 2026</div><div style="font-size:12.5px; color:var(--muted-foreground);">2 records</div></div>
+              <div><div class="cp-h">Period B · Q2 2026</div><div style="font-size:12.5px; color:var(--muted-foreground);">1 record</div></div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <div class="section-title">CDS · Individual Development Plan</div>
+            <p style="font-size:12.5px; margin:-4px 0 12px;"><a href="#">Competency matrix ↗</a></p>
+            <div class="idp-item">
+              <div><div class="t">React Server Components deep-dive</div><div class="d">Target: 2026-10-31</div></div>
+              <span class="status-pill status-approved">Complete</span>
+            </div>
+            <div class="idp-item">
+              <div><div class="t">Lead a cross-team design review</div><div class="d">Target: 2026-11-15</div></div>
+              <span class="status-pill status-pending">In progress</span>
+            </div>
+            <button class="btn btn-outline btn-sm" style="margin-top:2px;">+ Add IDP record</button>
+            <div class="section-title" style="margin:18px 0 10px; font-size:13.5px;">Assessments</div>
+            <div class="idp-item">
+              <div><div class="t">Senior FE Engineer — competency review</div><div class="d">2026-06-01 · reviewer: Kateryna Moroz</div></div>
+              <span class="status-pill status-approved">Meets level</span>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <div class="section-title">Management notes</div>
+            <div class="record">
+              <div class="author">Kateryna Moroz</div>
+              <p style="margin:8px 0 0; font-size:13.5px;">Great mentor for the two new hires this quarter — consider for a Team Lead track next cycle.</p>
+              <div class="note-visibility">
+                <span class="vis-chip"><span class="cb-box checked" style="width:14px;height:14px;">✓</span>Visible to employee</span>
+                <span class="vis-chip"><span class="cb-box" style="width:14px;height:14px;"></span>Visible to PM</span>
+              </div>
+              <div style="margin-top:10px; display:flex; gap:8px;"><button class="btn btn-outline btn-sm">Save</button><button class="btn btn-outline btn-sm">Delete</button></div>
+            </div>
+            <div class="form-block">
+              <div class="field-label">Add note</div>
+              <textarea class="input"></textarea>
+              <div class="note-visibility" style="margin-bottom:12px;">
+                <span class="vis-chip"><span class="cb-box" style="width:14px;height:14px;"></span>Visible to employee</span>
+                <span class="vis-chip"><span class="cb-box" style="width:14px;height:14px;"></span>Visible to PM</span>
+              </div>
+              <button class="btn btn-default btn-sm">Add note</button>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <div class="section-title">Projects</div>
+            <p style="font-size:13.5px; margin:0;">Atlas — Vue 3 → React migration · Orion — retainer support</p>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-card">
+            <div class="section-title" style="justify-content:space-between;">Mentorship<span class="sw on" style="margin-top:0;"><span class="knob"></span></span></div>
+            <p style="font-size:11.5px; color:var(--muted-foreground); margin:-6px 0 10px;">Open to mentoring</p>
+            <div class="mentor-row">
+              <div class="left"><div class="avatar" style="background:#C98A1F;">MT</div><div><div style="font-size:13px; font-weight:600;">Mariana Tkach</div><div style="font-size:11.5px; color:var(--muted-foreground);">Mentee · since 2026-03-01</div></div></div>
+              <button class="btn btn-outline-danger btn-sm">End pair</button>
+            </div>
+            <p style="font-size:12px; margin:8px 0 0;"><a href="#">View in Mentorship Hub →</a></p>
+          </div>
+
+          <div class="section-card">
+            <div class="section-title">Request history</div>
+            <div class="record">
+              <div class="record-head"><span style="font-weight:600;">Senior FE Engineer — Atlas</span><span class="status-pill status-approved">Approved</span></div>
+              <div class="author">Engineering · project Atlas</div>
+              <div class="details">Proposed 2026-08-14 · decided 2026-08-19</div>
+            </div>
+            <div class="record">
+              <div class="record-head"><span style="font-weight:600;">Backend Engineer — Phoenix</span><span class="status-pill status-rejected">Rejected</span></div>
+              <div class="author">Engineering · project Phoenix</div>
+              <div class="details">Proposed 2026-05-02 · decided 2026-05-06</div>
+              <div class="details" style="margin-top:4px;">Reason: candidate accepted a different internal offer</div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <div class="section-title">Career timeline</div>
+            <p style="font-size:13.5px; color:var(--muted-foreground); margin:0;">Promoted to Senior — Mar 2025 · Joined as Middle — Jun 2022</p>
+          </div>
+          <div class="section-card">
+            <div class="section-title">Leaves and absences</div>
+            <p style="font-size:13.5px; color:var(--muted-foreground); margin:0;">Vacation: Aug 12–19</p>
+          </div>
+          <div class="section-card">
+            <div class="section-title">Custom fields</div>
+            <dl class="cf-grid">
+              <div><dt>T-shirt size</dt><dd>L</dd></div>
+              <div><dt>GitHub handle</dt><dd>@oborysenko</dd></div>
+              <div><dt>Remote-first</dt><dd>Yes</dd></div>
+              <div><dt>Preferred IDE</dt><dd>WebStorm</dd></div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{shareOpen}}" hint-placeholder-val="{{true}}">
+    <div class="backdrop">
+      <div class="modal">
+        <div class="modal-header">Share profile</div>
+        <div class="modal-body">
+          <div style="display:flex; gap:8px; margin-bottom:14px;">
+            <button class="btn btn-outline" style="{{createTabStyle}}" onClick="{{showCreateTab}}">Create</button>
+            <button class="btn btn-outline" style="{{manageTabStyle}}" onClick="{{showManageTab}}">Manage links</button>
+          </div>
+
+          <sc-if value="{{isCreateTab}}" hint-placeholder-val="{{true}}">
+            <p style="font-size:12.5px; color:var(--muted-foreground); margin:0 0 12px;">Identity (S1) is always included. Select any extra sections to share.</p>
+            <span class="field-label">Recipient</span>
+            <input class="input" placeholder="Select an employee">
+            <span class="field-label">Link expires after</span>
+            <input class="input" placeholder="24 hours">
+            <div class="field-label">Additional sections</div>
+            <div class="fieldset-box">
+              <div class="cb-row"><div class="cb-box checked">✓</div>Risks</div>
+              <div class="cb-row"><div class="cb-box"></div>Employment</div>
+              <div class="cb-row"><div class="cb-box"></div>Career timeline</div>
+              <div class="cb-row"><div class="cb-box"></div>CDS</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{isManageTab}}" hint-placeholder-val="{{false}}">
+            <div style="border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 12px; margin-bottom:10px;">
+              <div style="font-size:13.5px; font-weight:700;">Kateryna Moroz</div>
+              <div style="font-size:12px; color:var(--muted-foreground); margin-top:2px;">Expires 12/10/2026, 14:00 · Sections: Identity, Risks</div>
+            </div>
+            <p style="font-size:13px; color:var(--muted-foreground);">No other active shared links for this employee.</p>
+          </sc-if>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onClick="{{closeShare}}">Cancel</button>
+          <sc-if value="{{isCreateTab}}" hint-placeholder-val="{{true}}">
+            <button class="btn btn-default">Create link</button>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{notifOpen}}">
+    <div class="backdrop" style="z-index:60;">
+      <div class="modal" style="width:460px;">
+        <div class="modal-header">Notification preferences</div>
+        <div class="modal-body" style="padding-top:8px;">
+          <div class="np-row">
+            <div><div class="np-title">Risk level changes</div><div class="np-desc">Email me when a risk level changes for someone I manage</div></div>
+            <div class="sw on"><div class="knob"></div></div>
+          </div>
+          <div class="np-row">
+            <div><div class="np-title">Campaign deadlines</div><div class="np-desc">Remind me 3 days before a campaign I own is due</div></div>
+            <div class="sw on"><div class="knob"></div></div>
+          </div>
+          <div class="np-row">
+            <div><div class="np-title">Weekly summary</div><div class="np-desc">A digest of team and campaign changes every Monday morning</div></div>
+            <div class="sw"><div class="knob"></div></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onClick="{{closeNotifPrefs}}">Cancel</button>
+          <button class="btn btn-default" onClick="{{closeNotifPrefs}}">Save</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    const shareOpen = this.state.shareOpen ?? false;
+    const activeTab = this.state.activeTab ?? 'create';
+    const accountMenuOpen = this.state.accountMenuOpen ?? false;
+    const notifOpen = this.state.notifOpen ?? false;
+    return {
+      shareOpen,
+      isCreateTab: activeTab === 'create',
+      isManageTab: activeTab === 'manage',
+      createTabStyle: activeTab === 'create' ? 'background:var(--primary);color:var(--primary-foreground);border-color:var(--primary);' : '',
+      manageTabStyle: activeTab === 'manage' ? 'background:var(--primary);color:var(--primary-foreground);border-color:var(--primary);' : '',
+      openShare: () => this.setState({ shareOpen: true, activeTab: 'create' }),
+      closeShare: () => this.setState({ shareOpen: false }),
+      showCreateTab: () => this.setState({ activeTab: 'create' }),
+      showManageTab: () => this.setState({ activeTab: 'manage' }),
+      accountMenuOpen,
+      notifOpen,
+      footerOpenClass: accountMenuOpen ? 'open' : '',
+      toggleAccountMenu: () => this.setState({ accountMenuOpen: !this.state.accountMenuOpen }),
+      openNotifPrefs: () => this.setState({ accountMenuOpen: false, notifOpen: true }),
+      closeNotifPrefs: () => this.setState({ notifOpen: false }),
+    };
+  }
+}
+</script>
+</x-dc>
+</body>
+</html>

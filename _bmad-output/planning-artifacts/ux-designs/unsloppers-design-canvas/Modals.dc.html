@@ -1,0 +1,287 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --radius: 10px; --radius-sm: 6px; --radius-lg: 16px;
+      --background: #FFFFFF; --foreground: #1C1B29;
+      --card: #FFFFFF;
+      --primary: #5B4FE0; --primary-hover: #4A3FC4; --primary-foreground: #FFFFFF;
+      --secondary: #F0F0F7; --secondary-foreground: #1C1B29;
+      --muted: #F7F7FB; --muted-foreground: #6B6B80;
+      --destructive: #DC3545; --destructive-foreground: #FFFFFF;
+      --border: #E4E4EE; --input: #C7C7D6; --ring: #5B4FE0;
+    }
+    body { margin: 0; background: #EDEDF2; color: var(--foreground); font-family: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif; }
+    h1, h2, h3, h4 { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; margin: 0; }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 48px 56px 96px; }
+    .h1 { font-size: 28px; font-weight: 700; color: #1a1a22; }
+    .lede { font-size: 14px; color: #5a5a68; margin-top: 6px; max-width: 660px; line-height: 1.5; }
+    .board { display: flex; flex-wrap: wrap; gap: 32px; margin-top: 36px; align-items: flex-start; }
+    .board-item { }
+    .board-label { font-size: 12px; font-weight: 700; color: #5a5a68; margin-bottom: 10px; text-transform: uppercase; letter-spacing: .04em; }
+    .backdrop { width: 520px; min-height: 380px; background: rgba(20,17,46,.4); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; padding: 24px; }
+
+    .modal { width: 100%; max-width: 440px; background: var(--card); border-radius: var(--radius-lg); box-shadow: 0 20px 50px rgba(20,17,46,.28); overflow: hidden; }
+    .modal-header { padding: 20px 20px 0; }
+    .modal-title { font-size: 17px; font-weight: 700; }
+    .modal-desc { font-size: 13px; color: var(--muted-foreground); margin-top: 4px; }
+    .modal-body { padding: 16px 20px; }
+    .modal-footer { padding: 14px 20px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border); background: var(--muted); }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--radius); border: 1px solid transparent; font-size: 14px; font-weight: 600; font-family: 'Source Sans 3', sans-serif; height: 32px; padding: 0 12px; white-space: nowrap; }
+    .btn-default { background: var(--primary); color: var(--primary-foreground); }
+    .btn-outline { background: var(--background); color: var(--foreground); border-color: var(--input); }
+    .btn-destructive { background: var(--destructive); color: #fff; }
+    .btn-outline.tab-active, .btn.tab-active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn[disabled] { opacity: .45; cursor: default; }
+
+    .field-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block; }
+    .input { width: 100%; font-size: 14px; padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid var(--input); background: var(--background); color: var(--foreground); margin-bottom: 14px; }
+    textarea.input { min-height: 60px; font-family: inherit; resize: vertical; }
+    .cb-row { display: flex; align-items: center; gap: 8px; font-size: 14px; padding: 6px 0; }
+    .cb-box { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--input); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; color: #fff; }
+    .cb-box.checked { background: var(--primary); border-color: var(--primary); }
+    .fieldset-box { max-height: 180px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
+    .legend { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+
+    .link-row { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 10px; }
+    .link-row .name { font-size: 13.5px; font-weight: 700; }
+    .link-row .meta { font-size: 12px; color: var(--muted-foreground); margin-top: 2px; }
+
+    .sidebar-footer { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 6px; cursor: pointer; }
+    .sidebar-footer .avatar { width: 30px; height: 30px; border-radius: 999px; background: var(--primary); display:flex; align-items:center; justify-content:center; font-family:'Manrope',sans-serif; font-weight:700; font-size: 11px; color:#fff; flex-shrink:0; }
+    .sidebar-footer .who .n { font-size: 12px; font-weight: 700; color: #fff; }
+    .sidebar-footer .who .r { font-size: 11px; color: #A6ADD9; }
+    .sidebar-footer > svg { color: #A6ADD9; }
+    .account-popover { width: 252px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 16px 40px rgba(20,17,46,.22); overflow: hidden; }
+    .account-popover .ap-header { display: flex; align-items: center; gap: 10px; padding: 14px; border-bottom: 1px solid var(--border); }
+    .account-popover .ap-header .avatar { width: 36px; height: 36px; border-radius: 999px; background: var(--primary); display:flex; align-items:center; justify-content:center; font-family:'Manrope',sans-serif; font-weight:700; font-size: 13px; color:#fff; flex-shrink:0; }
+    .account-popover .ap-header .n { font-size: 13.5px; font-weight: 700; }
+    .account-popover .ap-header .e { font-size: 11.5px; color: var(--muted-foreground); margin-top: 1px; }
+    .account-popover .ap-body { padding: 6px; }
+    .account-popover .ap-item { display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .account-popover .ap-item:hover { background: var(--muted); }
+    .account-popover .ap-item svg { color: var(--muted-foreground); }
+    .account-popover .ap-item.danger { color: #DC3545; }
+    .account-popover .ap-item.danger svg { color: #DC3545; }
+    .account-popover .ap-divider { height: 1px; background: var(--border); margin: 5px 8px; }
+    .np-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .np-row:last-child { border-bottom: none; }
+    .np-title { font-size: 13.5px; font-weight: 600; }
+    .np-desc { font-size: 12.5px; color: var(--muted-foreground); margin-top: 2px; max-width: 260px; }
+    .sw { width: 32px; height: 18px; border-radius: 999px; background: var(--muted); position: relative; flex-shrink: 0; margin-top: 2px; }
+    .sw.on { background: var(--primary); }
+    .sw .knob { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 999px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+    .sw.on .knob { left: 16px; }
+  </style>
+</helmet>
+
+<div class="wrap">
+  <div class="h1">Modals and popovers</div>
+  <div class="lede">Built to the <code>Modal.tsx</code> contract (a wrapper over <code>Dialog</code>) and <code>ConfirmationModal.tsx</code> (a wrapper over <code>alert-dialog</code>), using Unsloppers / People Platform tokens. Modal radius is 16px (lg).</div>
+
+  <div class="board">
+
+    <div class="board-item">
+      <div class="board-label">RoleFormDialog — create role</div>
+      <div class="backdrop">
+        <div class="modal">
+          <div class="modal-header"><div class="modal-title">Create role</div></div>
+          <div class="modal-body">
+            <span class="field-label">Role name</span>
+            <input class="input" placeholder="e.g. Team Lead">
+            <div class="legend">Permissions</div>
+            <div class="fieldset-box">
+              <div class="cb-row"><div class="cb-box checked">✓</div>Employees.read</div>
+              <div class="cb-row"><div class="cb-box checked">✓</div>Employees.write</div>
+              <div class="cb-row"><div class="cb-box"></div>Risks.read</div>
+              <div class="cb-row"><div class="cb-box"></div>Risks.write</div>
+              <div class="cb-row"><div class="cb-box"></div>Campaigns.manage</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline">Cancel</button>
+            <button class="btn btn-default">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-item">
+      <div class="board-label">CampaignFormDialog — new campaign</div>
+      <div class="backdrop">
+        <div class="modal">
+          <div class="modal-header"><div class="modal-title">New campaign</div></div>
+          <div class="modal-body">
+            <span class="field-label">Title</span>
+            <input class="input" placeholder="Q1 Engagement Survey">
+            <span class="field-label">Short description</span>
+            <textarea class="input"></textarea>
+            <span class="field-label">Purpose</span>
+            <textarea class="input"></textarea>
+            <span class="field-label">Link to the external form</span>
+            <input class="input" placeholder="https://forms.office.com/...">
+            <span class="field-label">Due date</span>
+            <input class="input" style="margin-bottom:0;" placeholder="2026-10-15">
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline">Cancel</button>
+            <button class="btn btn-default">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-item">
+      <div class="board-label">ConfirmationModal — destructive</div>
+      <div class="backdrop" style="min-height:220px;">
+        <div class="modal" style="max-width:400px;">
+          <div class="modal-header">
+            <div class="modal-title">Revoke this shared link?</div>
+            <div class="modal-desc">The recipient will lose access immediately. This can't be undone.</div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline">Cancel</button>
+            <button class="btn btn-destructive">Revoke</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-item">
+      <div class="board-label">SharedLinkManagerDialog — tab: Create</div>
+      <div class="backdrop">
+        <div class="modal" style="max-width:460px;">
+          <div class="modal-header"><div class="modal-title">Share profile</div></div>
+          <div class="modal-body">
+            <div class="row" style="display:flex; gap:8px; margin-bottom:14px;">
+              <button class="btn btn-outline tab-active">Create</button>
+              <button class="btn btn-outline">Manage links</button>
+            </div>
+            <p style="font-size:12.5px; color:var(--muted-foreground); margin:0 0 12px;">Identity (S1) is always included. Select any extra sections to share.</p>
+            <span class="field-label">Recipient</span>
+            <input class="input" placeholder="Select an employee">
+            <span class="field-label">Link expires after</span>
+            <input class="input" placeholder="24 hours">
+            <div class="legend">Additional sections</div>
+            <div class="fieldset-box">
+              <div class="cb-row"><div class="cb-box checked">✓</div>Risks</div>
+              <div class="cb-row"><div class="cb-box"></div>Employment</div>
+              <div class="cb-row"><div class="cb-box"></div>Career timeline</div>
+              <div class="cb-row"><div class="cb-box"></div>CDS</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline">Cancel</button>
+            <button class="btn btn-default">Create link</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-item">
+      <div class="board-label">SharedLinkManagerDialog — tab: Manage links</div>
+      <div class="backdrop">
+        <div class="modal" style="max-width:460px;">
+          <div class="modal-header"><div class="modal-title">Share profile</div></div>
+          <div class="modal-body">
+            <div class="row" style="display:flex; gap:8px; margin-bottom:14px;">
+              <button class="btn btn-outline">Create</button>
+              <button class="btn btn-outline tab-active">Manage links</button>
+            </div>
+            <div class="link-row">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                <div><div class="name">Kateryna Moroz</div><div class="meta">Expires 12/10/2026, 14:00</div><div class="meta">Sections: Identity, Risks</div></div>
+                <div style="display:flex; gap:6px;"><button class="btn btn-outline" style="height:26px; padding:0 8px; font-size:12px;">View log</button><button class="btn btn-outline" style="height:26px; padding:0 8px; font-size:12px;">Revoke</button></div>
+              </div>
+            </div>
+            <div class="link-row">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                <div><div class="name">Ihor Savenko</div><div class="meta">Expires 09/10/2026, 09:00</div><div class="meta">Sections: Identity</div></div>
+                <div style="display:flex; gap:6px;"><button class="btn btn-outline" style="height:26px; padding:0 8px; font-size:12px;">View log</button><button class="btn btn-outline" style="height:26px; padding:0 8px; font-size:12px;">Revoke</button></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-item">
+      <div class="board-label">FunctionalRolesAssignmentForm — /employees/:id/functional-roles</div>
+      <div class="modal" style="max-width:400px; box-shadow:0 1px 2px rgba(20,17,46,.06);">
+        <div class="modal-header"><div class="modal-title">Functional roles</div></div>
+        <div class="modal-body">
+          <div class="legend">Assign functional roles</div>
+          <div class="fieldset-box">
+            <div class="cb-row"><div class="cb-box checked">✓</div>Team Lead</div>
+            <div class="cb-row"><div class="cb-box"></div>Recruiter</div>
+            <div class="cb-row"><div class="cb-box checked">✓</div>Finance Reviewer</div>
+          </div>
+        </div>
+        <div class="modal-footer" style="justify-content:flex-start;">
+          <button class="btn btn-default" disabled>Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-item">
+      <div class="board-label">Account menu — sidebar footer trigger</div>
+      <div style="width:252px; background:#15112E; border-radius:12px; padding:12px;">
+        <div class="sidebar-footer" style="background:#241D4A;">
+          <div class="avatar">KM</div>
+          <div class="who"><div class="n">Kateryna Moroz</div><div class="r">Delivery Manager</div></div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+        </div>
+        <div style="height:8px;"></div>
+        <div class="account-popover">
+          <div class="ap-header">
+            <div class="avatar">KM</div>
+            <div><div class="n">Kateryna Moroz</div><div class="e">kateryna.moroz@altexsoft.com</div></div>
+          </div>
+          <div class="ap-body">
+            <div class="ap-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>My profile</div>
+            <div class="ap-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>Notification preferences</div>
+            <div class="ap-divider"></div>
+            <div class="ap-item danger"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign out</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-desc" style="margin-top:10px; max-width:252px;">Click the chip at the bottom of the sidebar. "My profile" opens the user's own profile (EmployeeProfilePage); "Sign out" ends the session.</div>
+    </div>
+
+    <div class="board-item">
+      <div class="board-label">Notification preferences — from account menu</div>
+      <div class="backdrop" style="min-height:auto;">
+        <div class="modal" style="max-width:460px;">
+          <div class="modal-header"><div class="modal-title">Notification preferences</div></div>
+          <div class="modal-body">
+            <div class="np-row"><div><div class="np-title">Risk level changes</div><div class="np-desc">Email me when a risk level changes for someone I manage</div></div><div class="sw on"><div class="knob"></div></div></div>
+            <div class="np-row"><div><div class="np-title">Campaign deadlines</div><div class="np-desc">Remind me 3 days before a campaign I own is due</div></div><div class="sw on"><div class="knob"></div></div></div>
+            <div class="np-row"><div><div class="np-title">Weekly summary</div><div class="np-desc">A digest of team and campaign changes every Monday morning</div></div><div class="sw"><div class="knob"></div></div></div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline">Cancel</button>
+            <button class="btn btn-default">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

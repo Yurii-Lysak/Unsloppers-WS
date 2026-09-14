@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard — Unit Manager (mock)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;color:#1c1b29;background:#F7F7FA;display:flex;min-height:100vh}
+.sidebar{width:240px;background:#15112E;color:#cfc9ea;flex-shrink:0;padding:20px 14px}.sidebar .brand{color:#fff;font-weight:700;font-size:15px;margin:0 8px 16px}.sidebar nav a{display:flex;gap:10px;padding:9px 10px;border-radius:6px;color:#cfc9ea;text-decoration:none;font-size:13.5px}.sidebar nav a.active{background:#5B4FE0;color:#fff}
+.main{flex:1;padding:24px;max-width:1220px}h1{font-size:24px;font-weight:600}.sub{color:#666;font-size:13px;margin:2px 0 14px}
+.counters{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}@media(max-width:900px){.counters{grid-template-columns:repeat(2,1fr)}}
+.counter{background:#fff;border:1px solid #e2e0f0;border-radius:10px;padding:12px 14px}.counter .n{font-size:22px;font-weight:700}.counter .l{font-size:12px;color:#666;margin-top:2px}
+.pill{display:inline-block;border-radius:9999px;padding:2px 10px;font-size:12px;font-weight:500}.p-low{background:#E8F7EF;color:#157A52}.p-att{background:#FCF1DC;color:#92620E}.p-med{background:#FDE8D3;color:#9A4A0A}.p-high{background:#FBE7E9;color:#A61D2B}.p-leaver{background:#EDE7F6;color:#5B4A8A}
+.card{background:#fff;border:1px solid #e2e0f0;border-radius:10px;padding:14px 16px;margin-bottom:14px}.card h2{font-size:18px;font-weight:600;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th{font-size:12px;text-transform:uppercase;color:#777;text-align:left;padding:8px;border-bottom:1px solid #e7e5f2}td{padding:0 8px;height:56px;border-bottom:1px solid #f0eef8;vertical-align:middle}tbody tr:hover{background:#f7f5ff;cursor:pointer}
+tr.od{background:#FBE7E9}tr.od td:first-child{border-left:4px solid #A61D2B}.odtag{color:#A61D2B;font-weight:700;font-size:12px}
+.banner{background:#FCF1DC;border:1px solid #ecd9ac;color:#6d4c08;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px}
+</style></head><body>
+<aside class="sidebar"><div class="brand">◆ People Mgmt</div><nav>
+<a href="04-dashboard-um.html" class="active">Dashboard (UM)</a><a href="01-directory.html">All Employees</a><a href="02-employee-profile.html">Employee Profile</a><a href="03-my-profile.html">My Profile</a><a href="06-resourcing-list.html">Resourcing</a><a href="08-risk-dashboard.html">Risk Dashboard</a><a href="11-mentorship-hub.html">Mentorship</a>
+</nav></aside>
+<div class="main">
+<h1>Dashboard — Unit Manager</h1><div class="sub">Olena Kovalenko · Payments department · 84 people · screen-reader: “Dashboard, Unit Manager, 84 people”</div>
+<div class="banner">Showing last-known data — sync delayed. Project-derived access older than 15 min is withdrawn per policy; core profile data unaffected.</div>
+<div class="counters">
+<div class="counter"><div class="n">84</div><div class="l">People in scope</div></div>
+<div class="counter"><div class="n">3 <span class="pill p-high">high</span></div><div class="l">Active risk · high ▲1 vs last wk</div></div>
+<div class="counter"><div class="n">5 <span class="pill p-med">medium</span></div><div class="l">Active risk · medium</div></div>
+<div class="counter"><div class="n">4 <span class="pill p-att">attention</span></div><div class="l">Need attention (low excluded)</div></div>
+<div class="counter"><div class="n">2 <span class="pill p-leaver">leaver</span></div><div class="l">Predicted leavers · not departures</div></div>
+</div>
+<div class="card"><h2>People — grouped by department team (active-only risk + leave)</h2>
+<table><thead><tr><th>Person</th><th>Position</th><th>Risk (active only)</th><th>Leave</th><th>My overdue items</th></tr></thead><tbody>
+<tr class="od"><td><b><a href="02-employee-profile.html">Taras Boyko</a></b> · QA Eng.</td><td>QA Engineer G3</td><td><span class="pill p-high">high ▲up</span></td><td></td><td><span class="odtag">OVERDUE 3 d</span> — security refresher follow-up (due 10 Sep)</td></tr>
+<tr class="od"><td><b><a href="02-employee-profile.html">Oksana Petrenko</a></b> · Sr Java</td><td>Senior Java G4</td><td><span class="pill p-med">medium ▲up</span></td><td>Annual 14–21 Sep</td><td><span class="odtag">OVERDUE 1 d</span> — IDP evidence sign-off (due 12 Sep)</td></tr>
+<tr><td><b><a href="02-employee-profile.html">Iryna Shevchenko</a></b> · Lead</td><td>Team Lead</td><td><span class="pill p-att">need attention</span></td><td></td><td></td></tr>
+<tr><td><b><a href="02-employee-profile.html">Natalia Koval</a></b> · Designer</td><td>Product Designer</td><td><span style="font-size:12px;color:#888">(low: not active)</span></td><td></td><td></td></tr>
+</tbody></table></div>
+<div class="card"><h2>Resourcing routed to Payments</h2>
+<table><thead><tr><th>Request</th><th>Project</th><th>Headcount</th><th>State</th></tr></thead><tbody>
+<tr><td><b><a href="07-resourcing-detail.html">REQ-204</a></b> · Senior Java, settlement</td><td>Ledger migration</td><td>1 of 2 filled</td><td>Awaiting proposal</td></tr>
+<tr><td><b><a href="07-resourcing-detail.html">REQ-211</a></b> · QA automation</td><td>Settlement hardening</td><td>0 of 1 filled</td><td>Proposed → DM review</td></tr>
+</tbody></table></div>
+</div></body></html>

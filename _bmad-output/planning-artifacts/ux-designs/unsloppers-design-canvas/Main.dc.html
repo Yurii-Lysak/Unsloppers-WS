@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --radius: 10px; --radius-sm: 6px; --radius-lg: 16px;
+      --background: #FFFFFF; --foreground: #1C1B29;
+      --card: #FFFFFF; --card-foreground: #1C1B29;
+      --primary: #5B4FE0; --primary-hover: #4A3FC4; --primary-foreground: #FFFFFF;
+      --secondary: #F0F0F7; --secondary-foreground: #1C1B29;
+      --muted: #F7F7FB; --muted-foreground: #6B6B80;
+      --accent: #EEECFC;
+      --destructive: #DC3545; --destructive-foreground: #FFFFFF; --destructive-soft: #FBE7E9;
+      --border: #E4E4EE; --input: #C7C7D6; --ring: #5B4FE0;
+      --sidebar: #15112E; --sidebar-hover: #241D4A; --sidebar-foreground: #A6ADD9;
+      --risk-low-bg: #E8F7EF; --risk-low-fg: #157A52;
+      --risk-attention-bg: #FCF1DC; --risk-attention-fg: #92620E;
+      --risk-medium-bg: #FCF1DC; --risk-medium-fg: #92620E;
+      --risk-high-bg: #FBE7E9; --risk-high-fg: #A61D2B;
+      --risk-leaver-bg: #F0F0F7; --risk-leaver-fg: #6B6B80;
+    }
+    body { margin: 0; background: var(--background); color: var(--foreground); font-family: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif; }
+    h1, h2, h3, h4 { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; margin: 0; }
+    a { color: var(--primary); }
+    a:hover { color: var(--primary-hover); }
+    .wrap { max-width: 1152px; margin: 0 auto; padding: 0 64px; }
+    .cover { background: var(--sidebar); color: #fff; padding: 64px 0 52px; }
+    .logo-mark { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(155deg, var(--primary), #2F6FE0); display: flex; align-items: center; justify-content: center; font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 20px; color: #fff; }
+    .brand-row { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+    .brand-row .brand-name { font-size: 13px; font-weight: 700; color: var(--sidebar-foreground); letter-spacing: .04em; }
+    .cover h1 { font-size: 36px; color: #fff; line-height: 1.2; max-width: 640px; }
+    .cover .sub { margin-top: 14px; font-size: 15px; color: var(--sidebar-foreground); max-width: 620px; line-height: 1.5; }
+    .kicker { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-foreground); margin: 0 0 8px; }
+    .h1 { font-size: 28px; font-weight: 700; }
+    .lede { font-size: 15px; color: var(--muted-foreground); margin-top: 8px; max-width: 680px; line-height: 1.5; }
+    .section { padding: 48px 0; border-top: 1px solid var(--border); }
+    .section:first-of-type { border-top: none; padding-top: 40px; }
+    .group-label { font-size: 13px; font-weight: 700; color: var(--foreground); margin: 28px 0 12px; }
+    .group-label:first-child { margin-top: 0; }
+    .grid { display: grid; gap: 14px; }
+    .swatch { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+    .swatch .fill { height: 64px; }
+    .swatch .meta { padding: 9px 11px; background: var(--card); }
+    .swatch .name { font-size: 12.5px; font-weight: 600; }
+    .swatch .hex { font-size: 11px; color: var(--muted-foreground); font-family: ui-monospace, monospace; margin-top: 1px; }
+    .swatch .role { font-size: 11px; color: var(--muted-foreground); margin-top: 3px; }
+    .type-row { display: flex; align-items: baseline; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--muted); }
+    .type-row .label { width: 200px; flex-shrink: 0; font-size: 11.5px; color: var(--muted-foreground); font-family: ui-monospace, monospace; }
+    .note-box { margin-top: 16px; background: var(--muted); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; color: var(--muted-foreground); line-height: 1.6; max-width: 680px; }
+    .note-box code { font-family: ui-monospace, monospace; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 12px; }
+    .icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+    .icon-tile { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 8px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); }
+    .icon-tile span { font-size: 11px; color: var(--muted-foreground); }
+  </style>
+</helmet>
+
+<div class="cover">
+  <div class="wrap">
+    <div class="brand-row">
+      <div class="logo-mark">U</div>
+      <div class="brand-name">UNSLOPPERS · PEOPLE PLATFORM DESIGN SYSTEM</div>
+    </div>
+    <h1>Unsloppers Design System — Foundations</h1>
+    <div class="sub">Tokens, typography, and components carried over from the People Platform design system: the same light business-app surface, the same Ink/Indigo/Sky palette. Icons are line-based, shadcn/lucide style, no emoji in the core interface.</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="section">
+    <div class="kicker">Color logic</div>
+    <div class="h1">Colors</div>
+    <div class="lede">The same tokens as People Platform: a dark Ink sidebar, Indigo for primary actions, Sky for links and names, and semantic colors for risk statuses.</div>
+
+    <div class="group-label">Ink · dark base</div>
+    <div class="grid" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="swatch"><div class="fill" style="background:#15112E"></div><div class="meta"><div class="name">Sidebar</div><div class="hex">#15112E</div><div class="role">Sidebar background</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#241D4A"></div><div class="meta"><div class="name">Sidebar hover</div><div class="hex">#241D4A</div><div class="role">Hover state on dark surfaces</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#A6ADD9"></div><div class="meta"><div class="name">Sidebar foreground</div><div class="hex">#A6ADD9</div><div class="role">Menu item text</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#1C1B29"></div><div class="meta"><div class="name">Foreground</div><div class="hex">#1C1B29</div><div class="role">Primary text on light surfaces</div></div></div>
+    </div>
+
+    <div class="group-label">Accents</div>
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="swatch"><div class="fill" style="background:#5B4FE0"></div><div class="meta"><div class="name">Primary</div><div class="hex">#5B4FE0</div><div class="role">Primary buttons, active menu item, links</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#FFFFFF; border-bottom:1px solid var(--border)"></div><div class="meta"><div class="name">Primary foreground</div><div class="hex">#FFFFFF</div><div class="role">Text on Primary</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#DC3545"></div><div class="meta"><div class="name">Destructive</div><div class="hex">#DC3545</div><div class="role">Destructive actions (delete, revoke)</div></div></div>
+    </div>
+
+    <div class="group-label">Risk levels</div>
+    <div class="grid" style="grid-template-columns: repeat(5, 1fr);">
+      <div class="swatch"><div class="fill" style="background:#E8F7EF"></div><div class="meta"><div class="name">Risk · Low</div><div class="hex">#E8F7EF / #157A52</div><div class="role">Soft green badge</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#FCF1DC"></div><div class="meta"><div class="name">Risk · Attention / Medium</div><div class="hex">#FCF1DC / #92620E</div><div class="role">Soft yellow badge</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#FBE7E9"></div><div class="meta"><div class="name">Risk · High</div><div class="hex">#FBE7E9 / #A61D2B</div><div class="role">Soft red badge</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#F0F0F7"></div><div class="meta"><div class="name">Risk · Leaver</div><div class="hex">#F0F0F7 / #6B6B80</div><div class="role">Neutral badge</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#EEECFC"></div><div class="meta"><div class="name">Accent</div><div class="hex">#EEECFC</div><div class="role">Background for info icons, selected state</div></div></div>
+    </div>
+
+    <div class="group-label">Neutrals</div>
+    <div class="grid" style="grid-template-columns: repeat(5, 1fr);">
+      <div class="swatch"><div class="fill" style="background:#FFFFFF; border-bottom:1px solid var(--border)"></div><div class="meta"><div class="name">Background / Card</div><div class="hex">#FFFFFF</div><div class="role">Cards, panels, fields</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#F7F7FB"></div><div class="meta"><div class="name">Muted</div><div class="hex">#F7F7FB</div><div class="role">Workspace background</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#E4E4EE"></div><div class="meta"><div class="name">Border</div><div class="hex">#E4E4EE</div><div class="role">Borders, dividers</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#C7C7D6"></div><div class="meta"><div class="name">Input</div><div class="hex">#C7C7D6</div><div class="role">Input field borders</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#6B6B80"></div><div class="meta"><div class="name">Muted foreground</div><div class="hex">#6B6B80</div><div class="role">Labels, placeholders</div></div></div>
+    </div>
+    <div class="note-box">Colors are stored as plain hex tokens (instead of <code>oklch()</code>) — the same as in the People Platform design system they were carried over from 1:1.</div>
+  </div>
+
+  <div class="section">
+    <div class="kicker">Font pairing</div>
+    <div class="h1">Typography</div>
+    <div class="lede">Manrope for headings, Source Sans 3 for interface and tables — the same pairing as People Platform.</div>
+    <div style="margin-top: 20px;">
+      <div class="type-row"><div class="label">H1 · Manrope 700</div><div style="font-family:'Manrope',sans-serif; font-weight:700; font-size:28px;">All Employees</div></div>
+      <div class="type-row"><div class="label">H2 · Manrope 700</div><div style="font-family:'Manrope',sans-serif; font-weight:700; font-size:20px;">Functional roles</div></div>
+      <div class="type-row"><div class="label">Body · SS3 400</div><div style="font-family:'Source Sans 3',sans-serif; font-weight:400; font-size:15px;">Senior FE Engineer, Engineering</div></div>
+      <div class="type-row"><div class="label">Body medium · SS3 600</div><div style="font-family:'Source Sans 3',sans-serif; font-weight:600; font-size:14px;">Olena Borysenko</div></div>
+      <div class="type-row"><div class="label">Caption · SS3 500</div><div style="font-family:'Source Sans 3',sans-serif; font-weight:500; font-size:12px; color:var(--muted-foreground); letter-spacing:.04em; text-transform:uppercase;">Position</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="kicker">Interface rhythm</div>
+    <div class="h1">Radius</div>
+    <div style="display:flex; align-items:flex-end; gap:24px;">
+      <div style="text-align:center;"><div style="width:64px;height:64px;background:var(--primary);border-radius:6px;"></div><div style="font-size:12px;color:var(--muted-foreground);margin-top:8px;">sm · 6px<br>inputs, nav items</div></div>
+      <div style="text-align:center;"><div style="width:64px;height:64px;background:var(--primary);border-radius:10px;"></div><div style="font-size:12px;color:var(--muted-foreground);margin-top:8px;">md · 10px<br>cards, buttons</div></div>
+      <div style="text-align:center;"><div style="width:64px;height:64px;background:var(--primary);border-radius:16px;"></div><div style="font-size:12px;color:var(--muted-foreground);margin-top:8px;">lg · 16px<br>modals</div></div>
+      <div style="text-align:center;"><div style="width:64px;height:64px;background:var(--primary);border-radius:999px;"></div><div style="font-size:12px;color:var(--muted-foreground);margin-top:8px;">pill<br>badges, avatars</div></div>
+    </div>
+
+    <div class="group-label">Layout variables</div>
+    <div class="type-row"><div class="label">--header-height</div><div>56px (topbar)</div></div>
+    <div class="type-row"><div class="label">--sidebar-width</div><div>240px</div></div>
+  </div>
+
+  <div class="section" style="padding-bottom: 64px;">
+    <div class="kicker">Line style</div>
+    <div class="h1">Icons</div>
+    <div class="lede">Line icons in the shadcn/lucide style: 24px grid, ~1.9px stroke weight, color inherits currentColor. No emoji are used in the core interface.</div>
+    <div class="icon-grid" style="margin-top:20px;">
+      <div class="icon-tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3A3850" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg><span>Home</span></div>
+      <div class="icon-tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3A3850" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.4 3-5 5.5-5s4.9 1.6 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.2 14.2c2 .1 3.9 1.6 4.3 4.4"/></svg><span>All Employees</span></div>
+      <div class="icon-tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3A3850" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9c.9.9.9 4.1 0 5"/></svg><span>Campaigns</span></div>
+      <div class="icon-tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3A3850" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3.6v5.4c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5.6z"/></svg><span>Roles</span></div>
+      <div class="icon-tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3A3850" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back</span></div>
+      <div class="icon-tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3A3850" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span>Search</span></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

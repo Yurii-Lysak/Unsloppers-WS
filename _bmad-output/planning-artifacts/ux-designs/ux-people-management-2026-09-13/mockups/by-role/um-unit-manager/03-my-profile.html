@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Profile — Taras Boyko (mock)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;color:#1c1b29;background:#F7F7FA;display:flex;min-height:100vh}
+.sidebar{width:240px;background:#15112E;color:#cfc9ea;flex-shrink:0;padding:20px 14px}.sidebar .brand{color:#fff;font-weight:700;font-size:15px;margin:0 8px 16px}.sidebar nav a{display:flex;gap:10px;padding:9px 10px;border-radius:6px;color:#cfc9ea;text-decoration:none;font-size:13.5px}.sidebar nav a.active{background:#5B4FE0;color:#fff}
+.main{flex:1;padding:24px;max-width:900px}
+h1{font-size:24px;font-weight:600;margin-bottom:2px}.sub{color:#666;font-size:13px;margin-bottom:16px}
+.card{background:#fff;border:1px solid #e2e0f0;border-radius:10px;padding:16px 18px;margin-bottom:14px}.card h2{font-size:18px;font-weight:600;margin-bottom:10px}
+label{font-size:14px;font-weight:500;display:block;margin:10px 0 4px}input,textarea,select{width:100%;border:1px solid #d5d2e8;border-radius:4px;padding:9px 10px;font-size:13.5px}input:focus{outline:2px solid #5B4FE0;border-color:#5B4FE0}
+.hint{font-size:12px;color:#777;margin-top:3px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.editable{border-left:3px solid #157A52;padding-left:10px}.ro{background:#f7f6fc;color:#555}
+.check{display:flex;gap:10px;align-items:flex-start;background:#E8F7EF;border:1px solid #bfe3cf;border-radius:8px;padding:12px;margin-top:10px}
+.btn{border:1px solid #d5d2e8;background:#fff;border-radius:6px;padding:9px 16px;font-size:13.5px;cursor:pointer}.btn.primary{background:#5B4FE0;border-color:#5B4FE0;color:#fff;font-weight:600}
+.ok{background:#E8F7EF;color:#157A52;border-radius:6px;padding:8px 12px;font-size:13px;margin-bottom:12px}
+</style></head><body>
+<aside class="sidebar"><div class="brand">◆ People Mgmt</div><nav>
+<a href="04-dashboard-um.html">Dashboard (UM)</a><a href="01-directory.html">All Employees</a><a href="02-employee-profile.html">Employee Profile</a><a href="03-my-profile.html" class="active">My Profile</a><a href="06-resourcing-list.html">Resourcing</a><a href="08-risk-dashboard.html">Risk Dashboard</a><a href="11-mentorship-hub.html">Mentorship</a><!-- My action items / leaves live as S14 + leave sections, not separate surfaces — counts shown inline, no separate nav. -->
+</nav></aside>
+<div class="main">
+<h1>My Profile</h1><div class="sub">Taras Boyko · QA Engineer · Payments · <span style="font-family:monospace">EMP-01137</span> — self-service: green-edged fields are editable by you</div>
+<div class="ok">✓ Draft saved 09:41 — writes commit on blur / Enter. Your manager sees employment data; compensation and risk sections are never shown here.</div>
+<div class="card editable"><h2>Contacts &amp; address ✎ editable</h2>
+<div class="grid2">
+<div><label>Personal phone</label><input value="+380 67 100 2233"><div class="hint">Visible to your manager, PP and HR admin.</div></div>
+<div><label>Personal email</label><input value="taras.boyko.priv@example.com"></div>
+</div>
+<label>Residential address</label><input value="vul. Zelena 14, apt. 22, Lviv">
+<label>Emergency contact</label><input value="O. Boyko (spouse) · +380 67 100 2244">
+</div>
+<div class="card"><h2>Employment summary ⟡ read-only</h2>
+<div class="grid2">
+<div><label>Position</label><input class="ro" readonly value="QA Engineer · G3"></div>
+<div><label>Manager</label><input class="ro" readonly value="Olena Kovalenko"></div>
+<div><label>Department</label><input class="ro" readonly value="Payments"></div>
+<div><label>Start date</label><input class="ro" readonly value="03 Feb 2025"></div>
+</div><div class="hint">To change manager / department, ask your PP — those fields change only on the dedicated relationship screen.</div></div>
+<div class="card editable"><h2>Photo &amp; certificates ✎ upload</h2>
+<label>Profile photo</label><input type="file"><div class="hint">JPG/PNG ≤ 5 MB (assumed limit).</div>
+<label>New certificate (PDF)</label><input type="file"></div>
+<div class="card"><h2>My growth (CDS) — IDP ✓ complete</h2>
+<label>Current IDP goal</label><input class="ro" readonly value="Playwright advanced — pass automation for settlement suite">
+<div class="check"><span style="font-size:18px">✓</span><div><b>IDP complete ✓</b><br><span style="font-size:13px">Closed 28 Aug 2026 · evidence: <a href="#">assessment-result.pdf ↗</a> · assessor Olena K. Reopening needs your manager (completed IDPs stay completed).</span></div></div>
+<label style="margin-top:12px">Self reflection (visible to manager + PP)</label><textarea rows="3">Shipped settlement regression pack; next: API contract tests.</textarea></div>
+<div class="card"><h2>My mentorship &amp; feedback</h2>
+<p style="font-size:13.5px">Mentee of <b>Andriy K.</b> since 02 Jun 2026 · <b>open to mentoring others:</b> off
+<button class="btn" style="margin-left:8px">Turn on</button></p>
+<p style="font-size:13px;color:#555;margin-top:8px">Shared with you: “Reliable release coverage in August.” — Olena K. · 1 item flagged to you only.</p></div>
+<div><button class="btn primary">Save all</button> <button class="btn">Discard draft</button></div>
+</div></body></html>

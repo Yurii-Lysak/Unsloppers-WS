@@ -1,0 +1,22 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>13 · Shared link view (read-only)</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;color:#1C1B29;background:#F7F7FA;min-height:100vh}
+.top{height:3rem;background:#fff;border-bottom:1px solid #E4E4E9;display:flex;align-items:center;padding:0 24px;gap:12px}.top .brand{font-weight:700}
+.expiry{background:#FCF1DC;border-bottom:1px solid #E8C97A;padding:10px 24px;font-size:13px}.expiry.exp{background:#FBE7E9;border-color:#E89AA3}
+.content{padding:24px;max-width:860px;margin:0 auto}.card{background:#fff;border:1px solid #E4E4E9;border-radius:10px;padding:20px;margin-bottom:16px}.card h2{font-size:18px;margin-bottom:10px}
+.ptitle{font-size:24px;font-weight:600}.sub{color:#6B6B80;font-size:13px;margin:4px 0 16px}
+.kv{display:grid;grid-template-columns:170px 1fr;gap:6px 12px;font-size:14px}.kv dt{color:#6B6B80}
+.av{width:48px;height:48px;border-radius:9999px;background:#5B4FE0;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+.mono{font-family:ui-monospace,monospace;font-size:12px;color:#6B6B80}.ro{background:#EDEDF2;border-radius:6px;padding:2px 8px;font-size:12px;color:#55556A}
+.absent{background:#FAFAFC;border:1px dashed #D8D8E0;border-radius:10px;padding:12px 16px;font-size:13px;color:#6B6B80}</style></head><body>
+<div class="top"><span class="brand">◆ People Mgmt</span><span class="ro">read-only shared link</span><span style="margin-left:auto;font-size:13px">Recipient: <strong>D. Petrenko (DM)</strong> · authenticated</span></div>
+<div class="expiry">⏳ This link expires <strong>30 Sep 2026 09:00</strong> (bound to REQ-1042 lifetime) · sections re-clamp on every view — narrowed access stops rendering without a separate revoke step.</div>
+<div class="content"><p class="sub">SharedLink SL-2091 · from O. Koval · scope: S1 / S4 / S11 / S12 / S5 (CV + certificates only) · S6 enabled · S2/S3/S7/S8 never included</p>
+<div class="card"><div style="display:flex;gap:14px;align-items:center"><span class="av">KS</span><div><h1 class="ptitle">K. Shevchenko</h1><p class="sub" style="margin:0">Senior Backend Engineer · Platform · <span class="mono">EMP-04217</span></p></div></div>
+<h2 style="margin-top:16px">S1 · Identity &amp; employment</h2><dl class="kv"><dt>Department</dt><dd>Platform</dd><dt>Position / grade</dt><dd>Senior Backend Engineer · B4</dd><dt>Manager</dt><dd>O. Koval</dd><dt>Employment</dt><dd>active · full-time</dd></dl></div>
+<div class="card"><h2>S4 · Projects</h2><dl class="kv"><dt>Current</dt><dd>Atlas squad 2 (Backend, Jan 2026 – now)</dd><dt>Previous</dt><dd>Beacon (2024 – 2025)</dd></dl></div>
+<div class="card"><h2>S11 · Timeline</h2><p style="font-size:14px">▸ Joined 03 Mar 2022 · ▸ Grade B3→B4 14 Feb 2025 · ▸ Dept Web→Platform 01 Jun 2025 · <span class="mono">no departure event ever</span></p></div>
+<div class="card"><h2>S12 · Skills matrix &amp; IDP</h2><p style="font-size:14px">Matrix: Java — expert · Kafka — advanced (<span class="mono">file: platform-matrix v7</span>) · IDP: “Event-driven patterns” — in progress</p></div>
+<div class="card"><h2>S5 · Documents (CV + certificates only)</h2><p style="font-size:14px">📄 CV_K_Shevchenko.pdf · 📄 AWS-SA-cert.pdf<br><span class="mono">contract / W-8 / Diia never in shared links</span></p></div>
+<div class="card"><h2>S6 · Risk (optionally enabled)</h2><p><span style="display:inline-block;border-radius:9999px;font-size:12px;font-weight:500;padding:3px 10px;background:#FCF1DC;color:#92620E">need attention</span></p><p class="sub">Prediction, not departure. Never shown to the subject.</p></div>
+<div class="absent">No other sections are part of this link. Denied content is absent — never masked. <br><span class="mono">Expired/revoked state: “This link has expired / been revoked. Ask the sender for a new one.” — no profile content, no section names.</span></div>
+</div></body></html>

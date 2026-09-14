@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UX Design Validation: people management</title>
+<style>
+  :root { --bg:#fafaf9; --surface:#fff; --border:#e7e5e4; --text:#1c1917; --muted:#78716c;
+    --verdict-strong:#16a34a; --verdict-adequate:#65a30d; --verdict-thin:#d97706; --verdict-broken:#dc2626;
+    --sev-low:#64748b; --sev-medium:#ca8a04; --sev-high:#ea580c; --sev-critical:#dc2626; }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:15px}
+  .container{max-width:960px;margin:0 auto;padding:32px 24px 64px}
+  header.report-header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:24px}
+  .title h1{margin:0;font-size:22px;font-weight:600;letter-spacing:-.01em}
+  .title .subtitle{color:var(--muted);font-size:13px;margin-top:4px;font-family:ui-monospace,Menlo,monospace}
+  .synthesis{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--muted);border-radius:8px;padding:18px 22px;margin-bottom:24px;font-size:15.5px}
+  .synthesis p{margin:0 0 10px} .synthesis p:last-child{margin-bottom:0}
+  .dimension-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:24px}
+  .dim-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+  .dim-card .dim-name{font-size:13px;color:var(--muted);margin-bottom:6px}
+  .dim-card .dim-verdict{font-size:14px;font-weight:600}
+  section.dimension,section.reviewer-section{margin-bottom:14px}
+  section details{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  section summary{padding:14px 20px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:12px}
+  section summary::-webkit-details-marker{display:none}
+  section summary::before{content:"▸";color:var(--muted)} section details[open] summary::before{transform:rotate(90deg);display:inline-block}
+  section summary h2{display:inline;margin:0;font-size:16px;font-weight:600;flex:1}
+  .verdict-pill{font-size:11px;padding:3px 10px;border-radius:999px;font-weight:600;text-transform:uppercase;color:#fff}
+  .verdict-strong{background:var(--verdict-strong)} .verdict-adequate{background:var(--verdict-adequate)} .verdict-thin{background:var(--verdict-thin)} .verdict-broken{background:var(--verdict-broken)}
+  .dim-body{padding:4px 20px 18px} .findings-list{padding:0 20px 4px}
+  article.finding{padding:14px 0;border-top:1px solid var(--border)} article.finding:first-child{border-top:none}
+  article.finding header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .badge{font-size:10.5px;padding:3px 8px;border-radius:4px;font-weight:600;text-transform:uppercase}
+  .badge-sev-low{background:rgba(100,116,139,.12);color:var(--sev-low)} .badge-sev-medium{background:rgba(202,138,4,.14);color:var(--sev-medium)}
+  .badge-sev-high{background:rgba(234,88,12,.14);color:var(--sev-high)} .badge-sev-critical{background:rgba(220,38,38,.14);color:var(--sev-critical)}
+  .finding-title{margin:0;font-size:15px;font-weight:500;flex:1;min-width:200px}
+  .finding-location{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--muted)}
+  .finding-note,.finding-fix{margin-top:6px;font-size:14px} .reviewer-source{font-size:12px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+  .mechanical{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-top:24px;font-size:14px}
+  footer.report-footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="container">
+<header class="report-header"><div class="title"><h1>people management — UX Design Validation Report</h1><div class="subtitle">_bmad-output/planning-artifacts/ux-designs/ux-people-management-2026-09-13/DESIGN.md + EXPERIENCE.md</div></div></header>
+<div class="synthesis">
+<p>Spines are coherent, inheritance-disciplined, and shape-conformant, with all 14 cited mockups present and a credible IA-closure claim across FR-1–FR-65. The pair is downstream-usable for directory, resourcing, risk, campaign, and mentorship work, but MyProfile, departure-cascade, CDS/IDP, and the seven admin sub-surfaces ride on “stated admin task” coverage rather than flows, mocks, or DESIGN visual specs, and two risk tokens diverge from the cited CSS source.</p>
+<p>Extra reviewers shift the picture toward the mocks: token contrast is now measured and verified (all 12 pairs ≥ 4.5:1 — prior high closed), Update fixes verified as landed, but ship-blockers remain in mock markup story-dev will copy: plain-text/<code>onclick</code> rows, dead <code>#</code> nav, inline cards substituting for Dialog confirms, journal-gate drift, flat-trend over-render and <code>—</code>-for-empty cells. Fix token divergences + mock ship-blockers before build.</p>
+</div>
+<div class="dimension-summary">
+<div class="dim-card"><div class="dim-name">Flow coverage</div><div class="dim-verdict" style="color:var(--verdict-thin)">thin</div></div>
+<div class="dim-card"><div class="dim-name">Token completeness</div><div class="dim-verdict" style="color:var(--verdict-adequate)">adequate</div></div>
+<div class="dim-card"><div class="dim-name">Component coverage</div><div class="dim-verdict" style="color:var(--verdict-adequate)">adequate</div></div>
+<div class="dim-card"><div class="dim-name">State coverage</div><div class="dim-verdict" style="color:var(--verdict-adequate)">adequate</div></div>
+<div class="dim-card"><div class="dim-name">Visual reference coverage</div><div class="dim-verdict" style="color:var(--verdict-adequate)">adequate</div></div>
+<div class="dim-card"><div class="dim-name">Bloat</div><div class="dim-verdict" style="color:var(--verdict-strong)">strong</div></div>
+<div class="dim-card"><div class="dim-name">Inheritance discipline</div><div class="dim-verdict" style="color:var(--verdict-strong)">strong</div></div>
+<div class="dim-card"><div class="dim-name">Shape fit</div><div class="dim-verdict" style="color:var(--verdict-strong)">strong</div></div>
+</div>
+<section class="dimension"><details open><summary><h2>Flow coverage</h2><span class="verdict-pill verdict-thin">thin</span></summary>
+<div class="dim-body"><p>Six Key Flows cover resourcing/campaign/mentorship/risk/roles with climax + failure. Gaps: MyProfile self-service, departure cascade, SharedLink recipient, CDS/Feedback, admin sub-surfaces.</p></div>
+<div class="findings-list">
+<article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">MyProfile self-service journey has no flow</h3><span class="finding-location">EXPERIENCE.md:38 vs :159-220</span></header><div class="finding-fix"><strong>Fix:</strong> add Flow 7 or scope MyProfile out of this phase.</div></article>
+<article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Departure recording/cascade has no walkthrough</h3><span class="finding-location">EXPERIENCE.md:53-54,111</span></header><div class="finding-fix"><strong>Fix:</strong> short admin flow exercising atomic-cascade + sole-holder gates.</div></article>
+<article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">SharedLink recipient, CDS/Feedback, admin sub-surfaces uncovered</h3><span class="finding-location">EXPERIENCE.md:45-54</span></header><div class="finding-fix"><strong>Fix:</strong> extend F1/F3/F4 or mark admin-task-covered with pointers.</div></article>
+</div></details></section>
+<section class="dimension"><details><summary><h2>Token completeness</h2><span class="verdict-pill verdict-adequate">adequate</span></summary>
+<div class="dim-body"><p>Delta-only frontmatter with explicit inheritance. Blockers: risk-medium/leaver diverge from index.css; display-sm undefined; ~15 inherited tokens lack source lines.</p></div>
+<div class="findings-list">
+<article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">risk-medium + risk-leaver diverge from cited source</h3><span class="finding-location">DESIGN.md:158,160 vs :21</span></header><div class="finding-fix"><strong>Fix:</strong> land index.css change or demote to proposed- keys.</div></article>
+<article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">display-sm undefined; inherited tokens lack source lines</h3><span class="finding-location">DESIGN.md:46-69,194-229</span></header><div class="finding-fix"><strong>Fix:</strong> add display-sm; add inherited-verified source note.</div></article>
+</div></details></section>
+<section class="dimension"><details><summary><h2>Component + State + Visual refs</h2><span class="verdict-pill verdict-adequate">adequate</span></summary>
+<div class="dim-body"><p>Core loop covered both sides. Gaps: admin components behavior-only; conflict states only in flow branches; seven admin surfaces share one mock; PM/PP lenses undedicated.</p></div>
+<div class="findings-list">
+<article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">Admin visuals, conflict rows, 12b split missing</h3><span class="finding-location">DESIGN.md:207-232; EXPERIENCE.md:81-111; mockups/12-admin.html</span></header><div class="finding-fix"><strong>Fix:</strong> one admin-table visual entry; promote 3 conflict rows; scope 12-admin or split 12b-org-relationships.</div></article>
+</div></details></section>
+<section class="reviewer-section"><details open><summary><h2>Accessibility review</h2><span class="reviewer-source">review-accessibility.md · 0/1/4/4</span></summary>
+<div class="dim-body"><p><b>Pass with fixes.</b> Contrast verified (12/12 ≥ 4.5:1). One high: mock chip/sort markup (bare ×, span sorts) undercuts keyboard/SR contracts — do not copy verbatim.</p></div>
+<div class="findings-list">
+<article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Chip × unlabeled; sort/toolbar spans non-semantic</h3><span class="finding-location">01:40-42,48-50; 08:23-24</span></header><div class="finding-fix"><strong>Fix:</strong> aria-label Remove-filter buttons; th[aria-sort] + buttons; toolbar aria-haspopup.</div></article>
+<article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">Live-region table, focus-trap boundary, zoom commit, banner contract</h3><span class="finding-location">EXPERIENCE.md:105-132</span></header><div class="finding-fix"><strong>Fix:</strong> role=status vs alert table; initial-focus/wrap/fallback; 200%+320px matrix; banner never auto-focuses.</div></article>
+</div></details></section>
+<section class="reviewer-section"><details open><summary><h2>Mock-vs-spine consistency</h2><span class="reviewer-source">review-mock-consistency.md · 3/7/14/9</span></summary>
+<div class="dim-body"><p><b>Conditional pass.</b> Update fixes verified (dismissed excluded, 01 links, 01 sidebar, MOCK-ONLY note, relabels, dash cleanup, address trim, IDP receipt, state comments). Ship-blockers: row-link contract, dead nav, Dialog substitution, journal drift, flat trends.</p></div>
+<div class="findings-list">
+<article class="finding"><header><span class="badge badge-sev-critical">critical</span><h3 class="finding-title">onclick / non-link rows in 04/05/06/08/09</h3><span class="finding-location">04:31-39; 05:36-44; 06:19-24; 08:25-31; 09:17-20</span></header><div class="finding-fix"><strong>Fix:</strong> name-cell real links; row never tabindex=0.</div></article>
+<article class="finding"><header><span class="badge badge-sev-high">high</span><h3 class="finding-title">Dead # nav; inline Dialog substitutes; journal drift; flat trends</h3><span class="finding-location">02/03/04/05/06/08/09/11/12; 07:22,25; 11:27; 12:25; 08:26-30</span></header><div class="finding-fix"><strong>Fix:</strong> wire sidebars; annotate Dialog content; adopt spine journal wording; omit flat trends.</div></article>
+<article class="finding"><header><span class="badge badge-sev-medium">medium</span><h3 class="finding-title">— for empty cells; viewed-as gaps; annotation gaps; unmocked states</h3><span class="finding-location">01/04/05/06/09; 06/07/08; 02/03/07/10/13</span></header><div class="finding-fix"><strong>Fix:</strong> blank absent cells; Viewed-as crumb per mock; one-line responsive/a11y comment per mock; HTML-comment state notes.</div></article>
+</div></details></section>
+<div class="mechanical"><h3>Mechanical notes</h3><ul><li>14/14 mock refs resolve; spine-wins stated (DESIGN.md:139; EXPERIENCE.md:18,58).</li><li>Mock contents sampled by reviewers; 12-admin scope + 02 anchors need build-time spot-check.</li><li>index.css line-level verification of inherited tokens not performed — flagged as T3.</li></ul></div>
+<footer class="report-footer"><div class="meta"><span>Rubric: review-rubric.md</span><span>Generated: 2026-09-13</span></div></footer>
+</div>
+</body>
+</html>
