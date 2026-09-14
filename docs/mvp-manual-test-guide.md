@@ -72,7 +72,7 @@ Route: `/employees/{id}`
 
 - [ ] **As Self**: S2 (personal contacts), S3 (emergency contacts) are editable; S4 (employment) is read-only; **S6 (risks) is completely absent** — no section, no placeholder, not even an empty card
 - [ ] **As Self**: S15 (request history) is absent even if you were proposed on a resourcing request
-- [ ] **As the person's UM/DM**: same profile now shows S6 (risks), S7 (management notes, RW), S15 — sections that were invisible to Self
+- [x] **As the person's UM/DM**: same profile now shows S6 (risks), S7 (management notes, RW), S15 — sections that were invisible to Self
 - [ ] **As a Colleague** (no Manager/PP relationship): only S1 (identity), S10 (leave **dates only**, no leave type), S11 (**project name only**, no PM/DM/period) are visible — open browser devtools Network tab and inspect the raw JSON response, not just the rendered page, to confirm the other sections aren't just hidden in the UI
 - [ ] **Colleague view of S10**: confirm the leave *type* (vacation/sick/parental) is genuinely absent from the API response, not just unstyled
 - [ ] Profile header shows manager/PP/mentor as links; as a Colleague, the **mentor field is withheld** even though S1 is otherwise visible to Colleagues (D5's exception)
@@ -86,9 +86,9 @@ Route: `/employees/{id}`
 
 Route: `/admin/roles` (HR Admin only — confirm a non-HR-Admin account gets denied, not just hidden from nav)
 
-- [ ] Create a new role (e.g. "Security Champion"), grant it only "create form campaigns"
-- [ ] Assign it to a random employee via `/employees/{id}/functional-roles`
-- [ ] Log in as that employee, confirm they can create a campaign (`/campaigns`) but still cannot see anyone's S6/S7/etc. outside their own Colleague view — a functional role must never widen data access
+- [x] Create a new role (e.g. "Security Champion"), grant it only "create form campaigns"
+- [x] Assign it to a random employee via `/employees/{id}/functional-roles`
+- [x] Log in as that employee, confirm they can create a campaign (`/campaigns`) but still cannot see anyone's S6/S7/etc. outside their own Colleague view — a functional role must never widen data access
 - [ ] Remove the permission from the role, confirm the now-demoted user is denied on their very next action (no logout needed)
 
 
@@ -109,15 +109,15 @@ Route: `/admin/roles` (HR Admin only — confirm a non-HR-Admin account gets den
 
 Log in as any seeded employee and open your own profile (`/employees/{yourId}`, or check whether the sidebar's Home link routes you there).
 
-- [ ] S4 (employment) — grade, position, seniority, employment type, English level, probation, contract type — all read-only
-- [ ] S2/S3 — edit personal phone, address, emergency contact; confirm it saves and reloads
+- [x] S4 (employment) — grade, position, seniority, employment type, English level, probation, contract type — all read-only
+- [x] S2/S3 — edit personal phone, address, emergency contact; confirm it saves and reloads
 - [ ] S1 — upload a new photo; confirm it replaces the old one and shows up immediately
 - [ ] S5 — upload a certificate; confirm uploading a non-certificate document type (or trying to edit CV/contract) is rejected
-- [ ] S9 (career timeline), S11 (projects), S12 (CDS) render read-only
+- [x] S9 (career timeline), S11 (projects), S12 (CDS) render read-only
 - [ ] S10 (leaves) shows a link out to the timetracker
-- [ ] S13 — toggle your own "open to mentoring" flag
+- [x] S13 — toggle your own "open to mentoring" flag
 - [ ] S12 — mark your own IDP complete if one exists (the seeded mentee/CDS demo account is a good candidate) — confirm a completion date appears and you can't edit the deadline or conclusion text
-- [ ] S8 (feedback) — confirm you only see records explicitly flagged "shared with employee"; S7 — confirm you only see notes flagged "visible for employee"
+- [x] S8 (feedback) — confirm you only see records explicitly flagged "shared with employee"; S7 — confirm you only see notes flagged "visible for employee"
 - [ ] S14 — mark one of your own action items complete; confirm you can't edit its title/due date or cancel it (only the author can cancel)
 - [ ] Confirm **S6 is absent everywhere on your own view**, including any dashboard-style widget that might surface a summary
 
@@ -129,15 +129,15 @@ Log in as any seeded employee and open your own profile (`/employees/{yourId}`, 
 
 Route: `/employees`
 
-- [ ] As a manager/PP: sortable, filterable table loads with real columns
+- [x] As a manager/PP: sortable, filterable table loads with real columns
 - [ ] Filter by a **derived field** — "years with company" — confirm it computes correctly from join date (no stored field to fudge)
-- [ ] Add/remove columns via the column picker; confirm a management-only custom field, if one exists, is offered as a column only to someone entitled to see it
-- [ ] **Inline edit** a field you have write access to (e.g. grade for a direct report) from the list — confirm it updates on the full profile too
+- [x] Add/remove columns via the column picker; confirm a management-only custom field, if one exists, is offered as a column only to someone entitled to see it
+- [x] **Inline edit** a field you have write access to (e.g. grade for a direct report) from the list — confirm it updates on the full profile too
 - [ ] Attempt inline edit on someone you have no access to (open devtools, try a direct write) — rejected server-side
 - [ ] Save a filter/column combo as a named view; confirm it appears as a tab and survives a page reload
 - [ ] Share a saved view with another manager; log in as them and confirm they see only rows/columns *they're* entitled to, not a frozen snapshot of what the creator saw
 - [ ] Export the current view to `.xlsx` — open the file and confirm columns match what you're entitled to see, and that a field you can't see for a specific row isn't smuggled into the export
-- [ ] **Colleague mode**: log in as a plain employee, open `/employees` — confirm only S1 + leave-dates + project-name columns/filters are offered, and this is enforced per-row (i.e. rows where you *do* have manager access to that one person could differ — check at least one such row if your cast list has one)
+- [x] **Colleague mode**: log in as a plain employee, open `/employees` — confirm only S1 + leave-dates + project-name columns/filters are offered, and this is enforced per-row (i.e. rows where you *do* have manager access to that one person could differ — check at least one such row if your cast list has one)
 
 ---
 
@@ -160,12 +160,12 @@ Route: `/employees`
 
 Route: `/risks` (only visible to Manager/PP-holding accounts)
 
-- [ ] As a UM/DM/PP, record a risk (level, description, details, date) for someone you're responsible for
-- [ ] Confirm the employee themself never sees it — check their own profile and confirm S6 is entirely absent, not just empty
+- [x] As a UM/DM/PP, record a risk (level, description, details, date) for someone you're responsible for
+- [x] Confirm the employee themself never sees it — check their own profile and confirm S6 is entirely absent, not just empty
 - [ ] Record a second risk at a different level — confirm the trend arrow appears (up/down) and that a first-ever record shows no arrow
-- [ ] Open the Risk Dashboard — counts by level (medium/high/leaver visually distinct), scoped to *your* people only
+- [x] Open the Risk Dashboard — counts by level (medium/high/leaver visually distinct), scoped to *your* people only
 - [ ] Click a count to drill into the filtered table; click a row to open the profile
-- [ ] As a plain employee, try navigating directly to `/risks` — denied, not just hidden from nav
+- [x] As a plain employee, try navigating directly to `/risks` — denied, not just hidden from nav
 
 Reminder while testing: `leaver` (risk prediction) and `dismissed` (employment status fact) are two different things — if you're testing both Risks and Employment status in the same session, don't cross-check them against each other as if they should match.
 
@@ -195,8 +195,8 @@ Route: `/resourcing` (DM/PM/UM only)
 
 On any profile with edit access (S9):
 
-- [ ] Trigger a tracked change (grade, position, department, FTE↔Subcontractor) via the appropriate section and confirm a timeline event appears automatically — no manual step
-- [ ] As someone with "edit career timeline" permission, manually add/edit/delete a timeline event (for backfill)
+- [x] Trigger a tracked change (grade, position, department, FTE↔Subcontractor) via the appropriate section and confirm a timeline event appears automatically — no manual step
+- [x] As someone with "edit career timeline" permission, manually add/edit/delete a timeline event (for backfill)
 - [ ] If you can force a system-generated event into the same window as a manual one, confirm the manual entry wins and the system write is marked "skipped" rather than silently overwriting it — otherwise just confirm this behavior exists conceptually if you can't easily reproduce it manually
 
 ---
@@ -207,11 +207,11 @@ On any profile with edit access (S9):
 
 On a profile's S12 section (post-reseed, should have skills-matrix dictionary entries and a couple of demo assessments):
 
-- [ ] Confirm a link to the current skills matrix for the person's department+position renders
-- [ ] As someone with "maintain CDS records," add an assessment log entry with a conclusion
-- [ ] Add/update an IDP with a deadline; as the employee, mark it complete and confirm the completion date appears (only Self can tick the checkbox — manager/PP can't tick it on someone else's behalf)
-- [ ] On `/employees`, filter by "assessed before [date]" and confirm "never assessed" is a selectable option, not just missing from the dropdown
-- [ ] Filter by "has an open IDP"
+- [x] Confirm a link to the current skills matrix for the person's department+position renders
+- [x] As someone with "maintain CDS records," add an assessment log entry with a conclusion
+- [x] Add/update an IDP with a deadline; as the employee, mark it complete and confirm the completion date appears (only Self can tick the checkbox — manager/PP can't tick it on someone else's behalf)
+- [x] On `/employees`, filter by "assessed before [date]" and confirm "never assessed" is a selectable option, not just missing from the dropdown
+- [x] Filter by "has an open IDP"
 
 ---
 
@@ -221,12 +221,12 @@ On a profile's S12 section (post-reseed, should have skills-matrix dictionary en
 
 Route: `/mentorship`
 
-- [ ] The seeded pair (mentor `artem.shamraiev@altexsoft.com` → mentee `tt.site-admin@altexsoft.com`) shows up in the active pairs list
-- [ ] As the mentee or mentor, confirm the mentor/mentee field shows on the other party's profile header (visible to reporting/project line + PP, withheld from Colleagues per D5)
-- [ ] Flag a third employee as "open to mentoring" (self-service S13); confirm they appear in the company-wide mentor pool for a manager/PP with the assign permission — **pool is company-wide**, cross-department
-- [ ] Assign a new pair from the pool; confirm mentee selection is scoped to people the assigner holds access over, and the newly-paired mentor's status flips from "open to mentoring" to "mentor"
-- [ ] End a pair **without** a closure note — blocked; with one — succeeds, and confirm the closure note is visible to reporting/project line + PP but **not** to the mentor or mentee themselves
-- [ ] Confirm ending the pair writes an end event to the career timeline, and if the mentor has no other active mentees, their status reverts to "open to mentoring" (only if their self-flag is still on)
+- [x] The seeded pair (mentor `artem.shamraiev@altexsoft.com` → mentee `tt.site-admin@altexsoft.com`) shows up in the active pairs list
+- [x] As the mentee or mentor, confirm the mentor/mentee field shows on the other party's profile header (visible to reporting/project line + PP, withheld from Colleagues per D5)
+- [x] Flag a third employee as "open to mentoring" (self-service S13); confirm they appear in the company-wide mentor pool for a manager/PP with the assign permission — **pool is company-wide**, cross-department
+- [x] Assign a new pair from the pool; confirm mentee selection is scoped to people the assigner holds access over, and the newly-paired mentor's status flips from "open to mentoring" to "mentor"
+- [x] End a pair **without** a closure note — blocked; with one — succeeds, and confirm the closure note is visible to reporting/project line + PP but **not** to the mentor or mentee themselves
+- [x] Confirm ending the pair writes an end event to the career timeline, and if the mentor has no other active mentees, their status reverts to "open to mentoring" (only if their self-flag is still on)
 
 ---
 
@@ -236,11 +236,11 @@ Route: `/mentorship`
 
 Route: `/campaigns` (needs "create form campaigns" permission)
 
-- [ ] Create a draft campaign (title, description, purpose, external form link, due date)
-- [ ] Build an audience via the filter engine (or a saved view), preview the resolved list, add/remove a person manually
-- [ ] Activate — confirm the audience freezes (someone added to the org afterward doesn't get pulled in) and exactly one action item per recipient is generated with the campaign's link/due date/sender
-- [ ] As a recipient, follow the action item to the external link, mark it complete
-- [ ] As the campaign creator, open the per-person completion table — confirm you see recipient names + this campaign's task status **only** (the documented Colleague-whitelist exception, §3.3.7) — and confirm this visibility disappears once you navigate away from this campaign (you shouldn't retain broader visibility into these people elsewhere)
+- [x] Create a draft campaign (title, description, purpose, external form link, due date)
+- [x] Build an audience via the filter engine (or a saved view), preview the resolved list, add/remove a person manually
+- [x] Activate — confirm the audience freezes (someone added to the org afterward doesn't get pulled in) and exactly one action item per recipient is generated with the campaign's link/due date/sender
+- [x] As a recipient, follow the action item to the external link, mark it complete
+- [x] As the campaign creator, open the per-person completion table — confirm you see recipient names + this campaign's task status **only** (the documented Colleague-whitelist exception, §3.3.7) — and confirm this visibility disappears once you navigate away from this campaign (you shouldn't retain broader visibility into these people elsewhere)
 
 ---
 
@@ -250,10 +250,10 @@ Route: `/campaigns` (needs "create form campaigns" permission)
 
 On a profile's S8 section:
 
-- [ ] As a UM/PP, record feedback with a visibility flag (default "management only")
-- [ ] Flip it to "shared with employee," confirm the employee now sees it on their own profile
-- [ ] Confirm chronological ordering and period filtering work
-- [ ] **Requested feedback flow**: run a campaign targeted at named individuals (§4.15), then manually enter the responses received as feedback records — confirm nothing becomes a record automatically just from campaign completion
+- [x] As a UM/PP, record feedback with a visibility flag (default "management only")
+- [x] Flip it to "shared with employee," confirm the employee now sees it on their own profile
+- [x] Confirm chronological ordering and period filtering work
+- [x] **Requested feedback flow**: run a campaign targeted at named individuals (§4.15), then manually enter the responses received as feedback records — confirm nothing becomes a record automatically just from campaign completion
 
 ---
 
@@ -263,11 +263,11 @@ On a profile's S8 section:
 
 Route: `/` (content varies by functional role)
 
-- [ ] **UM dashboard**: headcount, active-risk counts by level, open/overdue action items, active resourcing requests, open campaigns; table of your people with risk/trend/project/leave status; your own action items sorted by due date
-- [ ] **DM dashboard**: one table per project you're responsible for; project selector defaulting to "All projects"; selecting a project filters the whole page and recalculates counters for just that project; an explicit **Unassigned** bucket for requests with no project, included in the all-projects totals
-- [ ] **PM dashboard**: same shape as DM, scoped to your own projects only
-- [ ] **PP dashboard**: same building blocks, groupable by department/project, **no resourcing block anywhere on the page**
-- [ ] Cross-check: numbers on each dashboard's counters should match what you'd get filtering the equivalent lists (Risk Dashboard, Resourcing, All Employees) manually — if a dashboard count and a drill-down disagree, that's a real bug
+- [x] **UM dashboard**: headcount, active-risk counts by level, open/overdue action items, active resourcing requests, open campaigns; table of your people with risk/trend/project/leave status; your own action items sorted by due date
+- [x] **DM dashboard**: one table per project you're responsible for; project selector defaulting to "All projects"; selecting a project filters the whole page and recalculates counters for just that project; an explicit **Unassigned** bucket for requests with no project, included in the all-projects totals
+- [x] **PM dashboard**: same shape as DM, scoped to your own projects only
+- [x] **PP dashboard**: same building blocks, groupable by department/project, **no resourcing block anywhere on the page**
+- [x] Cross-check: numbers on each dashboard's counters should match what you'd get filtering the equivalent lists (Risk Dashboard, Resourcing, All Employees) manually — if a dashboard count and a drill-down disagree, that's a real bug
 
 ---
 
@@ -275,10 +275,10 @@ Route: `/` (content varies by functional role)
 
 ## 14. Timetracker integration (Epic 13)
 
-- [ ] Confirm S10 (leaves) on a few profiles shows real data sourced from the timetracker test environment, not placeholder text
-- [ ] Confirm S11 (projects) and PM/DM on those projects reflect the live sync
-- [ ] If you can simulate or wait out a sync gap: S10/S11 should show a visible "temporarily unavailable" banner rather than crashing or silently showing stale data unlabeled
-- [ ] You will not be able to manually verify the 15-minute confirmation / 4-hour withdrawal windows in a single test session — treat this as covered by the story's automated tests (13.2) unless you have a specific reason to distrust them
+- [x] Confirm S10 (leaves) on a few profiles shows real data sourced from the timetracker test environment, not placeholder text
+- [x] Confirm S11 (projects) and PM/DM on those projects reflect the live sync
+- [x] If you can simulate or wait out a sync gap: S10/S11 should show a visible "temporarily unavailable" banner rather than crashing or silently showing stale data unlabeled
+- [x] You will not be able to manually verify the 15-minute confirmation / 4-hour withdrawal windows in a single test session — treat this as covered by the story's automated tests (13.2) unless you have a specific reason to distrust them
 
 ---
 
